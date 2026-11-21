@@ -415,6 +415,15 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
         {
             MicsGainSettingsView(model: model, mics: database.mics)
         }
+        if database.debug.audioMixer {
+            builder.add(String(localized: "Processing"),
+                        [audio],
+                        audioImage,
+                        searchKeywords("Voice", "Effects", "Filter"))
+            {
+                MicsProcessingSettingsView(model: model, mics: database.mics)
+            }
+        }
         builder.add(
             String(localized: "Macros"),
             [],

@@ -11,16 +11,20 @@ struct AudioMixerSourceSettings {
     let channel: Int?
     let gain: Float
     let delay: Double
+    let voice: Bool
 }
 
 final class AudioMixerSource {
     let id: String
     let bufferedAudio: UUID?
+    let effectsLatency: Int64
     private(set) var delay: Int64 = 0
     private(set) var isRemoved = false
     private let startIndex: Int64
     private let channelsMap: [Int: Int]
     private let channel: Int?
+    private let voice: Bool
+    private let effects: [AudioMixerEffect]
     private var gain: Float = 0
     private var currentGain: Float = 0
     private var currentDelay: Int64 = 0
@@ -39,6 +43,9 @@ final class AudioMixerSource {
         self.startIndex = startIndex
         channelsMap = settings.channelsMap
         channel = settings.channel
+        voice = settings.voice
+        effects = settings.voice ? makeAudioMixerVoiceEffects() : []
+        effectsLatency = effects.reduce(0) { $0 + $1.latency }
         update(settings: settings)
         currentDelay = delay
     }
@@ -60,6 +67,7 @@ final class AudioMixerSource {
             && bufferedAudio == settings.bufferedAudio
             && channelsMap == settings.channelsMap
             && channel == settings.channel
+            && voice == settings.voice
     }
 
     func update(settings: AudioMixerSourceSettings) {
@@ -86,7 +94,7 @@ final class AudioMixerSource {
         if input.numberOfChannels != numberOfInputChannels {
             configure(input.numberOfChannels)
         }
-        let lookahead = audioMixerFramesPerBlock + audioMixerFadeFrames
+        let lookahead = audioMixerFramesPerBlock + max(audioMixerFadeFrames, Int(effectsLatency))
         var delay = delay
         if !isSilent, input.writeIndex - (blockStart - delay) < Int64(lookahead) {
             delay = previousDelay
@@ -100,18 +108,21 @@ final class AudioMixerSource {
             isSilent = true
         }
         if isSilent {
-            guard end == lookahead, !isOverwritten, index >= startIndex else {
+            guard end == lookahead, !isOverwritten, index >= startIndex, start(input, index) else {
                 return
             }
-            read(input, index, audioMixerFramesPerBlock, left, right)
             if startGain != 0 {
                 fadeIn()
             }
             isSilent = false
         } else {
-            read(input, index, audioMixerFramesPerBlock, left, right)
+            read(input, index + effectsLatency, audioMixerFramesPerBlock, left, right)
             if previousDelay != delay {
-                seek(input, blockStart - previousDelay)
+                seek(input, blockStart - previousDelay + effectsLatency)
+            }
+            guard process() else {
+                isSilent = true
+                return
             }
             if end < lookahead {
                 logger.debug("audio-mixer: Source \(id) stalled")
@@ -137,6 +148,33 @@ final class AudioMixerSource {
         } else {
             min(outputChannel, numberOfInputChannels - 1)
         }
+    }
+
+    private func start(_ input: AudioMixerInput, _ index: Int64) -> Bool {
+        if !effects.isEmpty {
+            for effect in effects {
+                effect.reset()
+            }
+            let primingIndex = index + effectsLatency - Int64(audioMixerFramesPerBlock)
+            read(input, primingIndex, audioMixerFramesPerBlock, left, right)
+            guard process() else {
+                return false
+            }
+        }
+        read(input, index + effectsLatency, audioMixerFramesPerBlock, left, right)
+        return process()
+    }
+
+    private func process() -> Bool {
+        if !effects.isEmpty, !isStereo {
+            right.update(from: left, count: audioMixerFramesPerBlock)
+        }
+        for effect in effects {
+            guard effect.process(left, right) else {
+                return false
+            }
+        }
+        return true
     }
 
     private func read(_ input: AudioMixerInput,
@@ -355,7 +393,7 @@ final class AudioMixer {
         for case let cameraId? in sources.map(\.bufferedAudio) where bufferedInputs[cameraId] == nil {
             bufferedInputs[cameraId] = AudioMixerInput(kind: .buffered)
         }
-        let latency = minimumLatency - min(sources.map(\.delay).min() ?? 0, 0)
+        let latency = minimumLatency + max(sources.map { $0.effectsLatency - $0.delay }.max() ?? 0, 0)
         if latency != self.latency {
             logger.debug("audio-mixer: Latency \(latency) frames")
             self.latency = latency

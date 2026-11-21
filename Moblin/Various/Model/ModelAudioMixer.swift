@@ -98,7 +98,8 @@ extension Model {
                                         channelsMap: makeAudioInputChannelsMap(),
                                         channel: mic.channel,
                                         gain: pow(10, mic.gainDb / 20),
-                                        delay: mic.delay.clamped(to: makeMicDelayRange(audioMixer: true)))
+                                        delay: mic.delay.clamped(to: makeMicDelayRange(audioMixer: true)),
+                                        voice: mic.processing == .voice)
     }
 
     private func makeAudioEncoderChannelsMap() -> [Int: Int] {

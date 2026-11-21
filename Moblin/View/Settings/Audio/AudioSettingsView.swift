@@ -81,6 +81,13 @@ struct AudioSettingsView: View {
                     } label: {
                         Text("Gains")
                     }
+                    if debug.audioMixer {
+                        NavigationLink {
+                            MicsProcessingSettingsView(model: model, mics: database.mics)
+                        } label: {
+                            Text("Processing")
+                        }
+                    }
                 }
             }
             if database.showAllSettings {

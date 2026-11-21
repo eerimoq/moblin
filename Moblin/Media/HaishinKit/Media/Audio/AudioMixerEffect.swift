@@ -28,7 +28,7 @@ final class AudioMixerEffect {
     private var left: UnsafeMutablePointer<Float>?
     private var right: UnsafeMutablePointer<Float>?
 
-    init?(subType: OSType) {
+    init?(subType: OSType, parameters: [AudioUnitParameterID: AudioUnitParameterValue] = [:]) {
         var description = AudioComponentDescription(
             componentType: kAudioUnitType_Effect,
             componentSubType: subType,
@@ -49,7 +49,7 @@ final class AudioMixerEffect {
         outputLeft = makeAudioMixerSamples(count: audioMixerFramesPerBlock)
         outputRight = makeAudioMixerSamples(count: audioMixerFramesPerBlock)
         timeStamp.mFlags = .sampleTimeValid
-        guard initialize() else {
+        guard initialize(parameters) else {
             logger.info("audio-mixer: Failed to initialize effect \(subType)")
             return nil
         }
@@ -67,7 +67,8 @@ final class AudioMixerEffect {
         AudioUnitReset(audioUnit, kAudioUnitScope_Global, 0)
     }
 
-    func process(_ left: UnsafeMutablePointer<Float>, _ right: UnsafeMutablePointer<Float>) {
+    @discardableResult
+    func process(_ left: UnsafeMutablePointer<Float>, _ right: UnsafeMutablePointer<Float>) -> Bool {
         self.left = left
         self.right = right
         let byteSize = UInt32(audioMixerFramesPerBlock * MemoryLayout<Float>.size)
@@ -91,10 +92,11 @@ final class AudioMixerEffect {
             left.update(repeating: 0, count: audioMixerFramesPerBlock)
             right.update(repeating: 0, count: audioMixerFramesPerBlock)
             reset()
-            return
+            return false
         }
         copyOutput(0, left)
         copyOutput(1, right)
+        return true
     }
 
     fileprivate func provideInput(_ data: UnsafeMutableAudioBufferListPointer, _ frameCount: UInt32) {
@@ -111,7 +113,7 @@ final class AudioMixerEffect {
         }
     }
 
-    private func initialize() -> Bool {
+    private func initialize(_ parameters: [AudioUnitParameterID: AudioUnitParameterValue]) -> Bool {
         var format = AudioStreamBasicDescription(
             mSampleRate: audioMixerSampleRate,
             mFormatID: kAudioFormatLinearPCM,
@@ -141,8 +143,16 @@ final class AudioMixerEffect {
                           kAudioUnitScope_Input,
                           &callback,
                           MemoryLayout<AURenderCallbackStruct>.size),
-              AudioUnitInitialize(audioUnit) == noErr,
-              AudioUnitGetProperty(audioUnit,
+              AudioUnitInitialize(audioUnit) == noErr
+        else {
+            return false
+        }
+        for (id, value) in parameters {
+            guard AudioUnitSetParameter(audioUnit, id, kAudioUnitScope_Global, 0, value, 0) == noErr else {
+                return false
+            }
+        }
+        guard AudioUnitGetProperty(audioUnit,
                                    kAudioUnitProperty_Latency,
                                    kAudioUnitScope_Global,
                                    0,
@@ -166,4 +176,23 @@ final class AudioMixerEffect {
 
 func makeAudioMixerLimiter() -> AudioMixerEffect? {
     AudioMixerEffect(subType: kAudioUnitSubType_PeakLimiter)
+}
+
+func makeAudioMixerVoiceEffects() -> [AudioMixerEffect] {
+    let highPass = AudioMixerEffect(subType: kAudioUnitSubType_HighPassFilter, parameters: [
+        kHipassParam_CutoffFrequency: 90,
+    ])
+    let dynamics = AudioMixerEffect(subType: kAudioUnitSubType_DynamicsProcessor, parameters: [
+        kDynamicsProcessorParam_Threshold: -24,
+        kDynamicsProcessorParam_HeadRoom: 6,
+        kDynamicsProcessorParam_ExpansionThreshold: -50,
+        kDynamicsProcessorParam_ExpansionRatio: 2,
+        kDynamicsProcessorParam_AttackTime: 0.003,
+        kDynamicsProcessorParam_ReleaseTime: 0.12,
+        kDynamicsProcessorParam_OverallGain: 0,
+    ])
+    guard let highPass, let dynamics else {
+        return []
+    }
+    return [highPass, dynamics]
 }
