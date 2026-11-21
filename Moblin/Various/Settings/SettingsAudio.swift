@@ -63,6 +63,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
     var builtInOrientation: SettingsMic?
     @Published var delay: Double = 0.0
     @Published var gainDb: Float = 0.0
+    @Published var pan: Float = 0.0
     @Published var connected: Bool = false
     @Published var mixed: Bool = false
     @Published var processing: SettingsMicsMicProcessing = .none
@@ -161,6 +162,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         case channel
         case processing
         case output
+        case pan
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -175,6 +177,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         try container.encode(.channel, channel)
         try container.encode(.processing, processing)
         try container.encode(.output, output)
+        try container.encode(.pan, pan)
     }
 
     init() {}
@@ -197,6 +200,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         channel = container.decode(.channel, Int?.self, nil)
         processing = container.decode(.processing, SettingsMicsMicProcessing.self, .none)
         output = container.decode(.output, SettingsMicsMicOutput.self, .streamAndRecording)
+        pan = container.decode(.pan, Float.self, 0.0)
     }
 }
 

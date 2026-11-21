@@ -5,6 +5,7 @@ import Testing
 private let startIndex: Int64 = 480_000
 private let cameraId = UUID()
 private let limiterLatency = makeAudioMixerLimiter()!.latency
+private let sqrt2 = Float(2).squareRoot()
 
 struct AudioMixerSuite {
     struct FormatCase: CustomTestStringConvertible {
@@ -57,6 +58,16 @@ struct AudioMixerSuite {
         var channel: Int?
         let left: Int
         let right: Int
+    }
+
+    struct PanCase: CustomTestStringConvertible {
+        let pan: Float
+        let left: Float
+        let right: Float
+
+        var testDescription: String {
+            "pan \(pan)"
+        }
     }
 
     struct SendsCase: CustomTestStringConvertible {
@@ -556,6 +567,73 @@ struct AudioMixerSuite {
         #expect(output.samples(1, frames) == createNoise(testCase.right, frames))
     }
 
+    @Test(arguments: [
+        PanCase(pan: 0, left: 1, right: 1),
+        PanCase(pan: -1, left: sqrt2, right: 0),
+        PanCase(pan: 1, left: 0, right: sqrt2),
+        PanCase(pan: -0.5, left: 0.92387953 * sqrt2, right: 0.38268343 * sqrt2),
+        PanCase(pan: 0.5, left: 0.38268343 * sqrt2, right: 0.92387953 * sqrt2),
+        PanCase(pan: -3, left: sqrt2, right: 0),
+    ])
+    func panKeepsPower(_ testCase: PanCase) {
+        let gains = makeAudioMixerPanGains(pan: testCase.pan)
+        #expect(abs(gains.left - testCase.left) < 1e-6)
+        #expect(abs(gains.right - testCase.right) < 1e-6)
+        #expect(abs(gains.left * gains.left + gains.right * gains.right - 2) < 1e-5)
+    }
+
+    @Test(arguments: [1, 2], [-1, -0.5, 0, 0.5, 1] as [Float])
+    func pansSources(_ numberOfChannels: Int, _ pan: Float) {
+        let mixer = AudioMixer()
+        let format = createFormat(.pcmFormatFloat32, numberOfChannels, false)
+        mixer.setSources([createSettings(pan: pan)])
+        let output = Output()
+        for tick in 0 ..< 20 {
+            mixer.appendBuiltin(
+                createSampleBuffer(format, tick) { 0.5 * createNoise($0, $1) },
+                createTime(tick)
+            )
+            while let block = mixer.renderNextBlock(now: createTime(tick + 1)) {
+                output.append(block)
+            }
+        }
+        let gains = makeAudioMixerPanGains(pan: pan)
+        let frames = 256 ..< output.end
+        let left = createNoise(0, frames).map { 0.5 * $0 * gains.left }
+        let right = createNoise(numberOfChannels - 1, frames).map { 0.5 * $0 * gains.right }
+        #expect(output.isContinuous)
+        #expect(zip(output.samples(0, frames), left).allSatisfy { abs($0 - $1) < 1e-6 })
+        #expect(zip(output.samples(1, frames), right).allSatisfy { abs($0 - $1) < 1e-6 })
+    }
+
+    @Test(arguments: [false, true])
+    func panChangesRamp(_ recording: Bool) throws {
+        let mixer = AudioMixer()
+        let format = createFormat(.pcmFormatFloat32, 1, false)
+        mixer.setSources([createSettings(sends: (1, recording ? 0.5 : 1))])
+        let output = Output()
+        for tick in 0 ..< 40 {
+            if tick == 20 {
+                mixer.setSources([createSettings(sends: (1, recording ? 0.5 : 1), pan: -1)])
+            }
+            mixer.appendBuiltin(createSampleBuffer(format, tick) { _, _ in 0.25 }, createTime(tick))
+            while let block = mixer.renderNextBlock(now: createTime(tick + 1)) {
+                output.append(block, recording: recording)
+            }
+        }
+        let level: Float = recording ? 0.125 : 0.25
+        let left = output.samples(0, 4096 ..< output.end)
+        let right = output.samples(1, 4096 ..< output.end)
+        let last = try #require(left.last)
+        #expect(output.isContinuous)
+        #expect(left.first == level)
+        #expect(right.first == level)
+        #expect(abs(last - level * sqrt2) < 1e-6)
+        #expect(right.last == 0)
+        #expect(calcMaximumStep(left) < level * (sqrt2 - 1) / 1024 + 1e-6)
+        #expect(calcMaximumStep(right) < level / 1024 + 1e-6)
+    }
+
     @Test
     func sharesOneInputPerDevice() {
         let mixer = AudioMixer()
@@ -853,7 +931,8 @@ private func createSettings(id: String = "mic",
                             gain: Float = 1,
                             delay: Double = 0,
                             voice: Bool = false,
-                            sends: (stream: Float, recording: Float) = (1, 1)) -> AudioMixerSourceSettings
+                            sends: (stream: Float, recording: Float) = (1, 1),
+                            pan: Float = 0) -> AudioMixerSourceSettings
 {
     AudioMixerSourceSettings(id: id,
                              bufferedAudio: bufferedAudio,
@@ -862,7 +941,8 @@ private func createSettings(id: String = "mic",
                              gain: gain,
                              delay: delay,
                              voice: voice,
-                             sends: sends)
+                             sends: sends,
+                             pan: pan)
 }
 
 private func createTime(_ tick: Int) -> CMTime {

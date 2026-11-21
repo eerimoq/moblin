@@ -111,7 +111,8 @@ extension Model {
                                         gain: pow(10, mic.gainDb / 20),
                                         delay: mic.delay.clamped(to: makeMicDelayRange(audioMixer: true)),
                                         voice: mic.processing == .voice,
-                                        sends: makeAudioMixerSends(output: mic.output))
+                                        sends: makeAudioMixerSends(output: mic.output),
+                                        pan: mic.pan)
     }
 
     private func makeAudioEncoderChannelsMap() -> [Int: Int] {

@@ -83,6 +83,11 @@ struct AudioSettingsView: View {
                     }
                     if debug.audioMixer {
                         NavigationLink {
+                            MicsPanSettingsView(model: model, mic: model.mic)
+                        } label: {
+                            Text("Pans")
+                        }
+                        NavigationLink {
                             MicsProcessingSettingsView(model: model, mics: database.mics)
                         } label: {
                             Text("Processing")
