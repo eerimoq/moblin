@@ -87,6 +87,11 @@ struct AudioSettingsView: View {
                         } label: {
                             Text("Processing")
                         }
+                        NavigationLink {
+                            MicsOutputsSettingsView(model: model, mics: database.mics)
+                        } label: {
+                            Text("Outputs")
+                        }
                     }
                 }
             }

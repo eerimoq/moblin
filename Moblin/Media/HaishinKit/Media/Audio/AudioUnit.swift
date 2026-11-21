@@ -483,8 +483,13 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             return
         }
         while let block = mixer.renderNextBlock(now: currentPresentationTimeStamp()) {
-            if let sampleBuffer = block.buffer.makeSampleBuffer(block.presentationTimeStamp) {
-                appendOutputSampleBuffer(processor, sampleBuffer, block.presentationTimeStamp)
+            let presentationTimeStamp = block.presentationTimeStamp
+            if let sampleBuffer = block.buffer.makeSampleBuffer(presentationTimeStamp) {
+                let recordingSampleBuffer = block.recordingBuffer?.makeSampleBuffer(presentationTimeStamp)
+                appendOutputSampleBuffer(processor,
+                                         sampleBuffer,
+                                         presentationTimeStamp,
+                                         recordingSampleBuffer: recordingSampleBuffer)
             }
         }
         if logger.debugEnabled, latestMixerLogTime.duration(to: .now) > .seconds(10) {
@@ -550,7 +555,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
 
     private func appendOutputSampleBuffer(_ processor: Processor,
                                           _ sampleBuffer: CMSampleBuffer,
-                                          _ presentationTimeStamp: CMTime)
+                                          _ presentationTimeStamp: CMTime,
+                                          recordingSampleBuffer: CMSampleBuffer? = nil)
     {
         guard presentationTimeStamp > latestSampleBufferAppendTime else {
             numberOfDiscardedSampleBuffers += 1
@@ -581,7 +587,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
-        processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
+        processor.recorder.appendAudio(recordingSampleBuffer ?? sampleBuffer, presentationTimeStamp)
         previewEncoder?.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
     }
 

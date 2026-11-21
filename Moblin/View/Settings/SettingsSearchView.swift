@@ -423,6 +423,13 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
             {
                 MicsProcessingSettingsView(model: model, mics: database.mics)
             }
+            builder.add(String(localized: "Outputs"),
+                        [audio],
+                        audioImage,
+                        searchKeywords("Stream", "Recording"))
+            {
+                MicsOutputsSettingsView(model: model, mics: database.mics)
+            }
         }
         builder.add(
             String(localized: "Macros"),
