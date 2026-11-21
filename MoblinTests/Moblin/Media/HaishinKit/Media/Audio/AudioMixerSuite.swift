@@ -705,6 +705,101 @@ struct AudioMixerSuite {
         #expect(calcMaximumStep(samples) < 0.5 / 1024 + 1e-6)
         #expect(numberOfRecordingBuffers == 22)
     }
+
+    @Test
+    func capturesInputBeforeDelayAndGain() throws {
+        let mixer = AudioMixer()
+        let format = createFormat(.pcmFormatFloat32, 2, false)
+        mixer.setSources([createSettings(id: "channel 2", channel: 1, gain: 0.25, delay: 0.5)])
+        for tick in 0 ..< 20 {
+            mixer.appendBuiltin(createSampleBuffer(format, tick), createTime(tick))
+            while mixer.renderNextBlock(now: createTime(tick + 1)) != nil {}
+        }
+        let samples = try mixer.capture(id: "channel 2", start: startIndex + 1000, count: 4096).get()
+        #expect(samples == createNoise(1, 1000 ..< 5096))
+    }
+
+    @Test
+    func captureRefusesIncompleteWindows() {
+        let mixer = AudioMixer()
+        let format = createFormat(.pcmFormatInt16, 1, true)
+        mixer.setSources([
+            createSettings(id: "builtin"),
+            createSettings(id: "buffered", bufferedAudio: cameraId),
+        ])
+        for tick in 0 ..< 20 where tick != 10 {
+            mixer.appendBuiltin(createSampleBuffer(format, tick), createTime(tick + (tick > 10 ? 3 : 0)))
+            mixer.appendBuffered(cameraId: cameraId, createSampleBuffer(format, tick))
+        }
+        let end = startIndex + 20 * 1024
+        #expect(isCaptureFailure(mixer.capture(id: "other", start: startIndex, count: 1024), .missing))
+        #expect(isCaptureFailure(mixer.capture(id: "buffered", start: end - 1000, count: 1024), .notReady))
+        #expect(isCaptureFailure(
+            mixer.capture(id: "buffered", start: startIndex, count: 4096),
+            .discontinuity
+        ))
+        #expect(isCaptureFailure(
+            mixer.capture(id: "builtin", start: startIndex, count: 4096),
+            .discontinuity
+        ))
+        #expect((try? mixer.capture(id: "buffered", start: startIndex + 11 * 1024, count: 4096).get()) != nil)
+        #expect((try? mixer.capture(id: "builtin", start: startIndex + 14 * 1024, count: 4096).get()) != nil)
+    }
+
+    @Test
+    func syncAlignsSources() throws {
+        let otherCameraId = UUID()
+        let format = createFormat(.pcmFormatFloat32, 1, false)
+        let signal = makeAudioSyncSignal()
+        let offset = 59256
+        let secondBurst = 400_000
+        let burst = { (frame: Int) -> Float in
+            for start in [30000, secondBurst] where frame >= start && frame < start + signal.count {
+                return signal[frame - start]
+            }
+            return 0
+        }
+        let mixer = AudioMixer()
+        mixer.setSources([
+            createSettings(id: "early", bufferedAudio: cameraId, gain: 0.5),
+            createSettings(id: "late", bufferedAudio: otherCameraId, gain: 0.5, delay: 0.1),
+        ])
+        let output = Output()
+        let detector = AudioSyncDetector()
+        for tick in 0 ..< 560 {
+            mixer.appendBuffered(cameraId: cameraId, createSampleBuffer(format, tick) { burst($1) })
+            mixer.appendBuffered(
+                cameraId: otherCameraId,
+                createSampleBuffer(format, tick) { burst($1 - offset) }
+            )
+            while let block = mixer.renderNextBlock(now: createTime(tick + 1)) {
+                output.append(block)
+            }
+            guard tick == 300 else {
+                continue
+            }
+            var arrivals: [String: Double] = [:]
+            for id in ["early", "late"] {
+                let samples = try mixer.capture(id: id, start: startIndex, count: audioSyncFrames).get()
+                arrivals[id] = try detector.detect(samples).get().frame
+            }
+            let delays = makeAudioSyncDelays(arrivals: arrivals,
+                                             delays: ["early": 0, "late": 0.1],
+                                             anchor: "late")
+            #expect(delays["late"] == 0.1)
+            let earlyDelay = try #require(delays["early"])
+            #expect(abs(earlyDelay - 0.1 - Double(offset) / 48000) < 0.1 / 48000)
+            mixer.setSources([
+                createSettings(id: "early", bufferedAudio: cameraId, gain: 0.5, delay: earlyDelay),
+                createSettings(id: "late", bufferedAudio: otherCameraId, gain: 0.5, delay: 0.1),
+            ])
+        }
+        let burstStart = secondBurst + offset + 4800
+        let frames = burstStart ..< burstStart + signal.count
+        let expected = frames.map { signal[$0 - burstStart] }
+        try #require(output.end >= frames.upperBound)
+        #expect(zip(output.samples(0, frames), expected).allSatisfy { abs($0 - $1) < 1e-4 })
+    }
 }
 
 private final class Output {
@@ -780,4 +875,13 @@ private func createSampleBuffer(_ format: AVAudioFormat,
                                 _ value: (Int, Int) -> Float = createNoise) -> CMSampleBuffer
 {
     createSampleBuffer(format, 1024 * tick, createTime(tick), frameLength: frameLength, value)
+}
+
+private func isCaptureFailure(_ result: Result<[Float], AudioMixerCaptureError>,
+                              _ error: AudioMixerCaptureError) -> Bool
+{
+    if case let .failure(actual) = result {
+        return actual == error
+    }
+    return false
 }

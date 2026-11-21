@@ -54,6 +54,7 @@ final class AudioMixerInput {
     private(set) var writeIndex: Int64 = 0
     private(set) var numberOfSlips = 0
     private(set) var numberOfResyncs = 0
+    private(set) var latestDiscontinuityIndex: Int64 = .min
     private var ring: [UnsafeMutablePointer<Float>] = []
     private var scratch: [UnsafeMutablePointer<Float>] = []
     private let slipScratch = makeAudioMixerSamples(count: audioMixerFadeFrames)
@@ -283,6 +284,7 @@ final class AudioMixerInput {
             skip = Int(-delta)
             fadeOutTail(writeIndex)
             fadeInPosition = 0
+            latestDiscontinuityIndex = writeIndex
         }
         if skip < count {
             write(skip, count - skip)
@@ -298,6 +300,7 @@ final class AudioMixerInput {
         isStarted = true
         fadeInPosition = 0
         timestampError = 0
+        latestDiscontinuityIndex = index
     }
 
     private func slip(_ delta: Int64, _ count: Int) -> Int {
