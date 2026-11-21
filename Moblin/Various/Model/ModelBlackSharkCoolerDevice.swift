@@ -10,12 +10,12 @@ import Foundation
 
 extension Model {
     func enableBlackSharkDevice(device: SettingsBlackSharkCoolerDevice) {
-        if !blackSharkCoolerDevices.keys.contains(device.bluetoothPeripheralId!) {
+        if !blackSharkCoolerDevices.keys.contains(device.id) {
             let blackSharkCoolerDevice = BlackSharkCoolerDevice()
             blackSharkCoolerDevice.delegate = self
-            blackSharkCoolerDevices[device.bluetoothPeripheralId!] = blackSharkCoolerDevice
+            blackSharkCoolerDevices[device.id] = blackSharkCoolerDevice
         }
-        blackSharkCoolerDevices[device.bluetoothPeripheralId!]?.start(deviceId: device.bluetoothPeripheralId)
+        blackSharkCoolerDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
     }
 
     func disableBlackSharkCoolerDevice(device: SettingsBlackSharkCoolerDevice) {
