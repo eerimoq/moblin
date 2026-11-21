@@ -153,6 +153,21 @@ struct ModelAudioMixerSuite {
     }
 
     @Test
+    func appAudioIsMixedAtLowerGain() {
+        let createMic = { (mic: SettingsMicsMic, gainDb: Float) in
+            let otherMic = SettingsMicsMic(name: mic.name, inputUid: mic.inputUid, connected: true)
+            otherMic.gainDb = gainDb
+            return otherMic
+        }
+        #expect(makeMixedMicGainDb(mic: createMic(screenCaptureMic, 0)) == -10)
+        #expect(makeMixedMicGainDb(mic: createMic(screenCaptureMic, -3)) == -3)
+        #expect(makeMixedMicGainDb(mic: createMic(screenCaptureMic, 4)) == 4)
+        #expect(makeMixedMicGainDb(mic: createMic(mediaPlayerMic, 0)) == 0)
+        #expect(makeMixedMicGainDb(mic: createMic(srtlaMic, 0)) == 0)
+        #expect(makeMixedMicGainDb(mic: createMic(usbMic2, 0)) == 0)
+    }
+
+    @Test
     func channelMicNames() {
         let makeNames = { (channelNames: [String?]) in
             makeAudioChannelMicNames(portName: "Wireless microphone", channelNames: channelNames)

@@ -41,6 +41,16 @@ func isAudioChannelMicConnected(mic: SettingsMicsMic,
     return mic.inputUid != inputUid || channel < numberOfChannels
 }
 
+let audioMixerAppAudioGainDb: Float = -10
+
+func makeMixedMicGainDb(mic: SettingsMicsMic) -> Float {
+    if mic.isScreenCapture(), mic.gainDb == 0 {
+        audioMixerAppAudioGainDb
+    } else {
+        mic.gainDb
+    }
+}
+
 func makeMicDelayRange(audioMixer: Bool) -> ClosedRange<Double> {
     audioMixer ? -0.5 ... 2.0 : -0.5 ... 0.5
 }
@@ -79,6 +89,9 @@ extension Model {
     }
 
     func setMicMixed(mic: SettingsMicsMic, mixed: Bool) {
+        if mixed {
+            mic.gainDb = makeMixedMicGainDb(mic: mic)
+        }
         mic.mixed = mixed
         updateMixedMics()
     }
