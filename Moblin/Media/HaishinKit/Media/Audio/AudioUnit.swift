@@ -2,6 +2,8 @@ import AVFoundation
 import Collections
 import CoreAudio
 
+typealias AudioMixerCaptures = [String: Result<[Float], AudioMixerCaptureError>]
+
 private class TalkbackPlayer {
     private let engine = AVAudioEngine()
     private let playerNode = AVAudioPlayerNode()
@@ -394,6 +396,20 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     func setMixedAudio(sources: [AudioMixerSourceSettings]?) {
         processorPipelineQueue.async {
             self.setMixedAudioInternal(sources: sources)
+        }
+    }
+
+    func captureMixedAudio(ids: [String],
+                           start: Int64,
+                           count: Int,
+                           onComplete: @escaping @Sendable (AudioMixerCaptures) -> Void)
+    {
+        processorPipelineQueue.async {
+            var captures: AudioMixerCaptures = [:]
+            for id in ids {
+                captures[id] = self.mixer?.capture(id: id, start: start, count: count) ?? .failure(.missing)
+            }
+            onComplete(captures)
         }
     }
 

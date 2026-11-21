@@ -117,6 +117,14 @@ final class Processor: @unchecked Sendable {
         audio.setMixedAudio(sources: sources)
     }
 
+    func captureMixedAudio(ids: [String],
+                           start: Int64,
+                           count: Int,
+                           onComplete: @escaping @Sendable (AudioMixerCaptures) -> Void)
+    {
+        audio.captureMixedAudio(ids: ids, start: start, count: count, onComplete: onComplete)
+    }
+
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
         audio.encoder.setSettings(settings: settings)
     }

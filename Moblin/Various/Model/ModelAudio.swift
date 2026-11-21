@@ -725,7 +725,7 @@ extension Model {
         return getWhepStream(id: id) != nil
     }
 
-    private func isMediaPlayerMic(mic: SettingsMicsMic) -> Bool {
+    func isMediaPlayerMic(mic: SettingsMicsMic) -> Bool {
         guard let id = UUID(uuidString: mic.inputUid) else {
             return false
         }

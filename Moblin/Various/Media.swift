@@ -701,6 +701,18 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setMixedAudio(sources: sources)
     }
 
+    func captureMixedAudio(ids: [String],
+                           start: Int64,
+                           count: Int,
+                           onComplete: @escaping @Sendable (AudioMixerCaptures) -> Void)
+    {
+        guard let processor else {
+            onComplete([:])
+            return
+        }
+        processor.captureMixedAudio(ids: ids, start: start, count: count, onComplete: onComplete)
+    }
+
     func registerEffect(_ effect: VideoEffect) {
         processor?.registerVideoEffect(effect)
     }

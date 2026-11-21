@@ -547,6 +547,7 @@ final class Model: NSObject, ObservableObject {
     let quickButtonsFilter = QuickButtonsFilter()
     let quickButtonsPages = QuickButtonsPages()
     let mic = Mic()
+    let audioSync = AudioSync()
     let goPro = GoProState()
     let obsQuickButton = QuickButtonObs()
     let streamingHistory = StreamingHistory()
