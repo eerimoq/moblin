@@ -1,11 +1,44 @@
 import Foundation
 
 func isAudioMicMixable(mic: SettingsMicsMic, current: SettingsMicsMic) -> Bool {
-    mic != current && !mic.isAudioSession()
+    guard mic != current else {
+        return false
+    }
+    guard mic.isAudioSession() else {
+        return true
+    }
+    return mic.channel != nil && current.channel != nil && mic.inputUid == current.inputUid
+}
+
+func makeAudioChannelMicNames(portName: String, channelNames: [String?]) -> [String] {
+    let names = channelNames.enumerated().map { channel, channelName in
+        guard let channelName, !channelName.isEmpty, channelName != portName else {
+            return "\(portName) \(channel + 1)"
+        }
+        if channelName.hasPrefix(portName) {
+            return channelName
+        }
+        return "\(portName): \(channelName)"
+    }
+    guard Set(names).count == names.count else {
+        return channelNames.indices.map { "\(portName) \($0 + 1)" }
+    }
+    return names
 }
 
 func makeAudioMixerMixedMics(mics: [SettingsMicsMic], current: SettingsMicsMic) -> [SettingsMicsMic] {
     mics.filter { $0.mixed && $0.connected && isAudioMicMixable(mic: $0, current: current) }
+}
+
+func isAudioChannelMicConnected(mic: SettingsMicsMic,
+                                found: [SettingsMicsMic],
+                                inputUid: String?,
+                                numberOfChannels: Int) -> Bool
+{
+    guard let channel = mic.channel, found.contains(where: { $0.inputUid == mic.inputUid }) else {
+        return false
+    }
+    return mic.inputUid != inputUid || channel < numberOfChannels
 }
 
 func makeMicDelayRange(audioMixer: Bool) -> ClosedRange<Double> {
@@ -20,6 +53,13 @@ extension Model {
         if !database.debug.audioMixer {
             media.setMixedAudio(sources: nil)
             mic.mixed = []
+            if mic.current.channel != nil,
+               let deviceMic = database.mics.mics.first(where: {
+                   $0.inputUid == mic.current.inputUid && $0.channel == nil
+               })
+            {
+                manualSelectMicById(id: deviceMic.id)
+            }
         }
     }
 
@@ -56,6 +96,7 @@ extension Model {
         return AudioMixerSourceSettings(id: mic.id,
                                         bufferedAudio: bufferedAudio,
                                         channelsMap: makeAudioInputChannelsMap(),
+                                        channel: mic.channel,
                                         gain: pow(10, mic.gainDb / 20),
                                         delay: mic.delay.clamped(to: makeMicDelayRange(audioMixer: true)))
     }

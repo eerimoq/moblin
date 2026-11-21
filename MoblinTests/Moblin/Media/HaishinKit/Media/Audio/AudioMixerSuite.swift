@@ -50,6 +50,7 @@ struct AudioMixerSuite {
     struct ChannelCase: CustomTestStringConvertible {
         let testDescription: String
         let channelsMap: [Int: Int]
+        var channel: Int?
         let left: Int
         let right: Int
     }
@@ -518,12 +519,14 @@ struct AudioMixerSuite {
         ChannelCase(testDescription: "channels 3 and 4", channelsMap: [0: 2, 1: 3], left: 2, right: 3),
         ChannelCase(testDescription: "channel 2 on both sides", channelsMap: [0: 1, 1: 1], left: 1, right: 1),
         ChannelCase(testDescription: "silent left", channelsMap: [0: -1, 1: 2], left: -1, right: 2),
-        ChannelCase(testDescription: "missing channels", channelsMap: [0: 4, 1: 7], left: 0, right: 1),
+        ChannelCase(testDescription: "missing device channels", channelsMap: [0: 4, 1: 7], left: 0, right: 1),
+        ChannelCase(testDescription: "channel mic 3", channelsMap: [:], channel: 2, left: 2, right: 2),
+        ChannelCase(testDescription: "missing channel 5", channelsMap: [:], channel: 4, left: -1, right: -1),
     ])
     func picksChannels(_ testCase: ChannelCase) {
         let mixer = AudioMixer()
         let format = createFormat(.pcmFormatFloat32, 4, false)
-        mixer.setSources([createSettings(channelsMap: testCase.channelsMap)])
+        mixer.setSources([createSettings(channelsMap: testCase.channelsMap, channel: testCase.channel)])
         let output = Output()
         for tick in 0 ..< 20 {
             mixer.appendBuiltin(createSampleBuffer(format, tick), createTime(tick))
@@ -590,12 +593,14 @@ private final class Output {
 private func createSettings(id: String = "mic",
                             bufferedAudio: UUID? = nil,
                             channelsMap: [Int: Int] = [0: 0, 1: 1],
+                            channel: Int? = nil,
                             gain: Float = 1,
                             delay: Double = 0) -> AudioMixerSourceSettings
 {
     AudioMixerSourceSettings(id: id,
                              bufferedAudio: bufferedAudio,
                              channelsMap: channelsMap,
+                             channel: channel,
                              gain: gain,
                              delay: delay)
 }

@@ -13,6 +13,16 @@ private func createBuiltinMic(_ orientation: SettingsMic, _ dataSourceId: Int) -
     return mic
 }
 
+private func createChannelMic(_ mic: SettingsMicsMic, _ channel: Int) -> SettingsMicsMic {
+    let channelMic = SettingsMicsMic(
+        name: "\(mic.name) \(channel + 1)",
+        inputUid: mic.inputUid,
+        connected: true
+    )
+    channelMic.channel = channel
+    return channelMic
+}
+
 private func createMixedMic(_ mic: SettingsMicsMic) -> SettingsMicsMic {
     let mixedMic = SettingsMicsMic(name: mic.name, inputUid: mic.inputUid, connected: mic.connected)
     mixedMic.dataSourceId = mic.dataSourceId
@@ -24,6 +34,12 @@ private func createMixedMic(_ mic: SettingsMicsMic) -> SettingsMicsMic {
 private let frontMic = createBuiltinMic(.front, 1)
 private let backMic = createBuiltinMic(.back, 2)
 private let usbMic = SettingsMicsMic(name: "USB Audio", inputUid: "AppleUSBAudioEngine:1", connected: true)
+private let usbMic1 = createChannelMic(usbMic, 0)
+private let usbMic2 = createChannelMic(usbMic, 1)
+private let interfaceMic1 = createChannelMic(
+    SettingsMicsMic(name: "Interface", inputUid: "AppleUSBAudioEngine:2", connected: true),
+    0
+)
 private let srtlaMic = SettingsMicsMic(name: srtlaCamera(name: "Cam 2"),
                                        inputUid: UUID().uuidString,
                                        connected: true)
@@ -55,6 +71,13 @@ struct ModelAudioMixerSuite {
         let expected: [SettingsMicsMic]
     }
 
+    struct ChannelMicCase: CustomTestStringConvertible {
+        let testDescription: String
+        let inputUid: String
+        let numberOfChannels: Int
+        let expected: Bool
+    }
+
     @Test(arguments: [
         MixableCase(mic: srtlaMic, current: frontMic, expected: true),
         MixableCase(mic: mediaPlayerMic, current: usbMic, expected: true),
@@ -64,6 +87,11 @@ struct ModelAudioMixerSuite {
         MixableCase(mic: usbMic, current: frontMic, expected: false),
         MixableCase(mic: backMic, current: frontMic, expected: false),
         MixableCase(mic: srtlaMic, current: srtlaMic, expected: false),
+        MixableCase(mic: usbMic2, current: usbMic1, expected: true),
+        MixableCase(mic: srtlaMic, current: usbMic1, expected: true),
+        MixableCase(mic: usbMic1, current: usbMic, expected: false),
+        MixableCase(mic: usbMic, current: usbMic1, expected: false),
+        MixableCase(mic: interfaceMic1, current: usbMic1, expected: false),
     ])
     func mixable(_ testCase: MixableCase) {
         #expect(isAudioMicMixable(mic: testCase.mic, current: testCase.current) == testCase.expected)
@@ -101,5 +129,40 @@ struct ModelAudioMixerSuite {
     ])
     func mixedMics(_ testCase: MixedMicsCase) {
         #expect(makeAudioMixerMixedMics(mics: testCase.mics, current: testCase.current) == testCase.expected)
+    }
+
+    @Test(arguments: [
+        ChannelMicCase(testDescription: "Delivered channel",
+                       inputUid: usbMic.inputUid,
+                       numberOfChannels: 2,
+                       expected: true),
+        ChannelMicCase(testDescription: "Channel above the delivered count",
+                       inputUid: usbMic.inputUid,
+                       numberOfChannels: 1,
+                       expected: false),
+        ChannelMicCase(testDescription: "Count delivered by another device",
+                       inputUid: frontMic.inputUid,
+                       numberOfChannels: 1,
+                       expected: true),
+    ])
+    func channelMicConnected(_ testCase: ChannelMicCase) {
+        #expect(isAudioChannelMicConnected(mic: usbMic2,
+                                           found: [frontMic, usbMic],
+                                           inputUid: testCase.inputUid,
+                                           numberOfChannels: testCase.numberOfChannels) == testCase.expected)
+    }
+
+    @Test
+    func channelMicNames() {
+        let makeNames = { (channelNames: [String?]) in
+            makeAudioChannelMicNames(portName: "Wireless microphone", channelNames: channelNames)
+        }
+        #expect(makeNames(["Wireless microphone 1", "Wireless microphone 2"])
+            == ["Wireless microphone 1", "Wireless microphone 2"])
+        #expect(makeNames(["Left", "Right"]) == ["Wireless microphone: Left", "Wireless microphone: Right"])
+        #expect(makeNames(["", nil]) == ["Wireless microphone 1", "Wireless microphone 2"])
+        #expect(makeNames(["Wireless microphone", "Wireless microphone"])
+            == ["Wireless microphone 1", "Wireless microphone 2"])
+        #expect(makeNames(["Mic", "Mic"]) == ["Wireless microphone 1", "Wireless microphone 2"])
     }
 }

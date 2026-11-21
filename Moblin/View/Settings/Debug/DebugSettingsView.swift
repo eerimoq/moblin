@@ -15,6 +15,7 @@ private struct AudioMixerView: View {
                 } else {
                     model.updateAudioMixer()
                 }
+                model.updateAudioSessionMicsAsync()
             }
     }
 }

@@ -8,6 +8,7 @@ struct AudioMixerSourceSettings {
     let id: String
     let bufferedAudio: UUID?
     let channelsMap: [Int: Int]
+    let channel: Int?
     let gain: Float
     let delay: Double
 }
@@ -19,6 +20,7 @@ final class AudioMixerSource {
     private(set) var isRemoved = false
     private let startIndex: Int64
     private let channelsMap: [Int: Int]
+    private let channel: Int?
     private var gain: Float = 0
     private var currentGain: Float = 0
     private var currentDelay: Int64 = 0
@@ -36,6 +38,7 @@ final class AudioMixerSource {
         bufferedAudio = settings.bufferedAudio
         self.startIndex = startIndex
         channelsMap = settings.channelsMap
+        channel = settings.channel
         update(settings: settings)
         currentDelay = delay
     }
@@ -56,6 +59,7 @@ final class AudioMixerSource {
             && id == settings.id
             && bufferedAudio == settings.bufferedAudio
             && channelsMap == settings.channelsMap
+            && channel == settings.channel
     }
 
     func update(settings: AudioMixerSourceSettings) {
@@ -126,7 +130,9 @@ final class AudioMixerSource {
     }
 
     private func pickChannel(_ outputChannel: Int) -> Int {
-        if let inputChannel = channelsMap[outputChannel], inputChannel < numberOfInputChannels {
+        if let channel {
+            channel
+        } else if let inputChannel = channelsMap[outputChannel], inputChannel < numberOfInputChannels {
             inputChannel
         } else {
             min(outputChannel, numberOfInputChannels - 1)

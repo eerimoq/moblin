@@ -175,6 +175,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var isOutputtingSilence = false
     private var isRunning = false
     private var builtinDelay = 0.0
+    private var builtinNumberOfChannels = 0
     private var mixer: AudioMixer?
     private let mixerTimer = SimpleTimer(queue: processorPipelineQueue)
     private var latestMixerLogTime = ContinuousClock.now
@@ -297,6 +298,15 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             return
         }
         appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
+    }
+
+    private func updateBuiltinNumberOfChannels(_ processor: Processor, _ sampleBuffer: CMSampleBuffer) {
+        let numberOfChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
+        guard numberOfChannels != builtinNumberOfChannels else {
+            return
+        }
+        builtinNumberOfChannels = numberOfChannels
+        processor.delegate.streamBuiltinAudioNumberOfChannels(numberOfChannels: numberOfChannels)
     }
 
     private func updateBuiltinAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
@@ -637,6 +647,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToHost(processor: processor, sampleBuffer: sampleBuffer)
         if let mixer {
+            updateBuiltinNumberOfChannels(processor, sampleBuffer)
             let presentationTimeStamp = presentationTimeStamp + CMTime(seconds: builtinDelay)
             mixer.appendBuiltin(sampleBuffer, presentationTimeStamp)
             return

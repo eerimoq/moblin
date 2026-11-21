@@ -3,6 +3,22 @@ import Foundation
 import Testing
 
 struct SettingsSuite {
+    struct MicIdCase: CustomTestStringConvertible {
+        let channel: Int?
+        let id: String
+
+        var testDescription: String {
+            id
+        }
+    }
+
+    struct MicEqualityCase: CustomTestStringConvertible {
+        let testDescription: String
+        let channel: Int?
+        let otherChannel: Int?
+        let expected: Bool
+    }
+
     @Test
     func streamUrlSchemeSelectsProtocol() {
         let stream = SettingsStream(name: "Test")
@@ -111,6 +127,42 @@ struct SettingsSuite {
         mic.mixed = true
         let decoded = try JSONDecoder().decode(SettingsMicsMic.self, from: JSONEncoder().encode(mic))
         #expect(decoded.mixed)
+    }
+
+    @Test
+    func micChannel() throws {
+        let mic = SettingsMicsMic()
+        var decoded = try JSONDecoder().decode(SettingsMicsMic.self, from: JSONEncoder().encode(mic))
+        #expect(decoded.channel == nil)
+        mic.channel = 2
+        decoded = try JSONDecoder().decode(SettingsMicsMic.self, from: JSONEncoder().encode(mic))
+        #expect(decoded.channel == 2)
+        decoded = try JSONDecoder().decode(SettingsMicsMic.self, from: Data("{}".utf8))
+        #expect(decoded.channel == nil)
+    }
+
+    @Test(arguments: [
+        MicIdCase(channel: nil, id: "AppleUSBAudioEngine:1 0"),
+        MicIdCase(channel: 2, id: "AppleUSBAudioEngine:1 0 2"),
+    ])
+    func micId(_ testCase: MicIdCase) {
+        let mic = SettingsMicsMic(name: "USB Audio", inputUid: "AppleUSBAudioEngine:1", connected: true)
+        mic.channel = testCase.channel
+        #expect(mic.id == testCase.id)
+    }
+
+    @Test(arguments: [
+        MicEqualityCase(testDescription: "whole devices", channel: nil, otherChannel: nil, expected: true),
+        MicEqualityCase(testDescription: "same channel", channel: 1, otherChannel: 1, expected: true),
+        MicEqualityCase(testDescription: "only one channel", channel: 1, otherChannel: nil, expected: false),
+        MicEqualityCase(testDescription: "different channels", channel: 1, otherChannel: 2, expected: false),
+    ])
+    func micEquality(_ testCase: MicEqualityCase) {
+        let mic = SettingsMicsMic(name: "USB Audio", inputUid: "AppleUSBAudioEngine:1", connected: true)
+        mic.channel = testCase.channel
+        let otherMic = SettingsMicsMic(name: "USB Audio", inputUid: "AppleUSBAudioEngine:1", connected: false)
+        otherMic.channel = testCase.otherChannel
+        #expect((mic == otherMic) == testCase.expected)
     }
 
     @Test

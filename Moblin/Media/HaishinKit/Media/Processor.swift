@@ -3,6 +3,7 @@ import SwiftUI
 
 protocol ProcessorDelegate: AnyObject {
     func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
+    func streamBuiltinAudioNumberOfChannels(numberOfChannels: Int)
     func streamLowFpsImage(lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideoAttachCameraError()
     func streamVideoCaptureSessionError(_ message: String)

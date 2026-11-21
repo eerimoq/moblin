@@ -1001,6 +1001,14 @@ extension Model: MediaDelegate {
         }
     }
 
+    nonisolated func mediaOnBuiltinAudioNumberOfChannels(numberOfChannels: Int) {
+        DispatchQueue.main.async {
+            self.mic.builtinNumberOfChannels = numberOfChannels
+            self.mic.builtinInputUid = AVAudioSession.sharedInstance().currentRoute.inputs.first?.uid
+            self.updateAudioSessionMicsAsync()
+        }
+    }
+
     nonisolated func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64) {
         guard let lowFpsImage else {
             return
