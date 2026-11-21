@@ -59,6 +59,16 @@ extension Model {
         }
     }
 
+    func reloadWorkoutDevicesAfterSettingsImport() {
+        for (deviceId, workoutDevice) in workoutDevices
+            where !database.workoutDevices.devices.contains(where: { $0.id == deviceId })
+        {
+            workoutDevice.stop()
+            workoutDevices.removeValue(forKey: deviceId)
+        }
+        autoStartWorkoutDevices()
+    }
+
     func stopWorkoutDevices() {
         for device in workoutDevices.values {
             device.stop()
