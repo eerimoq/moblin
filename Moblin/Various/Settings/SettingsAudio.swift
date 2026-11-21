@@ -14,20 +14,26 @@ enum SettingsMic: String, Codable, CaseIterable {
 
 class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unchecked Sendable {
     static func == (lhs: SettingsMicsMic, rhs: SettingsMicsMic) -> Bool {
-        lhs.inputUid == rhs.inputUid && lhs.dataSourceId == rhs.dataSourceId
+        lhs.inputUid == rhs.inputUid && lhs.dataSourceId == rhs.dataSourceId && lhs.channel == rhs.channel
     }
 
     var id: String {
-        "\(inputUid) \(dataSourceId ?? 0)"
+        if let channel {
+            "\(inputUid) \(dataSourceId ?? 0) \(channel)"
+        } else {
+            "\(inputUid) \(dataSourceId ?? 0)"
+        }
     }
 
     var name: String = ""
     var inputUid: String = ""
     var dataSourceId: Int?
+    var channel: Int?
     var builtInOrientation: SettingsMic?
     @Published var delay: Double = 0.0
     @Published var gainDb: Float = 0.0
     @Published var connected: Bool = false
+    @Published var mixed: Bool = false
 
     func isAudioSession() -> Bool {
         isBuiltin() || isExternal()
@@ -118,6 +124,8 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         case builtInOrientation
         case delay
         case gainDb
+        case mixed
+        case channel
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -128,6 +136,8 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         try container.encode(.builtInOrientation, builtInOrientation)
         try container.encode(.delay, delay)
         try container.encode(.gainDb, gainDb)
+        try container.encode(.mixed, mixed)
+        try container.encode(.channel, channel)
     }
 
     init() {}
@@ -146,6 +156,8 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         builtInOrientation = container.decode(.builtInOrientation, SettingsMic?.self, nil)
         delay = container.decode(.delay, Double.self, 0.0)
         gainDb = container.decode(.gainDb, Float.self, 0.0)
+        mixed = container.decode(.mixed, Bool.self, false)
+        channel = container.decode(.channel, Int?.self, nil)
     }
 }
 
