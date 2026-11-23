@@ -50,13 +50,23 @@ struct ChatActionButtonsView: View {
     }
 
     private func banButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "nosign", text: "Ban", foreground: .red) {
+        ActionButtonView(
+            image: "nosign",
+            text: selectedPost.platform == .chzzk ? "Restrict" : "Ban",
+            foreground: .red
+        ) {
             presentingBanConfirm = true
         }
         .confirmationDialog("", isPresented: $presentingBanConfirm) {
-            Button("Ban", role: .destructive) {
+            Button(selectedPost.platform == .chzzk ? "Restrict" : "Ban", role: .destructive) {
                 model.banUser(post: selectedPost)
                 dismiss()
+            }
+            if selectedPost.platform == .chzzk {
+                Button("Remove restriction") {
+                    model.moderateChzzkChat(post: selectedPost, action: .unrestrict)
+                    dismiss()
+                }
             }
         }
     }
@@ -66,17 +76,28 @@ struct ChatActionButtonsView: View {
             presentingTimeoutConfirm = true
         }
         .confirmationDialog("", isPresented: $presentingTimeoutConfirm) {
-            Button("5 minutes timeout", role: .destructive) {
-                model.timeoutUser(post: selectedPost, duration: 5 * 60)
-                dismiss()
-            }
-            Button("1 hour timeout", role: .destructive) {
-                model.timeoutUser(post: selectedPost, duration: 3600)
-                dismiss()
-            }
-            Button("24 hours timeout", role: .destructive) {
-                model.timeoutUser(post: selectedPost, duration: 24 * 3600)
-                dismiss()
+            if selectedPost.platform == .chzzk {
+                Button("Temporarily restrict", role: .destructive) {
+                    model.moderateChzzkChat(post: selectedPost, action: .temporaryRestrict)
+                    dismiss()
+                }
+                Button("Remove temporary restriction") {
+                    model.moderateChzzkChat(post: selectedPost, action: .temporaryUnrestrict)
+                    dismiss()
+                }
+            } else {
+                Button("5 minutes timeout", role: .destructive) {
+                    model.timeoutUser(post: selectedPost, duration: 5 * 60)
+                    dismiss()
+                }
+                Button("1 hour timeout", role: .destructive) {
+                    model.timeoutUser(post: selectedPost, duration: 3600)
+                    dismiss()
+                }
+                Button("24 hours timeout", role: .destructive) {
+                    model.timeoutUser(post: selectedPost, duration: 24 * 3600)
+                    dismiss()
+                }
             }
         }
     }

@@ -83,27 +83,51 @@ private struct ChzzkSession: Decodable {
     let url: URL
 }
 
-private struct ChzzkLives: Decodable {
-    struct Live: Decodable {
-        let channelId: String
-        let concurrentUserCount: Int
-    }
+struct ChzzkLiveStatus: Decodable {
+    let status: String
+    let concurrentUserCount: Int?
 
-    struct Page: Decodable {
-        let next: String?
+    func platformStatus() throws -> PlatformStatus {
+        switch status {
+        case "OPEN":
+            guard let concurrentUserCount, concurrentUserCount >= 0 else {
+                throw ChzzkApiError.invalidResponse
+            }
+            return .live(viewerCount: concurrentUserCount)
+        case "CLOSE", "CLOSED":
+            return .offline
+        default:
+            throw ChzzkApiError.invalidResponse
+        }
     }
+}
 
-    let data: [Live]
-    let page: Page?
+struct ChzzkModerationTarget: Sendable {
+    let channelId: String
+    let senderChannelId: String
+    let chatChannelId: String?
+    let messageTime: Int64?
+
+    var messageId: String? {
+        guard let chatChannelId, let messageTime else {
+            return nil
+        }
+        return "chzzk:\(channelId):\(chatChannelId):\(senderChannelId):\(messageTime)"
+    }
+}
+
+enum ChzzkModerationAction: Equatable {
+    case restrict
+    case unrestrict
+    case temporaryRestrict
+    case temporaryUnrestrict
+    case hideMessage
 }
 
 @MainActor
 final class ChzzkApi {
     private let clientId: String
     private let clientSecret: String
-    private var viewerChannelId: String?
-    private var viewerCursor: String?
-    private var viewerPageMatched = false
 
     init(clientId: String, clientSecret: String) {
         self.clientId = clientId
@@ -155,47 +179,58 @@ final class ChzzkApi {
         try await content(path: "/open/v1/users/me", accessToken: accessToken)
     }
 
-    func viewers(channelId: String) async throws -> Int? {
-        if viewerChannelId != channelId {
-            viewerChannelId = channelId
-            viewerCursor = nil
-            viewerPageMatched = false
+    func liveStatus(channelId: String) async throws -> PlatformStatus {
+        guard channelId.count == 32, channelId.allSatisfy({ $0.isHexDigit && $0.isASCII }) else {
+            throw ChzzkApiError.invalidResponse
         }
-        for page in 0 ..< 5 {
-            if page > 0 {
-                try await Task.sleep(for: .seconds(1))
-            }
-            let cursor = viewerCursor
-            var query = [URLQueryItem(name: "size", value: "20")]
-            if let cursor {
-                query.append(URLQueryItem(name: "next", value: cursor))
-            }
-            let lives: ChzzkLives
-            do {
-                lives = try await content(path: "/open/v1/lives", query: query, clientAuth: true)
-            } catch ChzzkApiError.status(400) where cursor != nil {
-                viewerCursor = nil
-                viewerPageMatched = false
-                continue
-            }
-            try Task.checkCancellation()
-            if let live = lives.data.first(where: { $0.channelId == channelId }) {
-                viewerPageMatched = true
-                return live.concurrentUserCount
-            }
-            if viewerPageMatched, cursor != nil {
-                viewerCursor = nil
-                viewerPageMatched = false
-                continue
-            }
-            viewerPageMatched = false
-            viewerCursor = lives.page?.next
-            if viewerCursor == nil || viewerCursor == "" || viewerCursor == cursor {
-                viewerCursor = nil
-                break
-            }
+        let url = URL(string: "https://api.chzzk.naver.com/polling/v2/channels/\(channelId)/live-status")!
+        var request = URLRequest(url: url)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.timeoutInterval = 15
+        let (data, response) = try await httpGet(request: request)
+        guard response.isSuccessful else {
+            throw ChzzkApiError.status(response.statusCode)
         }
-        return nil
+        let envelope = try JSONDecoder().decode(ChzzkResponse<ChzzkLiveStatus>.self, from: data)
+        guard envelope.code == 200, let content = envelope.content else {
+            throw ChzzkApiError.invalidResponse
+        }
+        return try content.platformStatus()
+    }
+
+    func moderate(_ action: ChzzkModerationAction, target: ChzzkModerationTarget,
+                  accessToken: String) async throws
+    {
+        let path: String
+        let method: String
+        var body: [String: Any] = ["targetChannelId": target.senderChannelId]
+        switch action {
+        case .restrict:
+            path = "/open/v1/restrict-channels"
+            method = "POST"
+        case .unrestrict:
+            path = "/open/v1/restrict-channels"
+            method = "DELETE"
+        case .temporaryRestrict, .temporaryUnrestrict:
+            guard let chatChannelId = target.chatChannelId, !chatChannelId.isEmpty else {
+                throw ChzzkApiError.invalidResponse
+            }
+            path = "/open/v1/temporary-restrict-channels"
+            method = action == .temporaryRestrict ? "POST" : "DELETE"
+            body["chatChannelId"] = chatChannelId
+        case .hideMessage:
+            guard let chatChannelId = target.chatChannelId, !chatChannelId.isEmpty,
+                  let messageTime = target.messageTime
+            else {
+                throw ChzzkApiError.invalidResponse
+            }
+            path = "/open/v1/chats/blind-message"
+            method = "POST"
+            body = ["chatChannelId": chatChannelId, "messageTime": messageTime,
+                    "senderChannelId": target.senderChannelId]
+        }
+        _ = try await request(path: path, method: method, accessToken: accessToken,
+                              bodyData: JSONSerialization.data(withJSONObject: body)) as ChzzkEmpty?
     }
 
     func session(accessToken: String) async throws -> URL {
@@ -246,7 +281,7 @@ final class ChzzkApi {
 
     private func request<T: Decodable>(path: String, method: String, body: [String: String]? = nil,
                                        query: [URLQueryItem] = [], accessToken: String? = nil,
-                                       clientAuth: Bool = false) async throws -> T?
+                                       clientAuth: Bool = false, bodyData: Data? = nil) async throws -> T?
     {
         var url = URLComponents(string: "https://openapi.chzzk.naver.com")!
         url.path = path
@@ -267,6 +302,9 @@ final class ChzzkApi {
         }
         if let body {
             request.httpBody = try JSONEncoder().encode(body)
+        }
+        if let bodyData {
+            request.httpBody = bodyData
         }
         let (data, response) = try await httpGet(request: request)
         guard response.isSuccessful else {

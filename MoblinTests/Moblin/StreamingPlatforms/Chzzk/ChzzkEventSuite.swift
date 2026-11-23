@@ -60,4 +60,36 @@ struct ChzzkEventSuite {
         #expect(donation.donatorChannelId == "anonymous")
         #expect(donation.donationText == nil)
     }
+
+    @Test
+    func moderationIdentifiers() throws {
+        let payload = """
+        {"channelId":"host","senderChannelId":"viewer","chatChannelId":"room",
+         "messageTime":1795410000123,"profile":{"nickname":"Viewer"},"content":"hello"}
+        """
+        let message = try JSONDecoder().decode(ChzzkChatMessage.self, from: Data(payload.utf8))
+        #expect(message.moderationTarget.channelId == "host")
+        #expect(message.moderationTarget.senderChannelId == "viewer")
+        #expect(message.moderationTarget.chatChannelId == "room")
+        #expect(message.moderationTarget.messageTime == 1_795_410_000_123)
+        #expect(message.moderationTarget.messageId == "chzzk:host:room:viewer:1795410000123")
+    }
+
+    @Test(arguments: ["CLOSE", "CLOSED"])
+    func offlineLiveStatus(status: String) throws {
+        #expect(try ChzzkLiveStatus(status: status, concurrentUserCount: nil).platformStatus() == .offline)
+    }
+
+    @Test(arguments: [0, 12, 100_000])
+    func directViewerCount(count: Int) throws {
+        #expect(try ChzzkLiveStatus(status: "OPEN", concurrentUserCount: count).platformStatus()
+            == .live(viewerCount: count))
+    }
+
+    @Test
+    func missingViewerCountIsNotZero() {
+        #expect(throws: (any Error).self) {
+            try ChzzkLiveStatus(status: "OPEN", concurrentUserCount: nil).platformStatus()
+        }
+    }
 }

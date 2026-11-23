@@ -225,7 +225,8 @@ extension Model {
         bits: String?,
         highlight: ChatHighlight?,
         live: Bool,
-        sourceChannelIcon: URL? = nil
+        sourceChannelIcon: URL? = nil,
+        chzzkTarget: ChzzkModerationTarget? = nil
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
         if let platform, database.chat.botEnabled, live, filter?.chatBot != false,
@@ -264,7 +265,8 @@ extension Model {
             filter: filter,
             platform: platform,
             sourceChannelIcon: sourceChannelIcon,
-            state: ChatPostState()
+            state: ChatPostState(),
+            chzzkTarget: chzzkTarget
         )
         chatPostId += 1
         if isTextToSpeechEnabledForMessage(post: post) {
@@ -454,6 +456,8 @@ extension Model {
             return
         }
         switch post.platform {
+        case .chzzk:
+            moderateChzzkChat(post: post, action: .restrict)
         case .twitch:
             guard let userId = post.userId else {
                 return
@@ -494,6 +498,10 @@ extension Model {
     }
 
     func deleteMessage(post: ChatPost) {
+        if post.platform == .chzzk {
+            moderateChzzkChat(post: post, action: .hideMessage)
+            return
+        }
         guard let messageId = post.messageId else {
             return
         }

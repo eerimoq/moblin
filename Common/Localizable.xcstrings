@@ -65574,6 +65574,16 @@
         }
       }
     },
+    "Check CHZZK moderation permissions and log in again." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 활동제한 쓰기·채팅 메시지 쓰기 권한을 확인하고 다시 로그인해 주세요."
+          }
+        }
+      }
+    },
     "Check the CHZZK chat write permission and log in again." : {
       "localizations" : {
         "ko" : {
@@ -66804,6 +66814,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "치지직 로그인 실패"
+          }
+        }
+      }
+    },
+    "CHZZK moderation updated." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 채팅 관리 요청을 처리했어요."
           }
         }
       }
@@ -77586,6 +77606,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "無法連線至伺服器。請檢查 URL 和網路。"
+          }
+        }
+      }
+    },
+    "Could not manage this CHZZK message." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 치지직 메시지를 관리하지 못했어요."
           }
         }
       }
@@ -214665,6 +214695,26 @@
         }
       }
     },
+    "Remove restriction" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "활동 제한 해제"
+          }
+        }
+      }
+    },
+    "Remove temporary restriction" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "임시 제한 해제"
+          }
+        }
+      }
+    },
     "Remove widget from scene" : {
       "localizations" : {
         "de" : {
@@ -219239,6 +219289,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "回復購買失敗"
+          }
+        }
+      }
+    },
+    "Restrict" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "활동 제한"
           }
         }
       }
@@ -278840,6 +278900,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "溫度"
+          }
+        }
+      }
+    },
+    "Temporarily restrict" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "임시 제한"
           }
         }
       }

@@ -31,7 +31,7 @@ extension Model {
     }
 
     func isChzzkViewersConfigured() -> Bool {
-        !stream.chzzkChannelId.isEmpty && !chzzkClientId.isEmpty && !chzzkClientSecret.isEmpty
+        !stream.chzzkChannelId.isEmpty
     }
 
     func reloadChzzkViewers() {
@@ -43,16 +43,16 @@ extension Model {
             return
         }
         chzzkViewersTask = Task { [weak self] in
-            var lastSeen: (count: Int, time: ContinuousClock.Instant)?
+            var lastSeen: (status: PlatformStatus, time: ContinuousClock.Instant)?
             while !Task.isCancelled {
-                let count = try? await api.viewers(channelId: channelId)
+                let status = try? await api.liveStatus(channelId: channelId)
                 try Task.checkCancellation()
                 let now = ContinuousClock.now
-                if let count {
-                    lastSeen = (count, now)
+                if let status {
+                    lastSeen = (status, now)
                 }
                 if let lastSeen, lastSeen.time.duration(to: now) < .seconds(120) {
-                    self?.chzzkPlatformStatus = .live(viewerCount: lastSeen.count)
+                    self?.chzzkPlatformStatus = lastSeen.status
                 } else {
                     self?.chzzkPlatformStatus = .unknown
                 }
@@ -122,6 +122,55 @@ extension Model {
         }
     }
 
+    func moderateChzzkChat(post: ChatPost, action: ChzzkModerationAction) {
+        guard let target = post.chzzkTarget, let api = chzzkApi, chzzkLoggedIn,
+              target.channelId == stream.chzzkChannelId
+        else {
+            makeErrorToast(title: String(localized: "Could not manage this CHZZK message."))
+            return
+        }
+        let streamId = stream.id
+        Task {
+            let isCurrentChannel = {
+                self.stream.id == streamId && self.stream.chzzkChannelId == target.channelId
+                    && self.chzzkLoggedIn
+            }
+            do {
+                let token = try await chzzkAccessToken()
+                guard isCurrentChannel() else {
+                    return
+                }
+                do {
+                    try await api.moderate(action, target: target, accessToken: token)
+                } catch ChzzkApiError.status(401) {
+                    guard isCurrentChannel() else {
+                        return
+                    }
+                    let refreshed = try await chzzkAccessToken(forceRefresh: true)
+                    guard isCurrentChannel() else {
+                        return
+                    }
+                    try await api.moderate(action, target: target, accessToken: refreshed)
+                }
+                guard isCurrentChannel() else {
+                    return
+                }
+                if action == .hideMessage, let messageId = target.messageId {
+                    deleteChatMessage(messageId: messageId)
+                }
+                makeToast(title: String(localized: "CHZZK moderation updated."))
+            } catch {
+                guard isCurrentChannel() else {
+                    return
+                }
+                makeErrorToast(title: String(localized: "Could not manage this CHZZK message."),
+                               subTitle: String(
+                                   localized: "Check CHZZK moderation permissions and log in again."
+                               ))
+            }
+        }
+    }
+
     func reloadChzzkChat() {
         chzzkChat?.stop()
         chzzkChat = nil
@@ -148,7 +197,7 @@ extension Model {
         }
         appendChatMessage(
             platform: .chzzk,
-            messageId: nil,
+            messageId: event.moderationTarget.messageId,
             displayName: event.profile.nickname,
             user: event.profile.nickname,
             userId: event.senderChannelId,
@@ -164,7 +213,8 @@ extension Model {
             isOwner: event.senderChannelId == event.channelId,
             bits: nil,
             highlight: nil,
-            live: true
+            live: true,
+            chzzkTarget: event.moderationTarget
         )
     }
 

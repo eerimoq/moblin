@@ -11,14 +11,21 @@ struct ChzzkChatMessage: Decodable {
     let profile: Profile
     let content: String
     let emojis: [String: String]?
+    let chatChannelId: String?
+    let messageTime: Int64?
     private let role: String?
+
+    var moderationTarget: ChzzkModerationTarget {
+        ChzzkModerationTarget(channelId: channelId, senderChannelId: senderChannelId,
+                              chatChannelId: chatChannelId, messageTime: messageTime)
+    }
 
     var userRoleCode: String? {
         profile.userRoleCode ?? role
     }
 
     private enum CodingKeys: String, CodingKey {
-        case channelId, senderChannelId, profile, content, emojis
+        case channelId, senderChannelId, profile, content, emojis, chatChannelId, messageTime
         case role = "userRoleCode"
     }
 }
