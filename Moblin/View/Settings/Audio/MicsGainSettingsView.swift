@@ -31,7 +31,11 @@ struct MicsGainSettingsView: View {
                     MicGainView(model: model, mic: mic)
                 }
             } footer: {
-                Text("Added to the output gain when the mic is selected.")
+                if model.database.debug.audioMixer {
+                    Text("Applied to each mic while it is selected or mixed, before the output gain.")
+                } else {
+                    Text("Added to the output gain when the mic is selected.")
+                }
             }
         }
         .navigationTitle("Gains")
