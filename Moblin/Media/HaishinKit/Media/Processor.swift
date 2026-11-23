@@ -101,15 +101,11 @@ final class Processor: @unchecked Sendable {
     }
 
     func setHasAudio(value: Bool) {
-        processorControlQueue.async {
-            self.audio.muted = !value
-        }
+        audio.setMuted(muted: !value)
     }
 
     func setAudioGain(gain: Float) {
-        processorControlQueue.async {
-            self.audio.gain = gain
-        }
+        audio.setGain(gain: gain)
     }
 
     func setAudioDelay(delay: Double) {
