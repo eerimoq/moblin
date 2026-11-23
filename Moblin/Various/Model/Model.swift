@@ -838,6 +838,10 @@ final class Model: NSObject, ObservableObject {
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?
     var sparkleEffect: AlertsEffect?
+    var popeHatEffect: AlertsEffect?
+    var chefHatEffect: AlertsEffect?
+    var moustacheEffect: AlertsEffect?
+    var poopEffect: AlertsEffect?
     var beautyEffect = BeautyEffect(fps: 30)
     var replayEffect: ReplayEffect?
     var locationManager = Location()

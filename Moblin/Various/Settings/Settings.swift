@@ -964,6 +964,10 @@ private nonisolated(unsafe) let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "Sunglasses"),
     SettingsAlertsMediaGalleryItem(name: "Salty"),
     SettingsAlertsMediaGalleryItem(name: "-100"),
+    SettingsAlertsMediaGalleryItem(name: "Pope hat"),
+    SettingsAlertsMediaGalleryItem(name: "Chef hat"),
+    SettingsAlertsMediaGalleryItem(name: "Moustache"),
+    SettingsAlertsMediaGalleryItem(name: "Poop"),
 ]
 
 private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
@@ -1024,6 +1028,22 @@ class SettingsAlertsMediaGallery: Codable, ObservableObject {
 
     func getGlassesImageId() -> UUID {
         bundledImages[5].id
+    }
+
+    func getPopeHatImageId() -> UUID {
+        bundledImages[8].id
+    }
+
+    func getChefHatImageId() -> UUID {
+        bundledImages[9].id
+    }
+
+    func getMoustacheImageId() -> UUID {
+        bundledImages[10].id
+    }
+
+    func getPoopImageId() -> UUID {
+        bundledImages[11].id
     }
 
     func allImages() -> [SettingsAlertsMediaGalleryItem] {
