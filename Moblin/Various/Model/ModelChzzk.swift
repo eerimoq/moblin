@@ -39,13 +39,13 @@ extension Model {
         chzzkViewersTask = nil
         chzzkPlatformStatus = .unknown
         let channelId = stream.chzzkChannelId
-        guard !channelId.isEmpty, let api = chzzkApi else {
+        guard !channelId.isEmpty else {
             return
         }
         chzzkViewersTask = Task { [weak self] in
             var lastSeen: (status: PlatformStatus, time: ContinuousClock.Instant)?
             while !Task.isCancelled {
-                let status = try? await api.liveStatus(channelId: channelId)
+                let status = try? await ChzzkApi.liveStatus(channelId: channelId)
                 try Task.checkCancellation()
                 let now = ContinuousClock.now
                 if let status {

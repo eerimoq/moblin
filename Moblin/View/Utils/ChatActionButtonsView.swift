@@ -58,7 +58,10 @@ struct ChatActionButtonsView: View {
             presentingBanConfirm = true
         }
         .confirmationDialog("", isPresented: $presentingBanConfirm) {
-            Button(selectedPost.platform == .chzzk ? "Restrict" : "Ban", role: .destructive) {
+            Button(
+                selectedPost.platform == .chzzk ? LocalizedStringKey("Restrict") : "Ban",
+                role: .destructive
+            ) {
                 model.banUser(post: selectedPost)
                 dismiss()
             }

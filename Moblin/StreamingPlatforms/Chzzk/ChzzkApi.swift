@@ -179,7 +179,7 @@ final class ChzzkApi {
         try await content(path: "/open/v1/users/me", accessToken: accessToken)
     }
 
-    func liveStatus(channelId: String) async throws -> PlatformStatus {
+    static func liveStatus(channelId: String) async throws -> PlatformStatus {
         guard channelId.count == 32, channelId.allSatisfy({ $0.isHexDigit && $0.isASCII }) else {
             throw ChzzkApiError.invalidResponse
         }
