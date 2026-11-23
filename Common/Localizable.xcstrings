@@ -65574,6 +65574,16 @@
         }
       }
     },
+    "Check the CHZZK chat write permission and log in again." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 채팅 메시지 쓰기 권한을 확인하고 다시 로그인해 주세요."
+          }
+        }
+      }
+    },
     "Checkboxes" : {
       "localizations" : {
         "de" : {
@@ -66764,6 +66774,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "치지직"
+          }
+        }
+      }
+    },
+    "CHZZK chat messages are limited to 100 characters." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 채팅은 100자까지 보낼 수 있어요."
           }
         }
       }
@@ -77566,6 +77586,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "無法連線至伺服器。請檢查 URL 和網路。"
+          }
+        }
+      }
+    },
+    "Could not send a message to CHZZK." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직에 메시지를 보내지 못했어요."
           }
         }
       }
@@ -148644,6 +148674,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "치지직에 다시 로그인해 주세요."
+          }
+        }
+      }
+    },
+    "Log in to Twitch, Kick, or CHZZK to send chat messages." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅을 보내려면 트위치, 킥 또는 치지직에 로그인해 주세요."
           }
         }
       }

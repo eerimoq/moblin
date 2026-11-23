@@ -184,6 +184,7 @@ struct ChatBotMessage {
     let isSubscriber: Bool
     let userId: String?
     let segments: [ChatPostSegment]
+    var channelId: String?
 }
 
 class ChatBotCommand {

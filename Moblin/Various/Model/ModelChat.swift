@@ -180,22 +180,27 @@ extension Model {
         chatTextToSpeech.reset(running: true)
     }
 
-    func sendChatMessage(message: String) {
+    func sendChatMessage(message: String, showError: Bool = false) {
         if stream.twitchLoggedIn {
             sendTwitchChatMessage(message: message) { _ in }
         }
         if stream.kickLoggedIn {
             sendKickChatMessage(message: message)
         }
+        if chzzkLoggedIn {
+            sendChzzkChatMessage(message: message, showError: showError)
+        }
     }
 
     func sendChatMessageShowToast(message: String) {
-        if !stream.twitchLoggedIn, !stream.kickLoggedIn {
+        if !stream.twitchLoggedIn, !stream.kickLoggedIn, !chzzkLoggedIn {
             makeErrorToast(title: String(localized: "Message not sent"),
-                           subTitle: String(localized: "Login to Twitch or Kick to send chat messages"))
+                           subTitle: String(
+                               localized: "Log in to Twitch, Kick, or CHZZK to send chat messages."
+                           ))
             return
         }
-        sendChatMessage(message: message)
+        sendChatMessage(message: message, showError: true)
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
@@ -233,7 +238,8 @@ extension Model {
                 isModerator: isModerator,
                 isSubscriber: isSubscriber,
                 userId: userId,
-                segments: segments
+                segments: segments,
+                channelId: platform == .chzzk ? stream.chzzkChannelId : nil
             ))
         }
         if pollEnabled, live, filter?.poll != false {

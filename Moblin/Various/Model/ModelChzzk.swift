@@ -43,10 +43,19 @@ extension Model {
             return
         }
         chzzkViewersTask = Task { [weak self] in
+            var lastSeen: (count: Int, time: ContinuousClock.Instant)?
             while !Task.isCancelled {
                 let count = try? await api.viewers(channelId: channelId)
                 try Task.checkCancellation()
-                self?.chzzkPlatformStatus = count.map { .live(viewerCount: $0) } ?? .unknown
+                let now = ContinuousClock.now
+                if let count {
+                    lastSeen = (count, now)
+                }
+                if let lastSeen, lastSeen.time.duration(to: now) < .seconds(120) {
+                    self?.chzzkPlatformStatus = .live(viewerCount: lastSeen.count)
+                } else {
+                    self?.chzzkPlatformStatus = .unknown
+                }
                 try await sleep(seconds: 30)
             }
         }
@@ -58,6 +67,59 @@ extension Model {
 
     func isChzzkChatConfigured() -> Bool {
         database.chat.enabled && isChzzkEventsConfigured()
+    }
+
+    func sendChzzkChatMessage(message: String, isBotReply: Bool = false, showError: Bool = false) {
+        guard chzzkLoggedIn, let api = chzzkApi else {
+            return
+        }
+        let streamId = stream.id
+        let channelId = stream.chzzkChannelId
+        Task {
+            let isCurrentChannel = {
+                self.stream.id == streamId && self.stream.chzzkChannelId == channelId && self.chzzkLoggedIn
+            }
+            guard isCurrentChannel() else {
+                return
+            }
+            do {
+                let text = try prepareChzzkChatMessage(message, isBotReply: isBotReply)
+                let token = try await chzzkAccessToken()
+                guard isCurrentChannel() else {
+                    return
+                }
+                do {
+                    try await api.sendChatMessage(message: text, accessToken: token)
+                } catch ChzzkApiError.status(401) {
+                    guard isCurrentChannel() else {
+                        return
+                    }
+                    let token = try await chzzkAccessToken(forceRefresh: true)
+                    guard isCurrentChannel() else {
+                        return
+                    }
+                    try await api.sendChatMessage(message: text, accessToken: token)
+                }
+            } catch ChzzkChatSendError.emptyMessage {
+                return
+            } catch {
+                guard isCurrentChannel() else {
+                    return
+                }
+                logger.debug("chzzk: Could not send chat message")
+                if showError {
+                    let detail = switch error {
+                    case ChzzkChatSendError.messageTooLong:
+                        String(localized: "CHZZK chat messages are limited to 100 characters.")
+                    case ChzzkApiError.status(403):
+                        String(localized: "Check the CHZZK chat write permission and log in again.")
+                    default:
+                        String(localized: "Could not send a message to CHZZK.")
+                    }
+                    makeErrorToast(title: String(localized: "Message not sent"), subTitle: detail)
+                }
+            }
+        }
     }
 
     func reloadChzzkChat() {

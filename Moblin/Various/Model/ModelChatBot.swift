@@ -25,7 +25,7 @@ extension Model {
         }
         switch mainCommand {
         case .help:
-            handleChatBotMessageHelp(platform: message.platform)
+            handleChatBotMessageHelp(to: message)
         case .tts:
             handleChatBotMessageTts(command: command)
         case .obs:
@@ -124,8 +124,8 @@ extension Model {
         }
     }
 
-    private func handleChatBotMessageHelp(platform: Platform) {
-        sendChatBotReply(message: "Moblin chat bot help: https://moblin.app/chat-bot/", platform: platform)
+    private func handleChatBotMessageHelp(to recipient: ChatBotMessage) {
+        sendChatBotReply(message: "Moblin chat bot help: https://moblin.app/chat-bot/", to: recipient)
     }
 
     private func handleChatBotMessageTtsOn(command: ChatBotCommand) {
@@ -239,7 +239,7 @@ extension Model {
             if let user = command.user() {
                 if permissions.sendChatMessages {
                     self.sendChatBotReply(message: self.formatSnapshotTakenSuccessfully(user: user),
-                                          platform: command.message.platform)
+                                          to: command.message)
                 }
                 message = self.formatSnapshotTakenBy(user: user)
             }
@@ -253,7 +253,7 @@ extension Model {
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
                 self.sendChatBotReply(message: self.formatSnapshotTakenNotAllowed(user: user),
-                                      platform: command.message.platform)
+                                      to: command.message)
             }
         }
     }
@@ -267,7 +267,7 @@ extension Model {
         ) {
             if permissions.sendChatMessages, let user = command.user() {
                 self.sendChatBotReply(message: self.formatSnapshotTakenSuccessfully(user: user),
-                                      platform: command.message.platform)
+                                      to: command.message)
             }
             self.takeSnapshotWithCountdown(message: command.rest(), user: command.user()) { message in
                 switch self.database.chat.botCommandSnapshot.effectiveSource(isLive: self.isLive) {
@@ -280,7 +280,7 @@ extension Model {
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
                 self.sendChatBotReply(message: self.formatSnapshotTakenNotAllowed(user: user),
-                                      platform: command.message.platform)
+                                      to: command.message)
             }
         }
     }
@@ -396,7 +396,7 @@ extension Model {
         guard let baseUrl = URL(string: ai.baseUrl) else {
             return
         }
-        let platform = command.message.platform
+        let recipient = command.message
         let user = command.user() ?? String(localized: "Unknown")
         OpenAi(baseUrl: baseUrl, apiKey: ai.apiKey)
             .ask(question, model: ai.model, role: ai.personality) { result in
@@ -404,12 +404,12 @@ extension Model {
                 case let .success(answer):
                     self.sendChatBotReply(
                         message: formatAiAnswer(user: user, question: question, answer: answer),
-                        platform: platform
+                        to: recipient
                     )
                 case let .failure(error):
                     self.sendChatBotReply(message: String(localized: """
                     \(user), sorry, I could not answer your question (\(error.description)). 😢
-                    """), platform: platform)
+                    """), to: recipient)
                 }
             }
     }
@@ -501,7 +501,7 @@ extension Model {
             command: command
         ) {
             self.sendChatBotReply(message: command.rest(),
-                                  platform: command.message.platform)
+                                  to: command.message)
         }
     }
 
@@ -539,7 +539,7 @@ extension Model {
             command: command
         ) {
             self.sendChatBotReply(message: self.formatPlainText(formatString: customCommand.formatString),
-                                  platform: command.message.platform)
+                                  to: command.message)
         }
     }
 
@@ -582,17 +582,17 @@ extension Model {
         guard !title.isEmpty else {
             return
         }
-        let platform = command.message.platform
+        let recipient = command.message
         let user = command.user() ?? String(localized: "Unknown")
         addMusic(title: title, user: user) { result in
             switch result {
             case let .added(song: song):
                 self.sendChatBotReply(message: self.makeMusicAddedMessage(song: song, user: user),
-                                      platform: platform)
+                                      to: recipient)
             case .songNotFound:
                 self.sendChatBotReply(
                     message: String(localized: "\(title) requested by \(user) not found."),
-                    platform: platform
+                    to: recipient
                 )
             case .alreadyAdded, .failed:
                 break
@@ -644,7 +644,7 @@ extension Model {
                 songs.append("Current song not found")
             }
             self.sendChatBotReply(message: songs.joined(separator: " | "),
-                                  platform: command.message.platform)
+                                  to: command.message)
         }
     }
 
@@ -903,7 +903,7 @@ extension Model {
                 }
                 self.sendChatBotReply(
                     message: String(localized: "Sorry, zoom x must be a number."),
-                    platform: command.message.platform
+                    to: command.message
                 )
                 return
             }
@@ -951,12 +951,16 @@ extension Model {
         }
     }
 
-    private func sendChatBotReply(message: String, platform: Platform) {
-        switch platform {
+    private func sendChatBotReply(message: String, to recipient: ChatBotMessage) {
+        switch recipient.platform {
         case .twitch:
             sendTwitchChatMessage(message: message) { _ in }
         case .kick:
             sendKickChatMessage(message: message)
+        case .chzzk:
+            if recipient.channelId == stream.chzzkChannelId {
+                sendChzzkChatMessage(message: message, isBotReply: true)
+            }
         default:
             break
         }
@@ -991,7 +995,7 @@ extension Model {
                         \(user) Sorry, but this chat bot command is on cooldown for \(Int(timeLeftOfCooldown
                                 .seconds)) \
                         seconds. 😢
-                        """), platform: command.message.platform)
+                        """), to: command.message)
                     }
                     return
                 }
@@ -1005,7 +1009,7 @@ extension Model {
                 if permissions.sendChatMessages, let user = command.user() {
                     self.sendChatBotReply(message: String(localized: """
                     \(user) Sorry, you are not allowed to use this chat bot command 😢
-                    """), platform: command.message.platform)
+                    """), to: command.message)
                 }
             }
         }

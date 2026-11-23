@@ -16,12 +16,43 @@ enum ChzzkApiError: Error {
     case invalidResponse
 }
 
+enum ChzzkChatSendError: Error {
+    case emptyMessage
+    case messageTooLong
+}
+
+func prepareChzzkChatMessage(_ message: String, isBotReply: Bool) throws -> String {
+    var text = message.trim()
+    guard !text.isEmpty else {
+        throw ChzzkChatSendError.emptyMessage
+    }
+    if isBotReply, text.hasPrefix("!") {
+        text = "↪ \(text)"
+    }
+    guard text.utf16.count > 100 else {
+        return text
+    }
+    guard isBotReply else {
+        throw ChzzkChatSendError.messageTooLong
+    }
+    var length = 0
+    let prefix = text.prefix { character in
+        length += String(character).utf16.count
+        return length < 100
+    }
+    return "\(prefix)…"
+}
+
 private struct ChzzkResponse<Content: Decodable>: Decodable {
     let code: Int
     let content: Content?
 }
 
 private struct ChzzkEmpty: Decodable {}
+
+private struct ChzzkChatSendResponse: Decodable {
+    let messageId: String
+}
 
 struct ChzzkTokenResponse: Decodable {
     let accessToken: String
@@ -72,6 +103,7 @@ final class ChzzkApi {
     private let clientSecret: String
     private var viewerChannelId: String?
     private var viewerCursor: String?
+    private var viewerPageMatched = false
 
     init(clientId: String, clientSecret: String) {
         self.clientId = clientId
@@ -127,6 +159,7 @@ final class ChzzkApi {
         if viewerChannelId != channelId {
             viewerChannelId = channelId
             viewerCursor = nil
+            viewerPageMatched = false
         }
         for page in 0 ..< 5 {
             if page > 0 {
@@ -140,14 +173,22 @@ final class ChzzkApi {
             let lives: ChzzkLives
             do {
                 lives = try await content(path: "/open/v1/lives", query: query, clientAuth: true)
-            } catch ChzzkApiError.status(400) {
+            } catch ChzzkApiError.status(400) where cursor != nil {
                 viewerCursor = nil
-                throw ChzzkApiError.status(400)
+                viewerPageMatched = false
+                continue
             }
             try Task.checkCancellation()
             if let live = lives.data.first(where: { $0.channelId == channelId }) {
+                viewerPageMatched = true
                 return live.concurrentUserCount
             }
+            if viewerPageMatched, cursor != nil {
+                viewerCursor = nil
+                viewerPageMatched = false
+                continue
+            }
+            viewerPageMatched = false
             viewerCursor = lives.page?.next
             if viewerCursor == nil || viewerCursor == "" || viewerCursor == cursor {
                 viewerCursor = nil
@@ -182,6 +223,13 @@ final class ChzzkApi {
         _ = try await request(path: "/open/v1/sessions/events/subscribe/\(event)", method: "POST",
                               query: [URLQueryItem(name: "sessionKey", value: sessionKey)],
                               accessToken: accessToken) as ChzzkEmpty?
+    }
+
+    func sendChatMessage(message: String, accessToken: String) async throws {
+        let _: ChzzkChatSendResponse = try await content(path: "/open/v1/chats/send",
+                                                         method: "POST",
+                                                         body: ["message": message],
+                                                         accessToken: accessToken)
     }
 
     private func content<T: Decodable>(path: String, method: String = "GET", body: [String: String]? = nil,
