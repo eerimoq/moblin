@@ -17,11 +17,16 @@ class AudioProvider: ObservableObject {
 @MainActor
 class Mic: ObservableObject {
     @Published var current: SettingsMicsMic = noMic
+    @Published var mixed: [SettingsMicsMic] = []
     @Published var inputGain: Float = 1.0
     @Published var inputGainSettable: Bool = false
     let inputGainTimer = SimpleTimer(queue: processorControlQueue)
     var requested: SettingsMicsMic?
     var isSwitchTimerRunning: Bool = false
+
+    func statusText() -> String {
+        ([current] + mixed).map(\.name).joined(separator: " + ")
+    }
 }
 
 extension Model {
@@ -155,7 +160,9 @@ extension Model {
                 if let highestPrioMic = getHighestPriorityConnectedMic() {
                     defaultMic = highestPrioMic
                 }
-            } else if let highestPrioMic = getHighestPriorityConnectedMic() {
+            } else if let highestPrioMic = getHighestPriorityConnectedMic(),
+                      getConnectedMicById(id: mic.current.id) == nil || !mic.mixed.contains(highestPrioMic)
+            {
                 selectMic(mic: highestPrioMic)
                 defaultMic = highestPrioMic
             }
@@ -164,10 +171,12 @@ extension Model {
 
     func markMicAsConnected(id: String) {
         getMicById(id: id)?.connected = true
+        updateMixedMics()
     }
 
     func markMicAsDisconnected(id: String) {
         getMicById(id: id)?.connected = false
+        updateMixedMics()
     }
 
     func updateMics() {
@@ -256,6 +265,7 @@ extension Model {
             }
         }
         database.mics.mics = mics
+        updateMixedMics()
     }
 
     func getMicById(id: String) -> SettingsMicsMic? {
@@ -270,7 +280,12 @@ extension Model {
     }
 
     func updateMicDelay() {
-        media.setAudioDelay(delay: getMicById(id: mic.current.id)?.delay ?? 0)
+        if database.debug.audioMixer {
+            updateMixedMics()
+        } else {
+            let delay = getMicById(id: mic.current.id)?.delay ?? 0
+            media.setAudioDelay(delay: delay.clamped(to: makeMicDelayRange(audioMixer: false)))
+        }
     }
 
     func selectMicDefault(mic: SettingsMicsMic) {
@@ -702,26 +717,30 @@ extension Model {
         remoteControlStateChanged(state: RemoteControlState(mic: micId))
     }
 
-    private func startTalkback(mic: SettingsMicsMic) {
+    func getMicCameraId(mic: SettingsMicsMic) -> UUID? {
         if isRtmpMic(mic: mic) {
-            media.setTalkback(cameraId: getRtmpMicCameraId(mic: mic))
+            getRtmpMicCameraId(mic: mic)
         } else if isSrtlaMic(mic: mic) {
-            media.setTalkback(cameraId: getSrtlaMicCameraId(mic: mic))
+            getSrtlaMicCameraId(mic: mic)
         } else if isSrtClientMic(mic: mic) {
-            media.setTalkback(cameraId: getSrtClientCameraId(mic: mic))
+            getSrtClientCameraId(mic: mic)
         } else if isRistMic(mic: mic) {
-            media.setTalkback(cameraId: getRistMicCameraId(mic: mic))
+            getRistMicCameraId(mic: mic)
         } else if isWhipMic(mic: mic) {
-            media.setTalkback(cameraId: getWhipMicCameraId(mic: mic))
+            getWhipMicCameraId(mic: mic)
         } else if isWhepMic(mic: mic) {
-            media.setTalkback(cameraId: getWhepMicCameraId(mic: mic))
+            getWhepMicCameraId(mic: mic)
         } else if isMediaPlayerMic(mic: mic) {
-            media.setTalkback(cameraId: getMediaPlayerMicCameraId(mic: mic))
+            getMediaPlayerMicCameraId(mic: mic)
         } else if mic.isScreenCapture() {
-            media.setTalkback(cameraId: screenCaptureCameraId)
+            screenCaptureCameraId
         } else {
-            media.setTalkback(cameraId: nil)
+            nil
         }
+    }
+
+    private func startTalkback(mic: SettingsMicsMic) {
+        media.setTalkback(cameraId: getMicCameraId(mic: mic))
     }
 
     private func stopTalkback() {

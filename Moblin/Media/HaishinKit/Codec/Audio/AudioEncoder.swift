@@ -56,6 +56,7 @@ class AudioEncoder: @unchecked Sendable {
         guard var newInSourceFormat, newInSourceFormat != inSourceFormat else {
             return
         }
+        inSourceFormat = newInSourceFormat
         ringBuffer = .init(&newInSourceFormat, numSamplesPerBuffer: samplesPerBuffer())
         audioConverter = makeAudioConverter(&newInSourceFormat)
         let newSampleRate = newInSourceFormat.mSampleRate
