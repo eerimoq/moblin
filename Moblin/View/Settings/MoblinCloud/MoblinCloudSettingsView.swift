@@ -103,7 +103,7 @@ struct MoblinCloudSettingsView: View {
                 """)
             }
             Section {
-                Picker("Videos", selection: $moblinCloud.mediaWidgetId) {
+                Picker("Media share", selection: $moblinCloud.mediaWidgetId) {
                     Text("-- None --")
                         .tag(nil as UUID?)
                     ForEach(database.widgets.filter { $0.type == .browser }) {
