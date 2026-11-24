@@ -715,7 +715,9 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlSetFilter(filter: filter, on: on)
     }
 
-    func remoteControlStreamerTriggerReaction(reaction _: RemoteControlReaction) {}
+    func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction) {
+        model?.handleRemoteControlTriggerReaction(reaction: reaction)
+    }
 
     func remoteControlStreamerShowToast(title: String, subTitle: String?, type: RemoteControlToastType) {
         model?.remoteControlStreamerShowToast(title: title, subTitle: subTitle, type: type)

@@ -11,6 +11,9 @@ enum SettingsReaction: Codable, CaseIterable {
     case rain
     case glasses
     case sparkle
+    case pope
+    case pizzaChef
+    case poop
 
     @available(iOS 17, *)
     init?(value: String?) {
@@ -31,6 +34,12 @@ enum SettingsReaction: Codable, CaseIterable {
             self = .glasses
         case "sparkle":
             self = .sparkle
+        case "pope":
+            self = .pope
+        case "pizzachef":
+            self = .pizzaChef
+        case "poop":
+            self = .poop
         default:
             return nil
         }
@@ -74,6 +83,12 @@ enum SettingsReaction: Codable, CaseIterable {
             String(localized: "Glasses")
         case .sparkle:
             String(localized: "Sparkle")
+        case .pope:
+            String(localized: "Pope")
+        case .pizzaChef:
+            String(localized: "Pizza chef")
+        case .poop:
+            String(localized: "Poop")
         }
     }
 }

@@ -152,6 +152,9 @@ enum ChatBotReactionArgument: String, ChatBotArgument {
     case rain
     case glasses
     case sparkle
+    case pope
+    case pizzaChef = "pizzachef"
+    case poop
 }
 
 enum ChatBotTeslaArgument: String, ChatBotArgument {

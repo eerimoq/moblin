@@ -260,6 +260,9 @@ enum RemoteControlReaction: Codable, CaseIterable {
     case rain
     case glasses
     case sparkle
+    case pope
+    case pizzaChef
+    case poop
 
     func toSettings() -> SettingsReaction {
         switch self {
@@ -279,6 +282,12 @@ enum RemoteControlReaction: Codable, CaseIterable {
             .glasses
         case .sparkle:
             .sparkle
+        case .pope:
+            .pope
+        case .pizzaChef:
+            .pizzaChef
+        case .poop:
+            .poop
         }
     }
 }

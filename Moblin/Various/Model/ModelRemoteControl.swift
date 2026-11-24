@@ -710,7 +710,7 @@ extension Model {
         }
     }
 
-    private func handleRemoteControlTriggerReaction(reaction: RemoteControlReaction) {
+    func handleRemoteControlTriggerReaction(reaction: RemoteControlReaction) {
         guard #available(iOS 17, *) else {
             return
         }
