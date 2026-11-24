@@ -37,6 +37,8 @@ extension RtmpModelMock: RtmpStreamDelegate {
 extension RtmpModelMock: ProcessorDelegate {
     func streamAudioLevel(audioLevel _: Float, numberOfAudioChannels _: Int, sampleRate _: Double) {}
 
+    func streamBuiltinAudioNumberOfChannels(numberOfChannels _: Int) {}
+
     func streamLowFpsImage(lowFpsImage _: Data?, frameNumber _: UInt64) {}
 
     func streamVideoAttachCameraError() {}

@@ -42,6 +42,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var externalCameraVideoRange: Bool = false
     @Published var photosImageQuality: Double = 0.95
     @Published var showTaps: Bool = false
+    @Published var audioMixer: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel
@@ -84,6 +85,7 @@ class SettingsDebug: Codable, ObservableObject {
         case externalCameraVideoRange
         case photosImageQuality
         case showTaps
+        case audioMixer
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -121,6 +123,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.externalCameraVideoRange, externalCameraVideoRange)
         try container.encode(.photosImageQuality, photosImageQuality)
         try container.encode(.showTaps, showTaps)
+        try container.encode(.audioMixer, audioMixer)
     }
 
     init() {}
@@ -172,5 +175,6 @@ class SettingsDebug: Codable, ObservableObject {
         externalCameraVideoRange = container.decode(.externalCameraVideoRange, Bool.self, false)
         photosImageQuality = container.decode(.photosImageQuality, Double.self, 0.95)
         showTaps = container.decode(.showTaps, Bool.self, false)
+        audioMixer = container.decode(.audioMixer, Bool.self, false)
     }
 }
