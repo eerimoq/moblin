@@ -116,10 +116,10 @@ struct MoblinCloudSettingsView: View {
                 }
             } footer: {
                 Text("""
-                Browser widget that plays the YouTube videos viewers request, instead of its own page. \
-                Viewers can only request videos while one is picked. Sign in to YouTube in Moblin's \
-                browser to play them with your account. Create one in Settings → Scenes and add it \
-                to the scenes you stream with.
+                Browser widget that plays the YouTube videos and Twitch clips viewers \
+                request, instead of its own page. Viewers can only request them while one is picked. \
+                Sign in to YouTube in Moblin's browser to play videos with your account. Create one \
+                in Settings → Scenes and add it to the scenes you stream with.
                 """)
             }
             Section {

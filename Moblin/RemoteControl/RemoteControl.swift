@@ -107,6 +107,7 @@ enum RemoteControlTipKind: Codable {
     case effect(sound: String)
     case wheelOfLuck(count: Int)
     case youTube(videoId: String, start: Int, duration: Int)
+    case twitchClip(slug: String, duration: Int)
 }
 
 enum RemoteControlResponse: Codable {

@@ -45,38 +45,72 @@ private enum MoblinCloudError: Error {
     case badResponse(String)
 }
 
+private let moblinCloudMediaReferer = "https://cloud.moblin.app/"
+
+private func isMoblinCloudMediaId(_ id: String, count: ClosedRange<Int>) -> Bool {
+    count.contains(id.count)
+        && id.allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber || $0 == "-" || $0 == "_") }
+}
+
+private func makeMoblinCloudMediaRequest(url: String, queryItems: [URLQueryItem]) -> BrowserEffectMedia? {
+    guard var components = URLComponents(string: url) else {
+        return nil
+    }
+    components.queryItems = queryItems
+    guard let url = components.url else {
+        return nil
+    }
+    var request = URLRequest(url: url)
+    request.setValue(moblinCloudMediaReferer, forHTTPHeaderField: "Referer")
+    return .playing(request: request)
+}
+
+enum MoblinCloudMediaSource {
+    case youTube(videoId: String, start: Int)
+    case twitchClip(slug: String)
+}
+
 struct MoblinCloudMedia {
     let requestId: String
     let name: String
     let message: String
-    let videoId: String
-    let start: Int
+    let source: MoblinCloudMediaSource
     let duration: Int
 
-    func request() -> URLRequest? {
-        guard videoId.count == 11,
-              videoId.allSatisfy({ $0.isASCII && ($0.isLetter || $0.isNumber || $0 == "-" || $0 == "_") }),
-              var components = URLComponents(string: "https://www.youtube.com/embed/\(videoId)")
-        else {
-            return nil
+    func page() -> BrowserEffectMedia? {
+        switch source {
+        case let .youTube(videoId: videoId, start: start):
+            guard isMoblinCloudMediaId(videoId, count: 11 ... 11) else {
+                return nil
+            }
+            let start = max(start, 0)
+            return makeMoblinCloudMediaRequest(
+                url: "https://www.youtube.com/embed/\(videoId)",
+                queryItems: [
+                    URLQueryItem(name: "start", value: String(start)),
+                    URLQueryItem(name: "end", value: String(start + duration)),
+                    URLQueryItem(name: "autoplay", value: "1"),
+                    URLQueryItem(name: "playsinline", value: "1"),
+                    URLQueryItem(name: "controls", value: "0"),
+                    URLQueryItem(name: "rel", value: "0"),
+                    URLQueryItem(name: "iv_load_policy", value: "3"),
+                    URLQueryItem(name: "fs", value: "0"),
+                ]
+            )
+        case let .twitchClip(slug: slug):
+            guard isMoblinCloudMediaId(slug, count: 1 ... 100) else {
+                return nil
+            }
+            return makeMoblinCloudMediaRequest(
+                url: "https://clips.twitch.tv/embed",
+                queryItems: [
+                    URLQueryItem(name: "clip", value: slug),
+                    URLQueryItem(name: "parent", value: "cloud.moblin.app"),
+                    URLQueryItem(name: "autoplay", value: "true"),
+                    URLQueryItem(name: "muted", value: "false"),
+                ]
+            )
         }
-        let start = max(start, 0)
-        components.queryItems = [
-            URLQueryItem(name: "start", value: String(start)),
-            URLQueryItem(name: "end", value: String(start + max(duration, 1))),
-            URLQueryItem(name: "autoplay", value: "1"),
-            URLQueryItem(name: "playsinline", value: "1"),
-            URLQueryItem(name: "controls", value: "0"),
-            URLQueryItem(name: "rel", value: "0"),
-            URLQueryItem(name: "iv_load_policy", value: "3"),
-            URLQueryItem(name: "fs", value: "0"),
-        ]
-        guard let url = components.url else {
-            return nil
-        }
-        var request = URLRequest(url: url)
-        request.setValue("https://cloud.moblin.app/", forHTTPHeaderField: "Referer")
-        return request
     }
 }
 
@@ -384,8 +418,8 @@ extension Model {
             mediaEffect.onVideoPlaying = { [weak self] playing in
                 self?.moblinCloudMediaVideoPlaying(playing: playing)
             }
-            if let media = moblinCloudMediaPlaying, let request = media.request() {
-                moblinCloudStartMedia(effect: mediaEffect, media: media, request: request)
+            if let media = moblinCloudMediaPlaying, let page = media.page() {
+                moblinCloudStartMedia(effect: mediaEffect, media: media, page: page)
             } else {
                 mediaEffect.setMedia(media: .idle)
             }
@@ -424,7 +458,7 @@ extension Model {
             return
         }
         while let media = moblinCloudMedia.popFirst() {
-            guard let request = media.request() else {
+            guard let page = media.page() else {
                 continue
             }
             var text = String(localized: "Requested a video")
@@ -432,20 +466,24 @@ extension Model {
                 text += ": \(media.message)"
             }
             moblinCloudAppendChatMessage(name: media.name, text: text)
-            moblinCloudStartMedia(effect: effect, media: media, request: request)
+            moblinCloudStartMedia(effect: effect, media: media, page: page)
             break
         }
         moblinCloudSendMedia()
     }
 
-    private func moblinCloudStartMedia(effect: BrowserEffect, media: MoblinCloudMedia, request: URLRequest) {
+    private func moblinCloudStartMedia(
+        effect: BrowserEffect,
+        media: MoblinCloudMedia,
+        page: BrowserEffectMedia
+    ) {
         moblinCloudMediaPlaying = media
         moblinCloudMediaStarted = false
         moblinCloudMediaEndedTimer.stop()
         moblinCloudMediaTimer.startSingleShot(timeout: 20) {
             self.moblinCloudMediaEnded()
         }
-        effect.setMedia(media: .playing(request: request))
+        effect.setMedia(media: page)
     }
 
     private func moblinCloudMediaVideoPlaying(playing: Bool) {
@@ -501,20 +539,31 @@ extension Model {
         case let .wheelOfLuck(count: count):
             moblinCloudTipWheelOfLuck(name: name, message: message, count: count)
         case let .youTube(videoId: videoId, start: start, duration: duration):
-            guard moblinCloudMedia.count < 100 else {
-                return
-            }
-            moblinCloudMedia.append(MoblinCloudMedia(
-                requestId: requestId,
-                name: name,
-                message: message,
-                videoId: videoId,
-                start: start,
-                duration: min(max(duration, 1), 600)
-            ))
-            moblinCloudTryNextMedia()
-            moblinCloudSendMedia()
+            moblinCloudAddMedia(name, message, requestId, .youTube(videoId: videoId, start: start), duration)
+        case let .twitchClip(slug: slug, duration: duration):
+            moblinCloudAddMedia(name, message, requestId, .twitchClip(slug: slug), duration)
         }
+    }
+
+    private func moblinCloudAddMedia(
+        _ name: String,
+        _ message: String,
+        _ requestId: String,
+        _ source: MoblinCloudMediaSource,
+        _ duration: Int
+    ) {
+        guard moblinCloudMedia.count < 100 else {
+            return
+        }
+        moblinCloudMedia.append(MoblinCloudMedia(
+            requestId: requestId,
+            name: name,
+            message: message,
+            source: source,
+            duration: min(max(duration, 1), 600)
+        ))
+        moblinCloudTryNextMedia()
+        moblinCloudSendMedia()
     }
 
     private func moblinCloudShowTipMessage(name: String, message: String, amount: String, currency: String) {
