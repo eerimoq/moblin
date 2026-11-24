@@ -77,6 +77,9 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void)
     func remoteControlStreamerSetMoblinCloudAlertsWidget(id: UUID?)
     func remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: UUID?)
+    func remoteControlStreamerSetMoblinCloudMediaWidget(id: UUID?)
+    func remoteControlStreamerSetMoblinCloudMediaPaused(on: Bool)
+    func remoteControlStreamerSkipMoblinCloudMedia()
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
     func remoteControlStreamerStartMacro(id: UUID)
@@ -202,6 +205,13 @@ class RemoteControlStreamer {
             return
         }
         send(message: .event(data: .icon(id: id)))
+    }
+
+    func sendMedia(media: RemoteControlMoblinCloudMedia?) {
+        guard connected else {
+            return
+        }
+        send(message: .event(data: .media(media: media)))
     }
 
     func sendPreview(preview: Data) {
@@ -408,6 +418,15 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setMoblinCloudWheelOfLuckWidget(id: widgetId):
             delegate.remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: widgetId)
+            sendEmptyOkResponse(id: id)
+        case let .setMoblinCloudMediaWidget(id: widgetId):
+            delegate.remoteControlStreamerSetMoblinCloudMediaWidget(id: widgetId)
+            sendEmptyOkResponse(id: id)
+        case let .setMoblinCloudMediaPaused(on: on):
+            delegate.remoteControlStreamerSetMoblinCloudMediaPaused(on: on)
+            sendEmptyOkResponse(id: id)
+        case .skipMoblinCloudMedia:
+            delegate.remoteControlStreamerSkipMoblinCloudMedia()
             sendEmptyOkResponse(id: id)
         case let .twitchEventSubNotification(message: message):
             delegate.remoteControlStreamerTwitchEventSubNotification(message: message)

@@ -45,6 +45,41 @@ private enum MoblinCloudError: Error {
     case badResponse(String)
 }
 
+struct MoblinCloudMedia {
+    let requestId: String
+    let name: String
+    let message: String
+    let videoId: String
+    let start: Int
+    let duration: Int
+
+    func request() -> URLRequest? {
+        guard videoId.count == 11,
+              videoId.allSatisfy({ $0.isASCII && ($0.isLetter || $0.isNumber || $0 == "-" || $0 == "_") }),
+              var components = URLComponents(string: "https://www.youtube.com/embed/\(videoId)")
+        else {
+            return nil
+        }
+        let start = max(start, 0)
+        components.queryItems = [
+            URLQueryItem(name: "start", value: String(start)),
+            URLQueryItem(name: "end", value: String(start + max(duration, 1))),
+            URLQueryItem(name: "autoplay", value: "1"),
+            URLQueryItem(name: "playsinline", value: "1"),
+            URLQueryItem(name: "controls", value: "0"),
+            URLQueryItem(name: "rel", value: "0"),
+            URLQueryItem(name: "iv_load_policy", value: "3"),
+            URLQueryItem(name: "fs", value: "0"),
+        ]
+        guard let url = components.url else {
+            return nil
+        }
+        var request = URLRequest(url: url)
+        request.setValue("https://cloud.moblin.app/", forHTTPHeaderField: "Referer")
+        return request
+    }
+}
+
 private func describe(_ response: URLResponse, _ data: Data) -> String {
     guard let response = response.http else {
         return "not HTTP"
@@ -322,6 +357,128 @@ extension Model {
         moblinCloud?.sendIcon(id: database.iconImage)
     }
 
+    private func getMoblinCloudMediaEffect() -> BrowserEffect? {
+        guard let id = database.moblinCloud.mediaWidgetId,
+              database.findWidget(id: id)?.type == .browser
+        else {
+            return nil
+        }
+        return browserEffects[id]
+    }
+
+    func remoteControlSetMoblinCloudMediaWidget(id: UUID?) {
+        guard id == nil || database.widgets.contains(where: { $0.id == id && $0.type == .browser }) else {
+            return
+        }
+        database.moblinCloud.mediaWidgetId = id
+        moblinCloudMediaWidgetUpdated()
+    }
+
+    func moblinCloudMediaWidgetUpdated() {
+        let mediaEffect = getMoblinCloudMediaEffect()
+        for effect in browserEffects.values where effect !== mediaEffect && effect.isMedia() {
+            effect.onVideoPlaying = nil
+            effect.setMedia(media: nil)
+        }
+        if let mediaEffect, !mediaEffect.isMedia() {
+            mediaEffect.onVideoPlaying = { [weak self] playing in
+                self?.moblinCloudMediaVideoPlaying(playing: playing)
+            }
+            if let media = moblinCloudMediaPlaying, let request = media.request() {
+                moblinCloudStartMedia(effect: mediaEffect, media: media, request: request)
+            } else {
+                mediaEffect.setMedia(media: .idle)
+            }
+        }
+        moblinCloudSendMedia()
+        moblinCloudTryNextMedia()
+    }
+
+    func moblinCloudSendMedia(force: Bool = false) {
+        let media = getMoblinCloudMediaEffect().map { _ in
+            RemoteControlMoblinCloudMedia(
+                paused: moblinCloudMediaPaused,
+                playing: moblinCloudMediaPlaying?.requestId,
+                queued: moblinCloudMedia.map(\.requestId)
+            )
+        }
+        guard force || media != moblinCloudMediaSent else {
+            return
+        }
+        moblinCloudMediaSent = media
+        moblinCloud?.sendMedia(media: media)
+    }
+
+    func moblinCloudSetMediaPaused(on: Bool) {
+        moblinCloudMediaPaused = on
+        moblinCloudSendMedia()
+        moblinCloudTryNextMedia()
+    }
+
+    func moblinCloudTryNextMedia() {
+        guard moblinCloudMediaPlaying == nil,
+              !moblinCloudMediaPaused,
+              let effect = getMoblinCloudMediaEffect(),
+              effect.isLoaded
+        else {
+            return
+        }
+        while let media = moblinCloudMedia.popFirst() {
+            guard let request = media.request() else {
+                continue
+            }
+            var text = String(localized: "Requested a video")
+            if !media.message.isEmpty {
+                text += ": \(media.message)"
+            }
+            moblinCloudAppendChatMessage(name: media.name, text: text)
+            moblinCloudStartMedia(effect: effect, media: media, request: request)
+            break
+        }
+        moblinCloudSendMedia()
+    }
+
+    private func moblinCloudStartMedia(effect: BrowserEffect, media: MoblinCloudMedia, request: URLRequest) {
+        moblinCloudMediaPlaying = media
+        moblinCloudMediaStarted = false
+        moblinCloudMediaEndedTimer.stop()
+        moblinCloudMediaTimer.startSingleShot(timeout: 20) {
+            self.moblinCloudMediaEnded()
+        }
+        effect.setMedia(media: .playing(request: request))
+    }
+
+    private func moblinCloudMediaVideoPlaying(playing: Bool) {
+        guard let media = moblinCloudMediaPlaying else {
+            return
+        }
+        if playing {
+            moblinCloudMediaEndedTimer.stop()
+            if !moblinCloudMediaStarted {
+                moblinCloudMediaStarted = true
+                moblinCloudMediaTimer.startSingleShot(timeout: Double(media.duration) + 15) {
+                    self.moblinCloudMediaEnded()
+                }
+            }
+        } else if moblinCloudMediaStarted {
+            moblinCloudMediaEndedTimer.startSingleShot(timeout: 3) {
+                self.moblinCloudMediaEnded()
+            }
+        }
+    }
+
+    func moblinCloudMediaEnded() {
+        guard moblinCloudMediaPlaying != nil else {
+            return
+        }
+        moblinCloudMediaPlaying = nil
+        moblinCloudMediaTimer.stop()
+        moblinCloudMediaEndedTimer.stop()
+        getMoblinCloudMediaEffect()?.setMedia(media: .idle)
+        moblinCloudTryNextMedia()
+        moblinCloudSendMedia()
+    }
+
     func moblinCloudPlayTipAlert(name: String, message: String, amount: String, currency: String) {
         guard let id = database.moblinCloud.alertsWidgetId,
               let effect = getAlertsEffect(id: id),
@@ -343,6 +500,20 @@ extension Model {
             moblinCloudTipEffect(name: name, message: message, sound: sound)
         case let .wheelOfLuck(count: count):
             moblinCloudTipWheelOfLuck(name: name, message: message, count: count)
+        case let .youTube(videoId: videoId, start: start, duration: duration):
+            guard moblinCloudMedia.count < 100 else {
+                return
+            }
+            moblinCloudMedia.append(MoblinCloudMedia(
+                requestId: requestId,
+                name: name,
+                message: message,
+                videoId: videoId,
+                start: start,
+                duration: min(max(duration, 1), 600)
+            ))
+            moblinCloudTryNextMedia()
+            moblinCloudSendMedia()
         }
     }
 
@@ -487,6 +658,10 @@ class MoblinCloud {
         streamer?.sendIcon(id: id)
     }
 
+    func sendMedia(media: RemoteControlMoblinCloudMedia?) {
+        streamer?.sendMedia(media: media)
+    }
+
     func stateChanged(state: RemoteControlState) {
         guard requestingStatus else {
             return
@@ -540,6 +715,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.updateMoblinCloudStatus()
         model?.moblinCloudSendWheelOfLuck()
         model?.moblinCloudSendIcon()
+        model?.moblinCloudSendMedia(force: true)
     }
 
     func remoteControlStreamerDisconnected() {
@@ -650,6 +826,18 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: UUID?) {
         model?.remoteControlSetMoblinCloudWheelOfLuckWidget(id: id)
+    }
+
+    func remoteControlStreamerSetMoblinCloudMediaWidget(id: UUID?) {
+        model?.remoteControlSetMoblinCloudMediaWidget(id: id)
+    }
+
+    func remoteControlStreamerSetMoblinCloudMediaPaused(on: Bool) {
+        model?.moblinCloudSetMediaPaused(on: on)
+    }
+
+    func remoteControlStreamerSkipMoblinCloudMedia() {
+        model?.moblinCloudMediaEnded()
     }
 
     func remoteControlStreamerTwitchEventSubNotification(message _: String) {}

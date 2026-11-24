@@ -345,6 +345,7 @@ extension Model {
         updateSpeechToText(drawnWidgets: resolver.resolve(scene, includeRemote: true).localDrawnWidgets()
             .map(\.widget))
         updateWidgetOutlines(resolver: resolver)
+        moblinCloudTryNextMedia()
     }
 
     func getSceneName(id: UUID?) -> String? {
@@ -1205,6 +1206,7 @@ extension Model {
             effect.effects = widget.getEffects(model: self)
             browserEffects[widget.id] = effect
         }
+        moblinCloudMediaWidgetUpdated()
     }
 
     private func resetMapVideoEffects(widgets: [SettingsWidget]) {

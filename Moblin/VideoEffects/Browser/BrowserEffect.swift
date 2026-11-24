@@ -54,6 +54,11 @@ private func addScript(_ configuration: WKWebViewConfiguration,
     ))
 }
 
+enum BrowserEffectMedia {
+    case idle
+    case playing(request: URLRequest)
+}
+
 class BrowserEffectMinimized: ObservableObject {
     @Published var value = false
 }
@@ -82,6 +87,8 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private var stopped = false
     private var suspended: Bool
     private let snapshotConfiguration: WKSnapshotConfiguration
+    private var media: BrowserEffectMedia?
+    var onVideoPlaying: (@MainActor (Bool) -> Void)?
     private let userContentController: WKUserContentController
     let localOnly: Bool
     let minimized = BrowserEffectMinimized()
@@ -203,8 +210,30 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         guard isLoaded else {
             return
         }
+        load()
+    }
+
+    func isMedia() -> Bool {
+        media != nil
+    }
+
+    @MainActor
+    func setMedia(media: BrowserEffectMedia?) {
+        self.media = media
+        reload()
+    }
+
+    @MainActor
+    private func load() {
         startLoadingTime = .now
-        webView.load(URLRequest(url: url))
+        switch media {
+        case nil:
+            webView.load(URLRequest(url: url))
+        case .idle?:
+            webView.loadHTMLString("<html></html>", baseURL: nil)
+        case let .playing(request: request)?:
+            webView.load(request)
+        }
     }
 
     @MainActor
@@ -293,8 +322,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
             self.crops = crops
         }
         if !isLoaded {
-            startLoadingTime = .now
-            webView.load(URLRequest(url: url))
+            load()
             server.enable()
             isLoaded = true
         }
@@ -390,6 +418,7 @@ extension BrowserEffect: BrowserEffectServerDelegate {
         if mode != .audioOnly {
             resumeTakeSnapshots()
         }
+        onVideoPlaying?(true)
     }
 
     func browserEffectServerVideoEnded() {
@@ -399,5 +428,6 @@ extension BrowserEffect: BrowserEffectServerDelegate {
         } else {
             suspendTakeSnapshots()
         }
+        onVideoPlaying?(false)
     }
 }

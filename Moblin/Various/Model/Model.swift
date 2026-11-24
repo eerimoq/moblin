@@ -732,6 +732,13 @@ final class Model: NSObject, ObservableObject {
     var moblinCloudTipEffects: Deque<(String, String, URL)> = []
     var moblinCloudTipEffectPlayer: AudioPlayer?
     let moblinCloudTipEffectTimer = MainTimer()
+    var moblinCloudMedia: Deque<MoblinCloudMedia> = []
+    var moblinCloudMediaPlaying: MoblinCloudMedia?
+    var moblinCloudMediaStarted = false
+    var moblinCloudMediaPaused = false
+    var moblinCloudMediaSent: RemoteControlMoblinCloudMedia?
+    let moblinCloudMediaTimer = MainTimer()
+    let moblinCloudMediaEndedTimer = MainTimer()
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
     var isRemoteControlAssistantRequestingStats = false
