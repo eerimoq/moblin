@@ -261,7 +261,7 @@ extension Model {
     }
 
     func updateTwitchStream(monotonicNow: ContinuousClock.Instant) {
-        guard isLive, isTwitchViewersConfigured() else {
+        guard isTwitchViewersConfigured() else {
             twitchPlatformStatus = .unknown
             return
         }

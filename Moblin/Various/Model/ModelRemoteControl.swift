@@ -476,7 +476,7 @@ extension Model {
         if isChatConfigured() {
             topLeft.chat = RemoteControlStatusItem(message: statusTopLeft.statusChatText)
         }
-        if isViewersConfigured(), isLive {
+        if isViewersConfigured() {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
         }
         return topLeft

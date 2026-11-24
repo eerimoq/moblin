@@ -3243,7 +3243,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isShowingStatusViewers() -> Bool {
-        isLive && database.show.viewers && !statusTopLeft.streamingPlatformStatuses.isEmpty
+        database.show.viewers && !statusTopLeft.streamingPlatformStatuses.isEmpty
     }
 
     private func statusStreamText() -> String {
