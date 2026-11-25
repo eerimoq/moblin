@@ -64,7 +64,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private var snapshotQueue: Deque<EffectImageCgImage> = []
     let width: Double
     let height: Double
-    private let url: URL
+    private var request: URLRequest?
     private(set) var isLoaded: Bool
     @Published private(set) var layout: SettingsWidgetLayout?
     private let mode: SettingsWidgetBrowserMode
@@ -81,20 +81,21 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private var stopped = false
     private var suspended: Bool
     private let snapshotConfiguration: WKSnapshotConfiguration
+    var onVideoPlaying: (@MainActor (Bool) -> Void)?
     private let userContentController: WKUserContentController
     let localOnly: Bool
     let minimized = BrowserEffectMinimized()
 
     @MainActor
     init(
-        url: URL,
+        request: URLRequest,
         styleSheet: String,
         widget: SettingsWidgetBrowser,
         moblinAccess: Bool,
         proxyServer: NWEndpoint?
     ) {
         scale = screenScale()
-        self.url = url
+        self.request = request
         baseFps = Double(widget.baseFps)
         fps = baseFps
         isLoaded = false
@@ -189,11 +190,17 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     }
 
     @MainActor
+    func setRequest(request: URLRequest?) {
+        self.request = request
+        reload()
+    }
+
+    @MainActor
     func reload() {
         guard isLoaded else {
             return
         }
-        webView.load(URLRequest(url: url))
+        load()
     }
 
     @MainActor
@@ -203,7 +210,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         if sceneWidget != nil || !crops.isEmpty {
             setSceneWidgetEnabled(sceneWidget: sceneWidget, crops: crops)
         } else if isLoaded {
-            setSceneWidgetLoaded()
+            setSceneWidgetDisabled()
         }
     }
 
@@ -263,6 +270,20 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         return image
     }
 
+    @MainActor
+    private func load() {
+        if let request {
+            webView.load(request)
+        } else {
+            loadBlankPage()
+        }
+    }
+
+    @MainActor
+    private func loadBlankPage() {
+        webView.loadHTMLString("<html></html>", baseURL: nil)
+    }
+
     private func nextSnapshot() -> EffectImageCgImage? {
         if let snapshot = snapshotQueue.popFirst() {
             self.snapshot = snapshot
@@ -282,7 +303,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
             self.crops = crops
         }
         if !isLoaded {
-            webView.load(URLRequest(url: url))
+            load()
             server.enable()
             isLoaded = true
         }
@@ -291,11 +312,11 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     }
 
     @MainActor
-    private func setSceneWidgetLoaded() {
+    private func setSceneWidgetDisabled() {
         processorPipelineQueue.async {
             self.clearSnapshots()
         }
-        webView.loadHTMLString("<html></html>", baseURL: nil)
+        loadBlankPage()
         server.disable()
         isLoaded = false
     }
@@ -378,6 +399,7 @@ extension BrowserEffect: BrowserEffectServerDelegate {
         if mode != .audioOnly {
             resumeTakeSnapshots()
         }
+        onVideoPlaying?(true)
     }
 
     func browserEffectServerVideoEnded() {
@@ -387,5 +409,6 @@ extension BrowserEffect: BrowserEffectServerDelegate {
         } else {
             suspendTakeSnapshots()
         }
+        onVideoPlaying?(false)
     }
 }

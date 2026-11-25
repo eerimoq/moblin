@@ -650,6 +650,8 @@ class RemoteControlAssistant: NSObject {
             break
         case .icon:
             break
+        case .mediaShare:
+            break
         case let .stats(data: data):
             delegate?.remoteControlAssistantStats(data: data)
         }

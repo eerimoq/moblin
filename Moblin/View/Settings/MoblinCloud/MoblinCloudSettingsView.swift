@@ -103,6 +103,26 @@ struct MoblinCloudSettingsView: View {
                 """)
             }
             Section {
+                Picker("Media share", selection: $moblinCloud.mediaWidgetId) {
+                    Text("-- None --")
+                        .tag(nil as UUID?)
+                    ForEach(database.widgets.filter { $0.type == .browser }) {
+                        Text($0.name)
+                            .tag($0.id as UUID?)
+                    }
+                }
+                .onChange(of: moblinCloud.mediaWidgetId) { _ in
+                    model.moblinCloudMediaShareWidgetUpdated()
+                }
+            } footer: {
+                Text("""
+                Browser widget that plays the YouTube videos and Twitch clips viewers \
+                request, instead of its own page. Viewers can only request them while one is picked. \
+                Sign in to YouTube in Moblin's browser to play videos with your account. Create one \
+                in Settings → Scenes and add it to the scenes you stream with.
+                """)
+            }
+            Section {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
                     value: moblinCloud.url,

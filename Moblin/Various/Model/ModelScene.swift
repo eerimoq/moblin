@@ -1192,11 +1192,11 @@ extension Model {
         }
         browserEffects.removeAll()
         for widget in widgets where widget.type == .browser {
-            guard let url = URL(string: widget.browser.url) else {
+            guard let request = widget.browser.getRequest() else {
                 continue
             }
             let effect = BrowserEffect(
-                url: url,
+                request: request,
                 styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
                 moblinAccess: widget.browser.moblinAccess,
@@ -1205,6 +1205,7 @@ extension Model {
             effect.effects = widget.getEffects(model: self)
             browserEffects[widget.id] = effect
         }
+        moblinCloudMediaShareEffectsReset()
     }
 
     private func resetMapVideoEffects(widgets: [SettingsWidget]) {

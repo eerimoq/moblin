@@ -1080,6 +1080,13 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         speechToText = container.decode(.speechToText, Bool.self, false)
         localOnly = container.decode(.localOnly, Bool.self, false)
     }
+
+    func getRequest() -> URLRequest? {
+        guard let url = URL(string: url) else {
+            return nil
+        }
+        return URLRequest(url: url)
+    }
 }
 
 class SettingsWidgetMap: Codable {

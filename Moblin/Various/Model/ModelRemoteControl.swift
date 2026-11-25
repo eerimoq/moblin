@@ -742,7 +742,8 @@ extension Model {
         let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
         let moblinCloud = RemoteControlSettingsMoblinCloud(
             alertsWidgetId: database.moblinCloud.alertsWidgetId,
-            wheelOfLuckWidgetId: database.moblinCloud.wheelOfLuckWidgetId
+            wheelOfLuckWidgetId: database.moblinCloud.wheelOfLuckWidgetId,
+            mediaShareWidgetId: database.moblinCloud.mediaWidgetId
         )
         return RemoteControlSettings(
             streams: streams,
@@ -1031,6 +1032,14 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: UUID?) {
         remoteControlSetMoblinCloudWheelOfLuckWidget(id: id)
+    }
+
+    func remoteControlStreamerSetMoblinCloudMediaShareWidget(id: UUID?) {
+        remoteControlSetMoblinCloudMediaShareWidget(id: id)
+    }
+
+    func remoteControlStreamerSkipMoblinCloudMediaShare() {
+        moblinCloudMediaShareEnded(reason: .skipped)
     }
 
     func remoteControlStreamerSetSrtConnectionPriority(

@@ -95,6 +95,8 @@ enum RemoteControlRequest: Codable {
     case getVideoSourceSnapshot(id: UUID)
     case setMoblinCloudAlertsWidget(id: UUID?)
     case setMoblinCloudWheelOfLuckWidget(id: UUID?)
+    case setMoblinCloudMediaShareWidget(id: UUID?)
+    case skipMoblinCloudMediaShare
     case showTally(message: String, background: RgbColor, foreground: RgbColor)
     case hideTally
 }
@@ -103,6 +105,12 @@ enum RemoteControlTipKind: Codable {
     case message(amount: String, currency: String)
     case effect(sound: String)
     case wheelOfLuck(count: Int)
+    case mediaShare(source: RemoteControlMediaShareSource, duration: Int)
+}
+
+enum RemoteControlMediaShareSource: Codable {
+    case youTube(videoId: String, start: Int)
+    case twitchClip(slug: String)
 }
 
 enum RemoteControlResponse: Codable {
@@ -137,6 +145,25 @@ enum RemoteControlEvent: Codable {
     case stats(data: RemoteControlStats)
     case wheelOfLuck(wheel: RemoteControlWheelOfLuck?)
     case icon(id: String)
+    case mediaShare(state: RemoteControlMediaShareState)
+}
+
+enum RemoteControlMediaShareState: Codable {
+    case unavailable
+    case idle(lastEnded: RemoteControlMediaShareEnded?)
+    case playing(requestId: String)
+}
+
+struct RemoteControlMediaShareEnded: Codable {
+    let requestId: String
+    let reason: RemoteControlMediaShareEndedReason
+}
+
+enum RemoteControlMediaShareEndedReason: Codable {
+    case finished
+    case skipped
+    case failedToStart
+    case timedOut
 }
 
 struct RemoteControlWheelOfLuckOption: Codable, Equatable {
@@ -1077,6 +1104,7 @@ struct RemoteControlEditorOptions: Codable {
 struct RemoteControlSettingsMoblinCloud: Codable {
     let alertsWidgetId: UUID?
     let wheelOfLuckWidgetId: UUID?
+    let mediaShareWidgetId: UUID?
 }
 
 struct RemoteControlSettings: Codable {
