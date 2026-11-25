@@ -845,6 +845,7 @@ private struct SceneEditorToolbarView: View {
                 .padding(4)
             }
         }
+        .scrollBounceBehavior(.basedOnSize, axes: vertical ? .vertical : .horizontal)
         .frame(width: vertical ? 52 : nil, height: vertical ? nil : 52)
     }
 }
