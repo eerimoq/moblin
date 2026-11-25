@@ -5,12 +5,11 @@ class MoblinCanvasDrawer {
     this.canvas.width = 0;
     this.canvas.height = 0;
     this.canvas.style.position = "absolute";
-    this.canvas.style.zIndex = -9999;
     this.canvas.style.pointerEvents = "none";
     this.canvasContext = this.canvas.getContext("2d");
     this.videoFrameCallbackId = null;
     this.isPlaying = false;
-    document.body.appendChild(this.canvas);
+    this.video.after(this.canvas);
     this.timer = setInterval(() => {
       this.handleTimer();
     }, 100);
@@ -49,20 +48,35 @@ class MoblinCanvasDrawer {
   }
 
   positionCanvas = () => {
-    const rect = this.video.getBoundingClientRect();
-    this.canvas.width = this.video.videoWidth;
-    this.canvas.height = this.video.videoHeight;
-    this.canvas.style.left = rect.left + window.scrollX + "px";
-    this.canvas.style.top = rect.top + window.scrollY + "px";
-    this.canvas.style.width = rect.width + "px";
-    this.canvas.style.height = rect.height + "px";
+    if (this.canvas.previousSibling !== this.video) {
+      this.video.after(this.canvas);
+    }
+    const style = getComputedStyle(this.video);
+    this.canvas.style.zIndex = style.zIndex;
+    this.canvas.style.objectFit = style.objectFit;
+    this.canvas.style.left = this.video.offsetLeft + "px";
+    this.canvas.style.top = this.video.offsetTop + "px";
+    this.canvas.style.width = this.video.offsetWidth + "px";
+    this.canvas.style.height = this.video.offsetHeight + "px";
+  };
+
+  resizeCanvas = () => {
+    if (this.canvas.width !== this.video.videoWidth) {
+      this.canvas.width = this.video.videoWidth;
+    }
+    if (this.canvas.height !== this.video.videoHeight) {
+      this.canvas.height = this.video.videoHeight;
+    }
   };
 
   handleVideoFrame = () => {
     if (this.canvasContext === null) {
       return;
     }
-    this.positionCanvas();
+    if (!this.isPlaying) {
+      this.positionCanvas();
+    }
+    this.resizeCanvas();
     this.canvasContext.drawImage(
       this.video,
       0,
