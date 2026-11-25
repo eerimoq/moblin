@@ -297,13 +297,11 @@ class SystemMonitor: ObservableObject {
 
 @MainActor
 class StatusTopRight: ObservableObject {
-    @Published var browserWidgetsStatusChanged = false
     @Published var remoteControlOk = false
     @Published var remoteControlStatus = noValue
     @Published var moblinCloudOk = false
     @Published var moblinCloudStatus = noValue
     @Published var djiDevicesStatus = noValue
-    @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
     @Published var workoutDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
@@ -1920,7 +1918,6 @@ final class Model: NSObject, ObservableObject {
         updateLocation()
         updateObsSourceScreenshot()
         updateObsAudioVolume()
-        updateBrowserWidgetStatus()
         logStatus()
         updateDebugOverlay()
         updateDistance()
@@ -2520,32 +2517,6 @@ final class Model: NSObject, ObservableObject {
 
     func seventvEmotesEnabledUpdated() {
         reloadChats()
-    }
-
-    func updateBrowserWidgetStatus() {
-        if statusTopRight.browserWidgetsStatusChanged {
-            statusTopRight.browserWidgetsStatusChanged = false
-        }
-        var messages: [String] = []
-        for browser in browsers {
-            let progress = browser.browserEffect.progress
-            if browser.browserEffect.isLoaded {
-                messages.append("\(browser.browserEffect.host): \(progress)%")
-                if progress != 100 || browser.browserEffect.startLoadingTime + .seconds(5) > .now,
-                   !statusTopRight.browserWidgetsStatusChanged
-                {
-                    statusTopRight.browserWidgetsStatusChanged = true
-                }
-            }
-        }
-        let message: String = if messages.isEmpty {
-            noValue
-        } else {
-            messages.joined(separator: ", ")
-        }
-        if statusTopRight.browserWidgetsStatus != message {
-            statusTopRight.browserWidgetsStatus = message
-        }
     }
 
     func reloadViewers() {
@@ -3359,10 +3330,6 @@ final class Model: NSObject, ObservableObject {
         stream.replay.enabled && !isChatPhone()
     }
 
-    func isShowingStatusBrowserWidgets() -> Bool {
-        database.show.browserWidgets && isStatusBrowserWidgetsActive() && !isChatPhone()
-    }
-
     func isShowingStatusCatPrinter() -> Bool {
         database.show.catPrinter && isAnyCatPrinterConfigured()
     }
@@ -3379,10 +3346,6 @@ final class Model: NSObject, ObservableObject {
         } else {
             false
         }
-    }
-
-    func isStatusBrowserWidgetsActive() -> Bool {
-        !statusTopRight.browserWidgetsStatus.isEmpty && statusTopRight.browserWidgetsStatusChanged
     }
 
     func isShowingStatusCpu() -> Bool {

@@ -73,7 +73,6 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private let snapshotTimer = MainTimer()
     private var snapshotInProgress = false
     private var nextSnapshotTime = ContinuousClock.now
-    var startLoadingTime = ContinuousClock.now
     private let scale: Double
     private var sceneWidget: SettingsSceneWidget?
     private var crops: [WidgetCrop] = []
@@ -178,15 +177,6 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         server.sendSpeechToTextClear()
     }
 
-    var host: String {
-        url.host() ?? "?"
-    }
-
-    @MainActor
-    var progress: Int {
-        Int(100 * webView.estimatedProgress)
-    }
-
     @MainActor
     func stop() {
         stopTakeSnapshots()
@@ -203,7 +193,6 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         guard isLoaded else {
             return
         }
-        startLoadingTime = .now
         webView.load(URLRequest(url: url))
     }
 
@@ -293,7 +282,6 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
             self.crops = crops
         }
         if !isLoaded {
-            startLoadingTime = .now
             webView.load(URLRequest(url: url))
             server.enable()
             isLoaded = true

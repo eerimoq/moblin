@@ -410,23 +410,6 @@ private struct RecordingStatusView: View {
     }
 }
 
-private struct BrowserWidgetsStatusView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var show: SettingsShow
-    let browserWidgetsStatus: String
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    var body: some View {
-        if model.isShowingStatusBrowserWidgets() {
-            StreamOverlayIconAndTextView(
-                icon: "globe",
-                text: browserWidgetsStatus,
-                textPlacement: textPlacement
-            )
-        }
-    }
-}
-
 private struct CatPrinterStatusView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
@@ -611,11 +594,6 @@ private struct StatusesView: View {
         RecordingStatusView(
             show: model.database.show,
             recording: model.recording,
-            textPlacement: textPlacement
-        )
-        BrowserWidgetsStatusView(
-            show: model.database.show,
-            browserWidgetsStatus: status.browserWidgetsStatus,
             textPlacement: textPlacement
         )
         CatPrinterStatusView(

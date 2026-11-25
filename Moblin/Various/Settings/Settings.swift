@@ -166,7 +166,6 @@ class SettingsShow: Codable, ObservableObject {
     @Published var location: Bool = false
     @Published var remoteControl: Bool = true
     @Published var moblinCloud: Bool = true
-    @Published var browserWidgets: Bool = true
     @Published var bonding: Bool = true
     @Published var events: Bool = true
     @Published var djiDevices: Bool = true
@@ -197,7 +196,6 @@ class SettingsShow: Codable, ObservableObject {
         case location
         case remoteControl
         case moblinCloud
-        case browserWidgets
         case bonding
         case events
         case djiDevices
@@ -228,7 +226,6 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.location, location)
         try container.encode(.remoteControl, remoteControl)
         try container.encode(.moblinCloud, moblinCloud)
-        try container.encode(.browserWidgets, browserWidgets)
         try container.encode(.bonding, bonding)
         try container.encode(.events, events)
         try container.encode(.djiDevices, djiDevices)
@@ -259,7 +256,6 @@ class SettingsShow: Codable, ObservableObject {
         location = container.decode(.location, Bool.self, false)
         remoteControl = container.decode(.remoteControl, Bool.self, true)
         moblinCloud = container.decode(.moblinCloud, Bool.self, true)
-        browserWidgets = container.decode(.browserWidgets, Bool.self, true)
         bonding = container.decode(.bonding, Bool.self, true)
         events = container.decode(.events, Bool.self, true)
         djiDevices = container.decode(.djiDevices, Bool.self, true)

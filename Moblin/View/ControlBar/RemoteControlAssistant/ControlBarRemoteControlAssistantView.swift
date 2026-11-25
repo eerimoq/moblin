@@ -316,7 +316,6 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                     StatusItemView(icon: "phone.connection", status: status.srtlaRtts)
                     StatusItemView(icon: "record.circle", status: status.recording)
                     StatusItemView(icon: "play", status: status.replay)
-                    StatusItemView(icon: "globe", status: status.browserWidgets)
                 }
             } else {
                 Text("No status received yet.")

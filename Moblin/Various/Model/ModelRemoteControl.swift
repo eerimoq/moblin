@@ -532,9 +532,6 @@ extension Model {
         if stream.replay.enabled {
             topRight.replay = RemoteControlStatusItem(message: String(localized: "Enabled"))
         }
-        if isStatusBrowserWidgetsActive() {
-            topRight.browserWidgets = RemoteControlStatusItem(message: statusTopRight.browserWidgetsStatus)
-        }
         if isAnyMoblinkConfigured() {
             topRight.moblink = RemoteControlStatusItem(message: moblink.status)
         }

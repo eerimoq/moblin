@@ -972,7 +972,6 @@ struct RemoteControlStatusTopRight: Codable {
     var srtlaRtts: RemoteControlStatusItem?
     var recording: RemoteControlStatusItem?
     var replay: RemoteControlStatusItem?
-    var browserWidgets: RemoteControlStatusItem?
     var moblink: RemoteControlStatusItem?
     var djiDevices: RemoteControlStatusItem?
     var systemMonitor: RemoteControlStatusItem?
