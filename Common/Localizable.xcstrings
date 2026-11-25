@@ -11647,7 +11647,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "<reaction> ist hearts, fireworks, balloons, confetti, lasers, glasses, sparkle, pope, pizzachef oder poop."
           }
         },
@@ -30106,8 +30106,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konto"
+            "state" : "translated",
+            "value" : "Account"
           }
         },
         "eo" : {
@@ -30546,7 +30546,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Actionkamera"
           }
         },
@@ -31122,7 +31122,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Adaptiv"
           }
         },
@@ -32298,7 +32298,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "hinzugefügt von %@"
           }
         },
@@ -32442,7 +32442,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird zur Ausgangsverstärkung addiert, wenn das Mikrofon ausgewählt ist."
           }
         },
@@ -33030,7 +33030,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Alarm-Widget, das Nachrichten im Stream anzeigt. Nachrichten erscheinen immer im Chat. Erstelle eines unter Einstellungen → Szenen und füge es den Szenen hinzu, mit denen du streamst."
           }
         },
@@ -34648,7 +34648,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Höhe"
           }
         },
@@ -34790,7 +34790,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Immer"
           }
         },
@@ -37150,7 +37150,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ankündigen"
           }
         },
@@ -42298,7 +42298,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Automatisch ins Hochformat drehen"
           }
         },
@@ -44803,7 +44803,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lade Quick Button-Snapshots und Chatbot-Snapshots automatisch in Kanäle auf deinem Discord-Server hoch."
+            "value" : "Lade Schnelltasten-Snapshots und Chatbot-Snapshots automatisch in Kanäle auf deinem Discord-Server hoch."
           }
         },
         "eo" : {
@@ -44950,7 +44950,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Automatisierung"
           }
         },
@@ -47308,7 +47308,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Backup"
           }
         },
@@ -49218,7 +49218,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bin gleich zurück"
           }
         },
@@ -53060,7 +53060,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Blockieren"
           }
         },
@@ -53202,7 +53202,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bluetooth"
           }
         },
@@ -57314,7 +57314,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Browserquelle"
           }
         },
@@ -58494,7 +58494,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kaufen"
           }
         },
@@ -61436,7 +61436,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Auto"
           }
         },
@@ -62318,7 +62318,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mobilfunk"
           }
         },
@@ -63196,7 +63196,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kanal"
           }
         },
@@ -67924,7 +67924,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Warteschlange leeren"
           }
         },
@@ -68066,7 +68066,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Warteschlange leeren."
           }
         },
@@ -68208,7 +68208,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Clip"
           }
         },
@@ -77338,7 +77338,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Verbindung zum Server nicht möglich. Prüfe die URL und das Netzwerk."
           }
         },
@@ -78960,7 +78960,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Szene erstellen"
           }
         },
@@ -79104,7 +79104,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Assistent zum Erstellen von Szenen"
           }
         },
@@ -79542,7 +79542,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Widget erstellen"
           }
         },
@@ -82630,7 +82630,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pfad der benutzerdefinierten URL ist nicht leer"
           }
         },
@@ -82774,7 +82774,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Query der benutzerdefinierten URL fehlt"
           }
         },
@@ -83064,7 +83064,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Radfahren"
           }
         },
@@ -85866,7 +85866,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Szene %@ löschen?"
           }
         },
@@ -86008,7 +86008,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Widget löschen"
           }
         },
@@ -88810,7 +88810,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Deaktivierte Szene"
           }
         },
@@ -92060,7 +92060,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Spenden"
           }
         },
@@ -94708,7 +94708,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ElevenLabs"
           }
         },
@@ -94850,7 +94850,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Emoji"
           }
         },
@@ -95584,7 +95584,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Leere Warteschlange"
           }
         },
@@ -95728,7 +95728,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Leere Bridge-ID des Fernsteuerungs-Relays"
           }
         },
@@ -99408,7 +99408,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Endet %@"
           }
         },
@@ -101026,7 +101026,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ethernet"
           }
         },
@@ -101904,7 +101904,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird ausgeführt, wenn das Rad bei dieser Option stehen bleibt."
           }
         },
@@ -102782,7 +102782,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Belichtung"
           }
         },
@@ -105424,7 +105424,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Snapshot von der Web-Fernsteuerung konnte nicht abgerufen werden"
           }
         },
@@ -107778,7 +107778,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Snapshot konnte nicht in Fotos gesichert werden"
           }
         },
@@ -109392,7 +109392,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fallback"
           }
         },
@@ -109830,7 +109830,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lüfter"
           }
         },
@@ -110714,7 +110714,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BTTV-, FFZ- und 7TV-Emotes erneut abrufen, zum Beispiel nachdem der Kanal neue hinzugefügt hat."
           }
         },
@@ -117368,7 +117368,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bildrate"
           }
         },
@@ -118842,7 +118842,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Verstärkungen"
           }
         },
@@ -119576,7 +119576,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gamepad"
           }
         },
@@ -119862,7 +119862,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "hat dir einen Shoutout an %lld Zuschauer gegeben!"
           }
         },
@@ -120746,7 +120746,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Erste Schritte"
           }
         },
@@ -125626,7 +125626,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Farbkorrektur"
           }
         },
@@ -126356,7 +126356,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Haptik"
           }
         },
@@ -126498,7 +126498,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Herzfrequenz"
           }
         },
@@ -127530,7 +127530,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ausblenden"
           }
         },
@@ -130192,7 +130192,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tastenkürzel"
           }
         },
@@ -130334,7 +130334,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hotspot"
           }
         },
@@ -136064,7 +136064,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Intensität und Schärfe von 1 bis 100, Standard 100 und 50."
           }
         },
@@ -136354,7 +136354,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Intercom"
           }
         },
@@ -136794,7 +136794,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ungültige URL für Chatbot-Snapshot der Web-Fernsteuerung"
           }
         },
@@ -137086,7 +137086,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ungültiger Port des Fernsteuerungs-Assistenten"
           }
         },
@@ -140610,7 +140610,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Halte den Moblin-Cloud-Schlüssel geheim."
           }
         },
@@ -141494,7 +141494,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Keyframe"
           }
         },
@@ -142948,7 +142948,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Querformat"
           }
         },
@@ -143534,7 +143534,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Groß"
           }
         },
@@ -145308,7 +145308,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lass Zuschauer von deiner eigenen Seite aus mit deinem Stream interagieren."
           }
         },
@@ -145598,7 +145598,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lizenz"
           }
         },
@@ -148828,7 +148828,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Melde dich bei Twitch oder Kick an, um Chatnachrichten zu senden"
           }
         },
@@ -149118,7 +149118,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Protokolle"
           }
         },
@@ -149410,8 +149410,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lautheit"
+            "state" : "translated",
+            "value" : "Lautstärke"
           }
         },
         "eo" : {
@@ -156038,7 +156038,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Maximales Keyframe-Intervall außerhalb des Bereichs"
           }
         },
@@ -158548,7 +158548,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nachricht nicht gesendet"
           }
         },
@@ -159724,7 +159724,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mikrofon"
           }
         },
@@ -163392,7 +163392,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin Cloud"
           }
         },
@@ -163536,8 +163536,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin-Cloud-API-Server. Standard ist %@."
+            "state" : "translated",
+            "value" : "Moblin Cloud API-Server. Standard ist %@."
           }
         },
         "eo" : {
@@ -163680,8 +163680,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin-Cloud-Schlüssel"
+            "state" : "translated",
+            "value" : "Moblin Cloud Schlüssel"
           }
         },
         "eo" : {
@@ -167504,8 +167504,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Die meisten VRM-0.x- und 1.0-Dateien sowie gezippte Live2D-Cubism-Modelle werden unterstützt."
+            "state" : "translated",
+            "value" : "Die meisten VRM-0.x- und 1.0-Dateien sowie gezippte Live2D Cubism Modelle werden unterstützt."
           }
         },
         "eo" : {
@@ -180340,7 +180340,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Keine Ergebnisse"
           }
         },
@@ -181666,7 +181666,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kein Widget ausgewählt"
           }
         },
@@ -181810,7 +181810,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Keine Widgets in dieser Szene"
           }
         },
@@ -183429,7 +183429,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nicht angefangen"
+            "value" : "Nicht gestartet"
           }
         },
         "eo" : {
@@ -186092,7 +186092,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Eine Reihe"
           }
         },
@@ -186820,7 +186820,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nur beim Drehen anzeigen"
           }
         },
@@ -188880,7 +188880,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ausrichtung"
           }
         },
@@ -190936,7 +190936,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Überhitzung"
           }
         },
@@ -191078,7 +191078,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Overlay"
           }
         },
@@ -194621,7 +194621,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Telefon"
           }
         },
@@ -194911,7 +194911,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Foto"
           }
         },
@@ -195341,7 +195341,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wähle das Alarm-Widget, das Nachrichten anzeigt, und das Glücksrad-Widget, das Zuschauer drehen."
           }
         },
@@ -195483,7 +195483,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bild-in-Bild"
           }
         },
@@ -196359,7 +196359,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pizzabäcker"
           }
         },
@@ -196501,7 +196501,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Plattform"
           }
         },
@@ -197241,7 +197241,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hat %@ abgespielt"
           }
         },
@@ -198715,7 +198715,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tasche"
           }
         },
@@ -199443,8 +199443,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kacke"
+            "state" : "translated",
+            "value" : "Kothaufen"
           }
         },
         "eo" : {
@@ -199585,7 +199585,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Papst"
           }
         },
@@ -204905,7 +204905,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Datenschutz"
           }
         },
@@ -205491,7 +205491,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Producer"
           }
         },
@@ -206809,7 +206809,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Qualität"
           }
         },
@@ -206951,7 +206951,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Warteschlange"
           }
         },
@@ -207095,8 +207095,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Seite der Schnellschaltfläche außerhalb des Bereichs"
+            "state" : "translated",
+            "value" : "Seite der Schnelltasten außerhalb des Bereichs"
           }
         },
         "eo" : {
@@ -210195,7 +210195,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vorlesen"
           }
         },
@@ -210339,7 +210339,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Anleitung lesen"
           }
         },
@@ -210777,7 +210777,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Empfangen"
           }
         },
@@ -213287,7 +213287,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Emotes neu laden"
           }
         },
@@ -215053,7 +215053,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Widget aus Szene entfernen"
           }
         },
@@ -219191,7 +219191,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wiederherstellen"
           }
         },
@@ -219929,7 +219929,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ergebnisse"
           }
         },
@@ -222139,7 +222139,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Drehen"
           }
         },
@@ -222283,7 +222283,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dreht die Benutzeroberfläche ins Hochformat, wenn das Gerät im Hochformat gehalten wird."
           }
         },
@@ -227285,8 +227285,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Scanne den QR-Code im Moblin-Bereich des Dashboards oder füge unten deinen Moblin-Cloud-Schlüssel ein."
+            "state" : "translated",
+            "value" : "Scanne den QR-Code im Moblin Bereich des Dashboards oder füge unten deinen Moblin Cloud Schlüssel ein."
           }
         },
         "eo" : {
@@ -227723,7 +227723,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Szeneneditor"
           }
         },
@@ -230089,7 +230089,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Screenshot"
           }
         },
@@ -239520,7 +239520,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Einstellungen teilen"
           }
         },
@@ -240100,7 +240100,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kurzbefehle"
           }
         },
@@ -240242,7 +240242,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Shoutout erhalten"
           }
         },
@@ -250898,8 +250898,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tipper anzeigen"
+            "state" : "translated",
+            "value" : "Taps anzeigen"
           }
         },
         "eo" : {
@@ -253118,7 +253118,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Melde dich bei [cloud.moblin.app](https://cloud.moblin.app) an und richte deine Seite ein."
           }
         },
@@ -253854,7 +253854,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schieberegler"
           }
         },
@@ -255622,7 +255622,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Song"
           }
         },
@@ -255764,7 +255764,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Song nicht gefunden"
           }
         },
@@ -255906,8 +255906,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Songtitel oder Apple-Music-Link."
+            "state" : "translated",
+            "value" : "Songtitel oder Apple Music Link."
           }
         },
         "eo" : {
@@ -256494,7 +256494,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Soundboard"
           }
         },
@@ -256786,7 +256786,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Quelle"
           }
         },
@@ -259596,7 +259596,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRT-Latenz außerhalb des Bereichs"
           }
         },
@@ -261382,7 +261382,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stabilisator"
           }
         },
@@ -264750,7 +264750,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Statistiken"
           }
         },
@@ -265188,7 +265188,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stereo"
           }
         },
@@ -266510,7 +266510,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das Telefon nicht mehr vibrieren lassen."
           }
         },
@@ -275674,7 +275674,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sync"
           }
         },
@@ -277150,7 +277150,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mache den Snapshot auf diesem Gerät oder rufe ihn von der Web-Fernsteuerung eines anderen Geräts ab."
           }
         },
@@ -279366,7 +279366,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Temperatur"
           }
         },
@@ -282018,7 +282018,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Verbindung zum Server wurde unterbrochen."
           }
         },
@@ -283046,7 +283046,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das Layout wird nur im Querformat verwendet."
           }
         },
@@ -285102,7 +285102,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Playlist enthält höchstens %lld Titel. Der älteste Titel wird entfernt, wenn ein Titel zu einer vollen Playlist hinzugefügt wird."
           }
         },
@@ -285390,7 +285390,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Warteschlange enthält höchstens %lld Titel. Der älteste Titel wird entfernt, wenn ein Titel zu einer vollen Warteschlange hinzugefügt wird."
           }
         },
@@ -286272,7 +286272,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der Server hat die Verbindung geschlossen. Prüfe die URL."
           }
         },
@@ -286414,7 +286414,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der Server hat die Verbindung abgelehnt (%@). URL oder Zugangsdaten sind wahrscheinlich falsch."
           }
         },
@@ -286556,8 +286556,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Der Server hat den Stream abgelehnt (%@). Der Stream-Key ist wahrscheinlich falsch."
+            "state" : "translated",
+            "value" : "Der Server hat den Stream abgelehnt (%@). Der Stream-Schlüssel ist wahrscheinlich falsch."
           }
         },
         "eo" : {
@@ -286698,8 +286698,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Der Server hat den Stream abgelehnt. Der Stream-Key ist wahrscheinlich falsch."
+            "state" : "translated",
+            "value" : "Der Server hat den Stream abgelehnt. Der Stream-Schlüssel ist wahrscheinlich falsch."
           }
         },
         "eo" : {
@@ -286840,7 +286840,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der Server hat einen Fehler gemeldet (%@)."
           }
         },
@@ -289198,7 +289198,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Thermisch"
           }
         },
@@ -290820,7 +290820,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zeitüberschreitung bei der Verbindung zum Server. Prüfe URL und Netzwerk."
           }
         },
@@ -291704,7 +291704,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hat %1$@ %2$@ gespendet"
           }
         },
@@ -291854,8 +291854,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "hat %1$@ %2$@ getrinkgeldet!"
+            "state" : "translated",
+            "value" : "hat %1$@ %2$@ gespendet!"
           }
         },
         "en" : {
@@ -302030,8 +302030,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Unbekannter Schnellschaltflächen-Typ"
+            "state" : "translated",
+            "value" : "Unbekannter Schnelltasten Typ"
           }
         },
         "eo" : {
@@ -303062,8 +303062,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nicht unterstützte Audio-Bitrate"
+            "state" : "translated",
+            "value" : "Nicht unterstützte Audio Bitrate"
           }
         },
         "eo" : {
@@ -303354,7 +303354,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nicht unterstützte SRT-DNS-Abfragestrategie"
           }
         },
@@ -303496,7 +303496,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nicht unterstützte SRT-Implementierung"
           }
         },
@@ -303640,7 +303640,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nicht unterstützter Video-Codec"
           }
         },
@@ -303784,7 +303784,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nicht unterstützte Video-FPS"
           }
         },
@@ -303928,7 +303928,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nicht unterstützte Videoauflösung"
           }
         },
@@ -306732,7 +306732,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Remote-Quelle verwenden"
           }
         },
@@ -308640,7 +308640,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Benutzeroberfläche"
           }
         },
@@ -310394,7 +310394,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vertikal"
           }
         },
@@ -310834,7 +310834,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vertikale Szenen"
           }
         },
@@ -310978,7 +310978,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vertikaler Zoom"
           }
         },
@@ -311418,7 +311418,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lässt das Telefon vibrieren. Bis zum Ausschalten, wenn keine Sekunden angegeben sind."
           }
         },
@@ -311858,7 +311858,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Video-Bitrate außerhalb des Bereichs"
           }
         },
@@ -314518,7 +314518,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lautstärke"
           }
         },
@@ -314662,7 +314662,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "VRM-Modelle erfordern iOS 18 oder neuer."
           }
         },
@@ -317298,7 +317298,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Web-Fernsteuerung"
           }
         },
@@ -318616,7 +318616,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Glücksrad-Widget, das Zuschauer drehen. Zuschauer können nur drehen, solange eines ausgewählt ist. Erstelle eines unter Einstellungen → Szenen und füge es den Szenen hinzu, mit denen du streamst."
           }
         },
@@ -319054,7 +319054,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wenn nicht live"
           }
         },
@@ -321126,7 +321126,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Widgets zum Hinzufügen zur Szene"
           }
         },
@@ -325864,7 +325864,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zoom- und Szenensteuerung"
           }
         },
