@@ -270,7 +270,11 @@ extension Model {
     }
 
     func updateMicDelay() {
-        media.setAudioDelay(delay: getMicById(id: mic.current.id)?.delay ?? 0)
+        if database.debug.audioMixer {
+            updateMixedMics()
+        } else {
+            media.setAudioDelay(delay: getMicById(id: mic.current.id)?.delay ?? 0)
+        }
     }
 
     func selectMicDefault(mic: SettingsMicsMic) {
@@ -702,26 +706,30 @@ extension Model {
         remoteControlStateChanged(state: RemoteControlState(mic: micId))
     }
 
-    private func startTalkback(mic: SettingsMicsMic) {
+    func getMicCameraId(mic: SettingsMicsMic) -> UUID? {
         if isRtmpMic(mic: mic) {
-            media.setTalkback(cameraId: getRtmpMicCameraId(mic: mic))
+            getRtmpMicCameraId(mic: mic)
         } else if isSrtlaMic(mic: mic) {
-            media.setTalkback(cameraId: getSrtlaMicCameraId(mic: mic))
+            getSrtlaMicCameraId(mic: mic)
         } else if isSrtClientMic(mic: mic) {
-            media.setTalkback(cameraId: getSrtClientCameraId(mic: mic))
+            getSrtClientCameraId(mic: mic)
         } else if isRistMic(mic: mic) {
-            media.setTalkback(cameraId: getRistMicCameraId(mic: mic))
+            getRistMicCameraId(mic: mic)
         } else if isWhipMic(mic: mic) {
-            media.setTalkback(cameraId: getWhipMicCameraId(mic: mic))
+            getWhipMicCameraId(mic: mic)
         } else if isWhepMic(mic: mic) {
-            media.setTalkback(cameraId: getWhepMicCameraId(mic: mic))
+            getWhepMicCameraId(mic: mic)
         } else if isMediaPlayerMic(mic: mic) {
-            media.setTalkback(cameraId: getMediaPlayerMicCameraId(mic: mic))
+            getMediaPlayerMicCameraId(mic: mic)
         } else if mic.isScreenCapture() {
-            media.setTalkback(cameraId: screenCaptureCameraId)
+            screenCaptureCameraId
         } else {
-            media.setTalkback(cameraId: nil)
+            nil
         }
+    }
+
+    private func startTalkback(mic: SettingsMicsMic) {
+        media.setTalkback(cameraId: getMicCameraId(mic: mic))
     }
 
     private func stopTalkback() {
