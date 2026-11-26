@@ -31704,6 +31704,9 @@
         }
       }
     },
+    "Add %@ as a destination on doink.tv, or go back and log in to add it here." : {
+
+    },
     "Add destination" : {
 
     },
@@ -92063,6 +92066,9 @@
           }
         }
       }
+    },
+    "doink.tv sends your stream to these destinations. Add %@ to stream there." : {
+
     },
     "Donate" : {
       "localizations" : {
@@ -188609,6 +188615,9 @@
           }
         }
       }
+    },
+    "Optional" : {
+
     },
     "Optional, but simplifies the setup." : {
       "localizations" : {
@@ -309114,6 +309123,9 @@
         }
       }
     },
+    "Uses bonding. Third-party service." : {
+
+    },
     "Using default" : {
       "localizations" : {
         "de" : {
@@ -322341,9 +322353,6 @@
         }
       }
     },
-    "Without login, only the stream key in the stream URL is used." : {
-
-    },
     "Workout" : {
       "localizations" : {
         "de" : {
@@ -325311,6 +325320,9 @@
           }
         }
       }
+    },
+    "Your doink.tv stream key, not your %@ stream key." : {
+
     },
     "Your location will not be shared with any service when within any privacy region." : {
       "localizations" : {

@@ -14,11 +14,11 @@ private func platformName(platform: String) -> String {
 }
 
 private struct DoinkAddTargetView: View {
-    let add: (String, String, String, String) -> Void
     @State private var name = ""
-    @State private var platform = "twitch"
+    @State var platform: String
     @State private var url = ""
-    @State private var key = ""
+    @State var key: String
+    let add: (String, String, String, String) -> Void
     @Environment(\.dismiss) var dismiss
 
     private func addDisabled() -> Bool {
@@ -28,7 +28,7 @@ private struct DoinkAddTargetView: View {
     var body: some View {
         Form {
             Section {
-                TextField("", text: $name)
+                TextField("Optional", text: $name)
                     .disableAutocorrection(true)
             } header: {
                 Text("Name")
@@ -72,6 +72,8 @@ struct DoinkTargetsView: View {
     let api: DoinkApi
     let targets: [DoinkApiTarget]
     let targetLimit: Int
+    var platform = "twitch"
+    var key = ""
     let onComplete: (DoinkApiResult<DoinkApiOk>) -> Void
 
     var body: some View {
@@ -99,7 +101,7 @@ struct DoinkTargetsView: View {
             }
             if targets.count < targetLimit {
                 NavigationLink {
-                    DoinkAddTargetView { name, platform, url, key in
+                    DoinkAddTargetView(platform: platform, key: key) { name, platform, url, key in
                         api.addTarget(
                             name: name,
                             platform: platform,

@@ -17,6 +17,7 @@ extension Model {
 
     func doinkLogout(stream: SettingsStream) {
         stream.doinkAccessToken = ""
+        stream.doinkChannelName = ""
         removeDoinkAccessTokenInKeychain(streamId: stream.id)
     }
 

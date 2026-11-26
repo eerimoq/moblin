@@ -144,7 +144,11 @@ struct StreamPlatformsSettingsView: View {
         NavigationLink {
             StreamDoinkSettingsView(stream: stream)
         } label: {
-            DoinkLogoAndNameView()
+            HStack {
+                DoinkLogoAndNameView()
+                Spacer()
+                GrayTextView(text: stream.doinkChannelName.isEmpty ? "" : "/\(stream.doinkChannelName)")
+            }
         }
         NavigationLink {
             StreamKickSettingsView(model: model, stream: stream)

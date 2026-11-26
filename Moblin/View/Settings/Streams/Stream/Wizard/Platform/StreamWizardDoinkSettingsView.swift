@@ -4,6 +4,7 @@ struct StreamWizardDoinkSettingsView: View {
     let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var stream: SettingsStream
+    var platform: String?
     @State private var streamKey = ""
     @State private var ingest: DoinkApiIngest?
 
@@ -19,6 +20,7 @@ struct StreamWizardDoinkSettingsView: View {
                 return
             }
             stream.url = ingest.srtlaUrl
+            stream.doinkChannelName = ingest.handle
             self.ingest = ingest
         }
     }
@@ -55,6 +57,10 @@ struct StreamWizardDoinkSettingsView: View {
                         }
                 } header: {
                     Text("Stream key")
+                } footer: {
+                    if let platform {
+                        Text("Your doink.tv stream key, not your \(platform) stream key.")
+                    }
                 }
             }
             if let ingest {
@@ -70,7 +76,13 @@ struct StreamWizardDoinkSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardGeneralSettingsView(model: model, createStreamWizard: createStreamWizard)
+                    if let platform {
+                        StreamWizardNetworkSetupDoinkTargetsSettingsView(model: model,
+                                                                         createStreamWizard: createStreamWizard,
+                                                                         platform: platform)
+                    } else {
+                        StreamWizardGeneralSettingsView(model: model, createStreamWizard: createStreamWizard)
+                    }
                 } label: {
                     WizardNextButtonView()
                 }
@@ -81,10 +93,14 @@ struct StreamWizardDoinkSettingsView: View {
             DoinkLoginView(model: model, presenting: $createStreamWizard.showDoinkAuth)
         }
         .onAppear {
-            createStreamWizard.platform = .doink
-            createStreamWizard.networkSetup = .direct
-            createStreamWizard.name = makeUniqueName(name: String("doink.tv"),
-                                                     existingNames: model.database.streams)
+            if platform != nil {
+                createStreamWizard.networkSetup = .doink
+            } else {
+                createStreamWizard.platform = .doink
+                createStreamWizard.networkSetup = .direct
+                createStreamWizard.name = makeUniqueName(name: String("doink.tv"),
+                                                         existingNames: model.database.streams)
+            }
             if ingest == nil {
                 loadIngest(credential: stream.doinkAccessToken)
             }

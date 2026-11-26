@@ -48,6 +48,24 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 }
                 Section {
                     NavigationLink {
+                        StreamWizardDoinkSettingsView(model: model,
+                                                      createStreamWizard: createStreamWizard,
+                                                      stream: createStreamWizard.doinkStream,
+                                                      platform: platform)
+                    } label: {
+                        HStack {
+                            Text("Moblin")
+                            Image(systemName: "arrow.right")
+                            Text(String("doink.tv"))
+                            Image(systemName: "arrow.right")
+                            Text(platform)
+                        }
+                    }
+                } footer: {
+                    Text("Uses bonding. Third-party service.")
+                }
+                Section {
+                    NavigationLink {
                         StreamWizardNetworkSetupDirectSettingsView(
                             model: model,
                             createStreamWizard: createStreamWizard
