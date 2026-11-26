@@ -740,7 +740,7 @@ extension Model {
                 )
             }
         let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
-        let moblinCloud = RemoteControlSettingsMoblinCloud(
+        let tips = RemoteControlSettingsTips(
             alertsWidgetId: database.moblinCloud.alertsWidgetId,
             wheelOfLuckWidgetId: database.moblinCloud.wheelOfLuckWidgetId,
             mediaShareWidgetId: database.moblinCloud.mediaWidgetId
@@ -756,7 +756,8 @@ extension Model {
                 connectionPrioritiesEnabled: connectionPrioritiesEnabled,
                 connectionPriorities: connectionPriorities
             ),
-            moblinCloud: moblinCloud,
+            moblinCloud: tips,
+            tips: tips,
             zoomPresets: RemoteControlSettingsZoomPresets(
                 front: makeRemoteControlZoomPresets(presets: database.zoom.front),
                 back: makeRemoteControlZoomPresets(presets: database.zoom.back)

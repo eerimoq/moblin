@@ -95,8 +95,10 @@ enum RemoteControlRequest: Codable {
     case getVideoSourceSnapshot(id: UUID)
     case setMoblinCloudAlertsWidget(id: UUID?)
     case setMoblinCloudWheelOfLuckWidget(id: UUID?)
-    case setMoblinCloudMediaShareWidget(id: UUID?)
-    case skipMoblinCloudMediaShare
+    case setTipsAlertsWidget(id: UUID?)
+    case setTipsWheelOfLuckWidget(id: UUID?)
+    case setTipsMediaShareWidget(id: UUID?)
+    case skipMediaShare
     case showTally(message: String, background: RgbColor, foreground: RgbColor)
     case hideTally
 }
@@ -1101,7 +1103,7 @@ struct RemoteControlEditorOptions: Codable {
     let canvasSize: RemoteControlSize
 }
 
-struct RemoteControlSettingsMoblinCloud: Codable {
+struct RemoteControlSettingsTips: Codable {
     let alertsWidgetId: UUID?
     let wheelOfLuckWidgetId: UUID?
     let mediaShareWidgetId: UUID?
@@ -1115,7 +1117,8 @@ struct RemoteControlSettings: Codable {
     var bitratePresets: [RemoteControlSettingsBitratePreset]
     var mics: [RemoteControlSettingsMic]
     var srt: RemoteControlSettingsSrt
-    var moblinCloud: RemoteControlSettingsMoblinCloud?
+    var moblinCloud: RemoteControlSettingsTips?
+    var tips: RemoteControlSettingsTips?
     var zoomPresets: RemoteControlSettingsZoomPresets?
 }
 

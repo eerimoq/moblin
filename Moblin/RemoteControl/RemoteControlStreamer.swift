@@ -412,16 +412,16 @@ class RemoteControlStreamer {
         case let .setSrtConnectionPrioritiesEnabled(enabled: enabled):
             delegate.remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: enabled)
             sendEmptyOkResponse(id: id)
-        case let .setMoblinCloudAlertsWidget(id: widgetId):
+        case let .setMoblinCloudAlertsWidget(id: widgetId), let .setTipsAlertsWidget(id: widgetId):
             delegate.remoteControlStreamerSetMoblinCloudAlertsWidget(id: widgetId)
             sendEmptyOkResponse(id: id)
-        case let .setMoblinCloudWheelOfLuckWidget(id: widgetId):
+        case let .setMoblinCloudWheelOfLuckWidget(id: widgetId), let .setTipsWheelOfLuckWidget(id: widgetId):
             delegate.remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: widgetId)
             sendEmptyOkResponse(id: id)
-        case let .setMoblinCloudMediaShareWidget(id: widgetId):
+        case let .setTipsMediaShareWidget(id: widgetId):
             delegate.remoteControlStreamerSetMoblinCloudMediaShareWidget(id: widgetId)
             sendEmptyOkResponse(id: id)
-        case .skipMoblinCloudMediaShare:
+        case .skipMediaShare:
             delegate.remoteControlStreamerSkipMoblinCloudMediaShare()
             sendEmptyOkResponse(id: id)
         case let .twitchEventSubNotification(message: message):
