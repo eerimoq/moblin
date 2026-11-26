@@ -62,10 +62,12 @@ class TestCase(test_case.TestCase):
         self.moblin.arduino.back_motor_off()
         self.moblin.arduino.front_motor_off()
 
-    def wait_for_ingest_stream_started(self, number_of_ingests=1, startup_delay=1):
+    def wait_for_ingest_stream_started(
+        self, number_of_ingests=1, startup_delay=1, bytes_per_ingest=3_000_000
+    ):
         time.sleep(startup_delay)
         self.moblin.wait_for_ingests(
             bitrate=Range(0, 100_000_000),
-            total_bytes=3_000_000,
+            total_bytes=number_of_ingests * bytes_per_ingest,
             number_of_ingests=number_of_ingests,
         )
