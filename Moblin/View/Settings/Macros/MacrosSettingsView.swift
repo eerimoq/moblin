@@ -207,6 +207,15 @@ private struct ActionView: View {
                         } label: {
                             TextItemLocalizedView(name: "Message", value: action.notificationMessage)
                         }
+                    case .playSound:
+                        Picker("Sound", selection: $action.soundId) {
+                            Text("-- None --")
+                                .tag(nil as UUID?)
+                            ForEach(database.alertsMediaGallery.allSounds()) {
+                                Text($0.name)
+                                    .tag($0.id as UUID?)
+                            }
+                        }
                     case .sendTwitchShoutout:
                         EmptyView()
                     case .delay:
@@ -427,6 +436,14 @@ private struct ActionView: View {
                 case .notification:
                     Spacer()
                     GrayTextView(text: action.notificationMessage)
+                case .playSound:
+                    if let soundName = database.alertsMediaGallery.allSounds()
+                        .first(where: { $0.id == action.soundId })?
+                        .name
+                    {
+                        Spacer()
+                        GrayTextView(text: soundName)
+                    }
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")

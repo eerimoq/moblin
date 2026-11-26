@@ -108,6 +108,7 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case gimbalPreset = "Move to gimbal preset"
     case sendChatMessage = "Send chat message"
     case notification = "Notification"
+    case playSound = "Play sound"
     case sendTwitchShoutout = "Send Twitch shoutout"
     case delay = "Delay"
     case waitForEvent = "Wait for event"
@@ -144,6 +145,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             String(localized: "Send chat message")
         case .notification:
             String(localized: "Notification")
+        case .playSound:
+            String(localized: "Play sound")
         case .sendTwitchShoutout:
             String(localized: "Send Twitch shoutout")
         case .delay:
@@ -406,6 +409,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var gimbalPresetId: UUID?
     @Published var chatMessage: String = ""
     @Published var notificationMessage: String = ""
+    @Published var soundId: UUID?
     @Published var delay: Double = 3
     @Published var macroId: UUID?
     @Published var djiDevices: Set<UUID> = []
@@ -438,6 +442,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         case gimbalPresetId
         case chatMessage
         case notificationMessage
+        case soundId
         case delay
         case macroId
         case djiDevices
@@ -467,6 +472,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.gimbalPresetId, gimbalPresetId)
         try container.encode(.chatMessage, chatMessage)
         try container.encode(.notificationMessage, notificationMessage)
+        try container.encode(.soundId, soundId)
         try container.encode(.delay, delay)
         try container.encode(.macroId, macroId)
         try container.encode(.djiDevices, djiDevices)
@@ -496,6 +502,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
         chatMessage = container.decode(.chatMessage, String.self, "")
         notificationMessage = container.decode(.notificationMessage, String.self, "")
+        soundId = container.decode(.soundId, UUID?.self, nil)
         delay = container.decode(.delay, Double.self, 3)
         macroId = container.decode(.macroId, UUID?.self, nil)
         djiDevices = container.decode(.djiDevices, Set<UUID>.self, [])

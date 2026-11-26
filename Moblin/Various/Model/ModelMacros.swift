@@ -239,6 +239,8 @@ extension Model {
             executeSendChatMessage(action: action, variables: macro.variables)
         case .notification:
             executeNotification(currentMacro: currentMacro, action: action, variables: macro.variables)
+        case .playSound:
+            executePlaySound(action: action)
         case .sendTwitchShoutout:
             executeSendTwitchShoutout(variables: macro.variables)
         case .delay:
@@ -337,6 +339,13 @@ extension Model {
         chatPostId += 1
         chatActivityFeed.appendMessage(post: post)
         quickButtonChatAlerts.appendMessage(post: post)
+        return true
+    }
+
+    private func executePlaySound(action: SettingsMacrosAction) -> Bool {
+        if let soundId = action.soundId {
+            playSoundBoardSound(soundId: soundId)
+        }
         return true
     }
 
