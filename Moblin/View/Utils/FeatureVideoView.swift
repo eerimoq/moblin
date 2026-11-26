@@ -8,13 +8,9 @@ struct FeatureVideoCardView: View {
             Color(.secondarySystemGroupedBackground)
                 .aspectRatio(9 / 16, contentMode: .fit)
                 .overlay {
-                    CacheAsyncImage(url: video.thumbnailUrl()) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    } placeholder: {
-                        EmptyView()
-                    }
+                    Image(video.thumbnail)
+                        .resizable()
+                        .scaledToFill()
                 }
                 .overlay {
                     Image(systemName: "play.circle.fill")
