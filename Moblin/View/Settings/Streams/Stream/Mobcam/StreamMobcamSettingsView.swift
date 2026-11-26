@@ -18,6 +18,7 @@ struct StreamMobcamSettingsView: View {
                     Text("Change the port by editing the URL.")
                 }
             }
+            FeatureVideosSectionView(videos: [.webcamInObs])
         }
         .navigationTitle("Mobcam")
     }

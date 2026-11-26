@@ -32,6 +32,7 @@ struct StreamWizardMobcamSettingsView: View {
                     WizardNextButtonView()
                 }
             }
+            FeatureVideosSectionView(videos: [.webcamInObs])
         }
         .onAppear {
             createStreamWizard.platform = .mobcam
