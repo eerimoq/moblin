@@ -15,10 +15,15 @@ struct FeatureVideo: Identifiable {
         id: "5v07BwaDe0s",
         thumbnail: "FeatureVideoZoomAndSceneControls"
     )
+    static let findQuickButtons = FeatureVideo(
+        id: "QWYT2eC-cio",
+        thumbnail: "FeatureVideoFindQuickButtons"
+    )
     static let all: [FeatureVideo] = [
-        .soundBoard,
+        .findQuickButtons,
         .webcamInObs,
         .chatSnapshotsToDiscord,
+        .soundBoard,
         .twitchRaid,
         .zoomAndSceneControls,
     ]

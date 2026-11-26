@@ -107,6 +107,7 @@ struct QuickButtonsSettingsView: View {
         Form {
             AppearanceSettingsView(database: model.database,
                                    quickButtons: model.database.quickButtonsGeneral)
+            FeatureVideosSectionView(videos: [.findQuickButtons])
             if showAll {
                 ButtonsSettingsView(model: model, database: model.database)
             }
