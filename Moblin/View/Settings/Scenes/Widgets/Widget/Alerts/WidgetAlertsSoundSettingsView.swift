@@ -78,16 +78,15 @@ private struct SoundGalleryItemView: View {
     }
 }
 
-private struct SoundGalleryView: View {
+struct SoundGalleryView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var gallery: SettingsAlertsMediaGallery
-    let alert: SettingsWidgetAlertsAlert
-    @Binding var soundId: UUID
+    let onDeleted: () -> Void
 
     private func deleteSound(at offsets: IndexSet) {
         gallery.customSounds.remove(atOffsets: offsets)
         model.fixAlertMedias()
-        soundId = alert.soundId
+        onDeleted()
     }
 
     var body: some View {
@@ -150,7 +149,9 @@ struct AlertSoundSelectorView: View {
             }
             Section {
                 NavigationLink {
-                    SoundGalleryView(gallery: gallery, alert: alert, soundId: $soundId)
+                    SoundGalleryView(gallery: gallery) {
+                        soundId = alert.soundId
+                    }
                 } label: {
                     Text("My sounds")
                 }
