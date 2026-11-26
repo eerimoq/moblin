@@ -2121,7 +2121,9 @@ final class Model: NSObject, ObservableObject {
         if database.alertsMediaGallery.allImages().first(where: { $0.id == alert.imageId }) == nil {
             alert.imageId = database.alertsMediaGallery.bundledImages[0].id
         }
-        if database.alertsMediaGallery.allSounds().first(where: { $0.id == alert.soundId }) == nil {
+        if let soundId = alert.soundId,
+           !database.alertsMediaGallery.allSounds().contains(where: { $0.id == soundId })
+        {
             alert.soundId = database.alertsMediaGallery.bundledSounds[0].id
         }
     }

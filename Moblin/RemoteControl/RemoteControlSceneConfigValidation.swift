@@ -421,7 +421,11 @@ private func isValidAlertUpdate(_ old: SettingsWidgetAlertsAlert,
               isValidChange(
                   old.soundId,
                   new.soundId,
-                  { soundId in mediaDatabase.alertsMediaGallery.allSounds().contains { $0.id == soundId } }
+                  { soundId in
+                      soundId.map { soundId in
+                          mediaDatabase.alertsMediaGallery.allSounds().contains { $0.id == soundId }
+                      } ?? true
+                  }
               )
         else {
             return false

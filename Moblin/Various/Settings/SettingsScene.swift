@@ -1205,7 +1205,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable 
     @Published var mediaType: SettingsWidgetAlertsAlertMediaType = .gifAndSound
     @Published var imageId: UUID = .init()
     @Published var imageLoopCount: Int = 1
-    @Published var soundId: UUID = .init()
+    @Published var soundId: UUID? = .init()
     @Published var videoName: String = ""
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var accentColor: RgbColor = .init(red: 0xFD, green: 0xFB, blue: 0x67)
@@ -1268,7 +1268,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable 
         mediaType = container.decode(.mediaType, SettingsWidgetAlertsAlertMediaType.self, .gifAndSound)
         imageId = container.decode(.imageId, UUID.self, .init())
         imageLoopCount = container.decode(.imageLoopCount, Int.self, 1)
-        soundId = container.decode(.soundId, UUID.self, .init())
+        soundId = container.decode(.soundId, UUID?.self, .init())
         videoName = container.decode(.videoName, String.self, "")
         textColor = container.decode(.textColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
         accentColor = container.decode(.accentColor, RgbColor.self, .init(red: 0xFD, green: 0xFB, blue: 0x67))

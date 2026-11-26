@@ -208,14 +208,10 @@ private struct ActionView: View {
                             TextItemLocalizedView(name: "Message", value: action.notificationMessage)
                         }
                     case .playSound:
-                        Picker("Sound", selection: $action.soundId) {
-                            Text("-- None --")
-                                .tag(nil as UUID?)
-                            ForEach(database.alertsMediaGallery.allSounds()) {
-                                Text($0.name)
-                                    .tag($0.id as UUID?)
-                            }
-                        }
+                        SoundSelectorNavigationView(model: model,
+                                                    gallery: database.alertsMediaGallery,
+                                                    title: "Sound",
+                                                    soundId: $action.soundId)
                     case .sendTwitchShoutout:
                         EmptyView()
                     case .delay:

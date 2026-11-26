@@ -26,7 +26,7 @@ struct QuickButtonSoundBoardView: View {
         Form {
             Section {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3)) {
-                    ForEach(gallery.allSounds().filter { $0.name != "Silence" }) { sound in
+                    ForEach(gallery.allSounds()) { sound in
                         SoundView(model: model, sound: sound)
                     }
                 }

@@ -980,7 +980,6 @@ private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
     SettingsAlertsMediaGalleryItem(name: "Fart 2"),
     SettingsAlertsMediaGalleryItem(name: "Bad chili fart"),
     SettingsAlertsMediaGalleryItem(name: "Perfect fart"),
-    SettingsAlertsMediaGalleryItem(name: "Silence"),
 ]
 
 class SettingsAlertsMediaGallery: Codable, ObservableObject {
@@ -2310,6 +2309,19 @@ private func updateBundledAlertsMediaGallery(database: Database) {
         }
     }
     database.alertsMediaGallery.bundledImages = bundledImages
+    if let silence = database.alertsMediaGallery.bundledSounds.first(where: { $0.name == "Silence" }) {
+        for widget in database.widgets {
+            for alert in remoteControlAllAlerts(widget.alerts) where alert.soundId == silence.id {
+                alert.soundId = nil
+            }
+            if widget.pomodoroTimer.focusToBreakSoundId == silence.id {
+                widget.pomodoroTimer.focusToBreakSoundId = nil
+            }
+            if widget.pomodoroTimer.breakToFocusSoundId == silence.id {
+                widget.pomodoroTimer.breakToFocusSoundId = nil
+            }
+        }
+    }
     var bundledSounds: [SettingsAlertsMediaGalleryItem] = []
     for sound in allBundledAlertsMediaGallerySounds {
         if let existingSound = database.alertsMediaGallery.bundledSounds

@@ -1,48 +1,4 @@
-import AVFAudio
 import SwiftUI
-
-@MainActor
-private func getPomodoroSoundName(model: Model, soundId: UUID?) -> String {
-    model.database.alertsMediaGallery.allSounds().first(where: { $0.id == soundId })?
-        .name ?? String(localized: "-- None --")
-}
-
-private struct PomodoroSoundSelectorView: View {
-    let model: Model
-    @Binding var soundId: UUID?
-    @State private var previewPlayer: AudioPlayer?
-
-    var body: some View {
-        Form {
-            Section {
-                Picker("", selection: $soundId) {
-                    ForEach(model.database.alertsMediaGallery.allSounds()) { sound in
-                        HStack {
-                            Text(sound.name)
-                            Spacer()
-                            Button {
-                                guard let url = model.getAlertSoundUrl(soundId: sound.id) else {
-                                    return
-                                }
-                                previewPlayer = try? AudioPlayer(contentsOf: url)
-                                previewPlayer?.play()
-                            } label: {
-                                Image(systemName: "play.fill")
-                            }
-                        }
-                        .tag(sound.id as UUID?)
-                    }
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            }
-        }
-        .onDisappear {
-            previewPlayer = nil
-        }
-        .navigationTitle("Sound")
-    }
-}
 
 struct WidgetPomodoroTimerQuickButtonControlsView: View {
     @ObservedObject var pomodoroTimer: SettingsWidgetPomodoroTimer
@@ -172,26 +128,14 @@ struct WidgetPomodoroTimerSettingsView: View {
             Text("Colors")
         }
         Section {
-            NavigationLink {
-                PomodoroSoundSelectorView(model: model, soundId: $pomodoroTimer.focusToBreakSoundId)
-            } label: {
-                HStack {
-                    Text("Focus to break")
-                    Spacer()
-                    GrayTextView(text: getPomodoroSoundName(model: model,
-                                                            soundId: pomodoroTimer.focusToBreakSoundId))
-                }
-            }
-            NavigationLink {
-                PomodoroSoundSelectorView(model: model, soundId: $pomodoroTimer.breakToFocusSoundId)
-            } label: {
-                HStack {
-                    Text("Break to focus")
-                    Spacer()
-                    GrayTextView(text: getPomodoroSoundName(model: model,
-                                                            soundId: pomodoroTimer.breakToFocusSoundId))
-                }
-            }
+            SoundSelectorNavigationView(model: model,
+                                        gallery: model.database.alertsMediaGallery,
+                                        title: "Focus to break",
+                                        soundId: $pomodoroTimer.focusToBreakSoundId)
+            SoundSelectorNavigationView(model: model,
+                                        gallery: model.database.alertsMediaGallery,
+                                        title: "Break to focus",
+                                        soundId: $pomodoroTimer.breakToFocusSoundId)
         } header: {
             Text("Sounds")
         }

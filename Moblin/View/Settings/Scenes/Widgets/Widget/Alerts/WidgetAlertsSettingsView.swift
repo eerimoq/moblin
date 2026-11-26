@@ -90,11 +90,6 @@ private func getImageName(model: Model, id: UUID?) -> String {
     model.database.alertsMediaGallery.allImages().first(where: { $0.id == id })?.name ?? ""
 }
 
-@MainActor
-private func getSoundName(model: Model, id: UUID?) -> String {
-    model.database.alertsMediaGallery.allSounds().first(where: { $0.id == id })?.name ?? ""
-}
-
 private struct VideoPickerView: UIViewControllerRepresentable {
     let model: Model
 
@@ -187,13 +182,13 @@ struct AlertMediaView: View {
                 } label: {
                     TextItemLocalizedView(name: "Image", value: getImageName(model: model, id: alert.imageId))
                 }
-                NavigationLink {
-                    AlertSoundSelectorView(gallery: model.database.alertsMediaGallery,
-                                           alert: alert,
-                                           soundId: $alert.soundId)
-                } label: {
-                    TextItemLocalizedView(name: "Sound", value: getSoundName(model: model, id: alert.soundId))
-                }
+                SoundSelectorNavigationView(model: model,
+                                            gallery: model.database.alertsMediaGallery,
+                                            title: "Sound",
+                                            soundId: $alert.soundId)
+                    .onChange(of: alert.soundId) { _ in
+                        model.updateAlertsSettings()
+                    }
             case .video:
                 VideoView(model: model, alert: alert)
             }

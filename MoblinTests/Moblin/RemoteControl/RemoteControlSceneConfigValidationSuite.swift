@@ -398,6 +398,7 @@ struct RemoteControlSceneConfigValidationSuite {
             $1.alerts.twitch.follows.imageId = image.id
             $1.alerts.twitch.follows.soundId = sound.id
         },
+        WidgetCase("Alert without sound", .alerts) { $1.alerts.twitch.follows.soundId = nil },
         WidgetCase("Configured AI", .alerts) {
             $1.alerts.ai.apiKey = "key"
             $1.alerts.aiEnabled = true

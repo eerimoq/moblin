@@ -72,14 +72,10 @@ struct ControllerButtonView: View {
                 }
             }
         case .playSound:
-            Picker("Sound", selection: $functionData.soundId) {
-                Text("-- None --")
-                    .tag(nil as UUID?)
-                ForEach(model.database.alertsMediaGallery.allSounds()) {
-                    Text($0.name)
-                        .tag($0.id as UUID?)
-                }
-            }
+            SoundSelectorNavigationView(model: model,
+                                        gallery: model.database.alertsMediaGallery,
+                                        title: "Sound",
+                                        soundId: $functionData.soundId)
         default:
             EmptyView()
         }
