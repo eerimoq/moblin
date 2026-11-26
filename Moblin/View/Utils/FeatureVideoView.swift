@@ -27,7 +27,7 @@ struct FeatureVideosGridView: View {
     let videos: [FeatureVideo]
 
     var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 15), count: 2), spacing: 15) {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 15)], spacing: 15) {
             ForEach(videos) {
                 FeatureVideoCardView(video: $0)
                     .buttonStyle(.borderless)
