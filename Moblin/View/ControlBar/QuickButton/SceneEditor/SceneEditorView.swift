@@ -97,7 +97,7 @@ private struct SceneEditorCanvasView: View {
     }
 
     private var snapThreshold: Double {
-        8 * scale
+        4 * scale
     }
 
     private var editableOutlines: [WidgetOutline] {
