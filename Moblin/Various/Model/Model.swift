@@ -496,6 +496,7 @@ final class Model: NSObject, ObservableObject {
     @Published var portraitVideoOffsetFromTop = 0.0
     @Published var currentStreamId = UUID()
     @Published var showTwitchAuth = false
+    @Published var showDoinkAuth = false
     @Published var showModerationAuth = false
     @Published var presentingModeration = false
     @Published var presentingPredefinedMessages: Bool = false
@@ -705,6 +706,8 @@ final class Model: NSObject, ObservableObject {
     var speechToText: SpeechToText?
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
+    let doinkAuth = DoinkAuth()
+    var doinkAuthOnComplete: ((_ accessToken: String) -> Void)?
     var kickAuthOnComplete: ((_ accessToken: String) -> Void)?
     var twitchPlatformStatus: PlatformStatus = .unknown
     let twitchSearchCategoriesTimer = MainTimer()
@@ -1154,6 +1157,7 @@ final class Model: NSObject, ObservableObject {
         let streamIds = database.streams.map(\.id)
         removeUnusedTwitchAccessTokensInKeychain(usedStreamIds: streamIds)
         removeUnusedKickAccessTokensInKeychain(usedStreamIds: streamIds)
+        removeUnusedDoinkAccessTokensInKeychain(usedStreamIds: streamIds)
         removeUnusedYouTubeAuthStatesInKeychain(usedStreamIds: streamIds)
     }
 
@@ -1301,6 +1305,7 @@ final class Model: NSObject, ObservableObject {
         autoStartWorkoutDevices()
         autoStartBlackSharkCoolerDevices()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
+        doinkAuth.setOnAccessToken(onAccessToken: handleDoinkAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()

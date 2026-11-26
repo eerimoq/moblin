@@ -1251,6 +1251,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var kickChatroomChannelId: String?
     @Published var kickSlug: String?
     var kickAccessToken: String = ""
+    var doinkAccessToken: String = ""
     @Published var kickLoggedIn: Bool = false
     var kickWantsToBeLoggedIn: Bool = false
     var kickNotLoggedInCount: Int = 0
@@ -1671,6 +1672,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         if kickLoggedIn {
             storeKickAccessTokenInKeychain(streamId: new.id, accessToken: kickAccessToken)
         }
+        new.doinkAccessToken = doinkAccessToken
+        if !doinkAccessToken.isEmpty {
+            storeDoinkAccessTokenInKeychain(streamId: new.id, accessToken: doinkAccessToken)
+        }
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
         new.youTubeAuthState = youTubeAuthState
@@ -1910,6 +1915,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         }
         twitchAccessToken = old.twitchAccessToken
         kickAccessToken = old.kickAccessToken
+        doinkAccessToken = old.doinkAccessToken
     }
 
     private func secretsRemoved(url: String) -> String {
@@ -1926,6 +1932,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     func loadFromKeychain() {
         twitchAccessToken = loadTwitchAccessTokenFromKeychain(streamId: id) ?? ""
         kickAccessToken = loadKickAccessTokenFromKeychain(streamId: id) ?? ""
+        doinkAccessToken = loadDoinkAccessTokenFromKeychain(streamId: id) ?? ""
         if let encoded = loadYouTubeAuthStateFromKeychain(streamId: id) {
             youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
         }

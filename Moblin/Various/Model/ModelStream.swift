@@ -21,10 +21,12 @@ class CreateStreamWizard: ObservableObject {
     var kickAccessToken = ""
     var kickLoggedIn: Bool = false
     let youTubeStream = SettingsStream(name: "")
+    let doinkStream = SettingsStream(name: "")
     @Published var presenting = false
     @Published var presentingSetup = false
     @Published var showTwitchAuth = false
     @Published var showKickAuth = false
+    @Published var showDoinkAuth = false
     @Published var name = ""
     @Published var backgroundStreaming = false
     @Published var autoGoLive = false

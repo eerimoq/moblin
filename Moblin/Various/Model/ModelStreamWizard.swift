@@ -5,6 +5,7 @@ enum WizardPlatform {
     case kick
     case youTube
     case soop
+    case doink
     case custom
     case obs
     case mobcam
@@ -108,6 +109,8 @@ extension Model {
             }
         case .mobcam:
             url = "mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"
+        case .doink:
+            url = createStreamWizard.doinkStream.url
         default:
             switch createStreamWizard.networkSetup {
             case .obs:
@@ -176,6 +179,11 @@ extension Model {
                 stream.soopChannelName = createStreamWizard.soopChannelName.trim()
                 stream.soopStreamId = createStreamWizard.soopStreamId.trim()
             }
+        case .doink:
+            stream.doinkAccessToken = createStreamWizard.doinkStream.doinkAccessToken
+            if !stream.doinkAccessToken.isEmpty {
+                storeDoinkAccessTokenInKeychain(streamId: stream.id, accessToken: stream.doinkAccessToken)
+            }
         case .obs:
             break
         case .custom:
@@ -202,6 +210,8 @@ extension Model {
             stream.bitrate = database.getHighestBitratePreset()
             stream.audioCodec = .aac
             stream.audioBitrate = 192_000
+        case .doink:
+            stream.codec = .h264avc
         default:
             switch createStreamWizard.networkSetup {
             case .obs:
@@ -243,6 +253,7 @@ extension Model {
         createStreamWizard.youTubeStream.youTubeAuthState = nil
         createStreamWizard.soopChannelName = ""
         createStreamWizard.soopStreamId = ""
+        createStreamWizard.doinkStream.doinkAccessToken = ""
         createStreamWizard.obsAddress = ""
         createStreamWizard.obsPort = ""
         createStreamWizard.obsRemoteControlEnabled = false
