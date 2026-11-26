@@ -31704,6 +31704,9 @@
         }
       }
     },
+    "Add destination" : {
+
+    },
     "Add {heartRate:%@} to a text widget to show heart rate on stream." : {
       "localizations" : {
         "de" : {
@@ -98237,6 +98240,9 @@
         }
       }
     },
+    "End stream" : {
+
+    },
     "End workout" : {
       "localizations" : {
         "de" : {
@@ -99694,6 +99700,9 @@
           }
         }
       }
+    },
+    "Ends doink fallback." : {
+
     },
     "Enter assistant's address and port. For example ws://132.23.43.43:2345." : {
       "localizations" : {
@@ -109244,6 +109253,9 @@
           }
         }
       }
+    },
+    "Failed to update doink" : {
+
     },
     "Failed to upload snapshot to Discord" : {
       "localizations" : {
@@ -140758,6 +140770,9 @@
           }
         }
       }
+    },
+    "Keeps your stream online for this long when you disconnect." : {
+
     },
     "Kelvin" : {
       "localizations" : {
@@ -222298,6 +222313,9 @@
           }
         }
       }
+    },
+    "Rotate stream key" : {
+
     },
     "Rotate the user interface to portrait when the device is held in portrait." : {
       "comment" : "A description of the setting to rotate the user interface to portrait when the device is held in portrait.",

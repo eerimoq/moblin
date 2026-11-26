@@ -5,6 +5,7 @@ struct StreamDoinkSettingsView: View {
     @ObservedObject var stream: SettingsStream
     @State private var loggedIn = false
     @State private var ingest: DoinkApiIngest?
+    @State private var info: DoinkApiStream?
 
     private func credential() -> String? {
         loggedIn ? stream.doinkAccessToken : doinkStreamKey(url: stream.url)
@@ -24,7 +25,17 @@ struct StreamDoinkSettingsView: View {
     private func loadIngest() {
         guard let credential = credential() else {
             ingest = nil
+            info = nil
             return
+        }
+        if loggedIn {
+            DoinkApi(accessTokenOrStreamKey: credential).getStream {
+                if case let .success(info) = $0 {
+                    self.info = info
+                }
+            }
+        } else {
+            info = nil
         }
         DoinkApi(accessTokenOrStreamKey: credential).getIngest {
             switch $0 {
@@ -42,6 +53,9 @@ struct StreamDoinkSettingsView: View {
 
     var body: some View {
         Form {
+            if let credential = credential() {
+                DoinkEndStreamView(model: model, api: DoinkApi(accessTokenOrStreamKey: credential))
+            }
             Section {
                 if loggedIn {
                     TextButtonView("Logout") {
@@ -84,6 +98,14 @@ struct StreamDoinkSettingsView: View {
                 } header: {
                     Text("Ingest")
                 }
+            }
+            if loggedIn {
+                DoinkStreamSettingsView(model: model,
+                                        stream: stream,
+                                        api: DoinkApi(accessTokenOrStreamKey: stream.doinkAccessToken),
+                                        info: $info,
+                                        reload: loadIngest,
+                                        logout: logout)
             }
         }
         .navigationTitle(String("doink.tv"))
