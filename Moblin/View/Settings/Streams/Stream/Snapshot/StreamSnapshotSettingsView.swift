@@ -69,6 +69,7 @@ struct StreamSnapshotSettingsView: View {
                     Text("Create a webhook in your Discord server's settings and paste it's URL above.")
                 }
             }
+            FeatureVideosSectionView(videos: [.chatSnapshotsToDiscord])
         }
         .navigationTitle("Snapshot")
     }

@@ -26,6 +26,7 @@ struct LocalOverlaysZoomAndSceneControlsSettingsView: View {
                     Text("Zoom")
                 }
             }
+            FeatureVideosSectionView(videos: [.zoomAndSceneControls])
         }
         .navigationTitle("Zoom and scene controls")
     }

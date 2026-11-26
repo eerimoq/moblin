@@ -618,8 +618,13 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
     builder.add(String(localized: "Help and support"),
                 [],
                 "questionmark.circle",
-                searchKeywords("Help", "Manual") + ["discord", "github", "faq"])
-    {
+                searchKeywords("Help", "Manual", "Videos") + [
+                    "discord",
+                    "github",
+                    "faq",
+                    "youtube",
+                    "shorts",
+                ]) {
         HelpAndSupportSettingsView()
     }
     if showAll {
