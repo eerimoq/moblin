@@ -164,6 +164,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var frameTimer = SimpleTimer(queue: processorPipelineQueue)
     private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
+    private var isWaitingForFirstFrame = false
     private var ignoreFramesAfterAttachSeconds = 0.0
     private var configuredIgnoreFramesAfterAttachSeconds = 0.0
     private var latestSampleBufferAppendTime: CMTime = .zero
@@ -624,7 +625,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     private func handleGapFillerTimer() {
-        guard isFirstAfterAttach, var latestSampleBuffer,
+        guard isWaitingForFirstFrame, var latestSampleBuffer,
               let latestSampleBufferTime = effectsProcessor.latestSampleBufferTime
         else {
             return
@@ -664,6 +665,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private func prepareFirstFrame() {
         firstFrameTime = nil
         isFirstAfterAttach = true
+        isWaitingForFirstFrame = true
         ignoreFramesAfterAttachSeconds = configuredIgnoreFramesAfterAttachSeconds
     }
 
@@ -1009,6 +1011,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             isSceneSwitchTransition: false
         ) {
             isFirstAfterAttach = false
+            isWaitingForFirstFrame = false
         }
     }
 
