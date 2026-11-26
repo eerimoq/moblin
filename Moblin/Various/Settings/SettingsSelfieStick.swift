@@ -14,6 +14,7 @@ class SettingsSelfieStick: Codable, ObservableObject {
         case gimbalMotion
         case macroId
         case streamDeckLayoutId
+        case soundId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -26,6 +27,7 @@ class SettingsSelfieStick: Codable, ObservableObject {
         try container.encode(.gimbalMotion, functionData.gimbalMotion)
         try container.encode(.macroId, functionData.macroId)
         try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
+        try container.encode(.soundId, functionData.soundId)
     }
 
     init() {}
@@ -40,5 +42,6 @@ class SettingsSelfieStick: Codable, ObservableObject {
         functionData.gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
         functionData.macroId = container.decode(.macroId, UUID?.self, nil)
         functionData.streamDeckLayoutId = container.decode(.streamDeckLayoutId, UUID?.self, nil)
+        functionData.soundId = container.decode(.soundId, UUID?.self, nil)
     }
 }
