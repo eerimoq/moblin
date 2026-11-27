@@ -113,7 +113,7 @@ private struct LayoutView: View {
     private func generalAndAlignmentPicker() -> some View {
         HStack {
             HStack {
-                SaveLoadLayoutView(layout: $replay.layout)
+                CopyPasteLayoutView(layout: $replay.layout)
                 Spacer()
             }
             Divider()

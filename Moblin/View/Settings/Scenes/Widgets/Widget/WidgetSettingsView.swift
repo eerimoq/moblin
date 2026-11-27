@@ -40,7 +40,7 @@ struct AlignmentPickerView: View {
     }
 }
 
-struct SaveLayoutButtonView: View {
+struct CopyLayoutButtonView: View {
     @EnvironmentObject private var model: Model
     @Binding var layout: SettingsWidgetLayout
 
@@ -49,7 +49,7 @@ struct SaveLayoutButtonView: View {
             model.layout = layout
         } label: {
             HCenter {
-                Text("Save layout")
+                Text("Copy layout")
             }
         }
         .buttonStyle(.bordered)
@@ -58,7 +58,7 @@ struct SaveLayoutButtonView: View {
     }
 }
 
-struct LoadLayoutButtonView: View {
+struct PasteLayoutButtonView: View {
     @EnvironmentObject private var model: Model
     @Binding var layout: SettingsWidgetLayout
 
@@ -70,7 +70,7 @@ struct LoadLayoutButtonView: View {
             HStack {
                 Text("")
                 Spacer(minLength: 0)
-                Text("Load layout")
+                Text("Paste layout")
                 Spacer(minLength: 0)
                 Text("")
             }
@@ -82,15 +82,15 @@ struct LoadLayoutButtonView: View {
     }
 }
 
-struct SaveLoadLayoutView: View {
+struct CopyPasteLayoutView: View {
     @Binding var layout: SettingsWidgetLayout
 
     var body: some View {
         VStack(alignment: .leading) {
             Spacer()
-            SaveLayoutButtonView(layout: $layout)
+            CopyLayoutButtonView(layout: $layout)
             Spacer()
-            LoadLayoutButtonView(layout: $layout)
+            PasteLayoutButtonView(layout: $layout)
             Spacer()
         }
     }
@@ -145,8 +145,8 @@ struct WidgetLayoutView: View {
         if widget.hasPosition() || widget.hasSize() {
             Section {
                 HStack {
-                    SaveLayoutButtonView(layout: $layout)
-                    LoadLayoutButtonView(layout: $layout)
+                    CopyLayoutButtonView(layout: $layout)
+                    PasteLayoutButtonView(layout: $layout)
                 }
                 if widget.hasPosition() {
                     if !layout.alignment.isHorizontalCenter() {
@@ -170,7 +170,7 @@ struct WidgetLayoutView: View {
                 Text("Layout")
             } footer: {
                 Text("""
-                Use save/load layout to position a widget in the same place in multiple \
+                Use copy/paste layout to position a widget in the same place in multiple \
                 scenes. Alternatively, use a Scene widget to easily show the same widgets \
                 in multiple scenes.
                 """)
