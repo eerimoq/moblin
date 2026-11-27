@@ -12816,7 +12816,146 @@
       }
     },
     "⚠️ Configure the browser widget as audio and video only, with local only off." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Konfiguriere das Browser-Widget als nur Audio und Video, mit „Nur lokal“ aus."
+          }
+        },
+        "eo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ C0nf1g_r3 th3 br0ws3r w1dg3t @s @_d10 @nd v1d30 0nly, w1th l0c@l 0nly 0ff."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Configura el widget de navegador como solo audio y vídeo, con solo local desactivado."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Määritä selainwidget vain ääni ja video -tilaan ja poista vain paikallinen käytöstä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Configurez le widget navigateur en audio et vidéo uniquement, avec local uniquement désactivé."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ ब्राउज़र विजेट को केवल ऑडियो और वीडियो के रूप में कॉन्फ़िगर करें, केवल लोकल बंद रखें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Atur widget browser sebagai hanya audio dan video, dengan hanya lokal nonaktif."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Configura il widget browser come solo audio e video, con solo locale disattivato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ ブラウザウィジェットを音声と映像のみに設定し、ローカルのみをオフにしてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ 브라우저 위젯을 오디오 및 비디오 전용으로 설정하고 로컬 전용은 끄세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Stel de browserwidget in als alleen audio en video, met alleen lokaal uit."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Skonfiguruj widżet przeglądarki jako tylko audio i wideo, z wyłączoną opcją tylko lokalnie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Configure o widget de navegador como somente áudio e vídeo, com somente local desativado."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Configure o widget de navegador como apenas áudio e vídeo, com apenas local desativado."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Настройте виджет браузера как «только аудио и видео», с выключенным «только локально»."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Nastavte widget prehliadača ako iba zvuk a video, s vypnutou možnosťou iba lokálne."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Konfigurera webbläsarwidgeten som endast ljud och video, med endast lokal av."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Tarayıcı widget'ını yalnızca ses ve video olarak, yalnızca yerel kapalı şekilde yapılandırın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Налаштуйте віджет браузера як «лише аудіо та відео», з вимкненим «лише локально»."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ Cấu hình widget trình duyệt ở chế độ chỉ âm thanh và video, tắt chỉ cục bộ."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ 将浏览器小组件配置为仅音频和视频，并关闭仅本地。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ 將瀏覽器小工具設定為僅音訊和影片，並關閉僅限本機。"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⚠️ 將瀏覽器小工具設定為僅音訊和影片，並關閉僅限本機。"
+          }
+        }
+      }
     },
     "⚠️ Disable Settings → Scenes → Scene switching → Force transition to enable groups." : {
       "localizations" : {
@@ -33764,7 +33903,146 @@
       }
     },
     "All are already in this scene. Create a new one." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Alle sind bereits in dieser Szene. Erstelle ein neues."
+          }
+        },
+        "eo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "@ll @r3 @lr3@dy 1n th1s sc3n3. Cr3@t3 @ n3w 0n3."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Todos ya están en esta escena. Crea uno nuevo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kaikki ovat jo tässä näkymässä. Luo uusi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tous sont déjà dans cette scène. Créez-en un nouveau."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सभी पहले से इस सीन में हैं। एक नया बनाएँ।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Semua sudah ada di adegan ini. Buat yang baru."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sono già tutti in questa scena. Creane uno nuovo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "すべてこのシーンに追加済みです。新しく作成してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "모두 이미 이 장면에 있습니다. 새로 만드세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ze staan allemaal al in deze scène. Maak een nieuwe."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wszystkie są już w tej scenie. Utwórz nowy."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Todos já estão nesta cena. Crie um novo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Todos já estão nesta cena. Crie um novo."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Все уже есть в этой сцене. Создайте новый."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Všetky už sú v tejto scéne. Vytvorte nový."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Alla finns redan i den här scenen. Skapa en ny."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hepsi zaten bu sahnede. Yeni bir tane oluşturun."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Усі вже є в цій сцені. Створіть новий."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tất cả đã có trong cảnh này. Hãy tạo mới."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "全部已在此场景中。请新建一个。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "全部都已在此場景中。請建立新的。"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "全部都已在此場景中。請建立新的。"
+          }
+        }
+      }
     },
     "Allow other devices on the local network to execute HTTP requests through this proxy. Anyone on the local network can use it, so only enable it on networks you trust." : {
       "comment" : "A description of the local network section of the HTTP proxy settings.",
@@ -57460,7 +57738,147 @@
     },
     "Browser widget that plays the YouTube videos and Twitch clips viewers request, instead of its own page. Viewers can only request them while one is picked. Sign in to YouTube in Moblin's browser to play videos with your account. Create one in Settings → Scenes and add it to the scenes you stream with." : {
       "comment" : "A widget that plays videos.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Browser-Widget, das statt seiner eigenen Seite die YouTube-Videos und Twitch-Clips abspielt, die Zuschauer anfordern. Zuschauer können nur anfragen, solange eines ausgewählt ist. Melde dich in Moblins Browser bei YouTube an, um Videos mit deinem Konto abzuspielen. Erstelle eines unter Einstellungen → Szenen und füge es den Szenen hinzu, mit denen du streamst."
+          }
+        },
+        "eo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Br0ws3r w1dg3t th@t pl@ys th3 Y0_T_b3 v1d30s @nd Tw1tch cl1ps v13w3rs r3q_3st, 1nst3@d 0f 1ts 0wn p@g3. V13w3rs c@n 0nly r3q_3st th3m wh1l3 0n3 1s p1ck3d. S1gn 1n t0 Y0_T_b3 1n M0bl1n's br0ws3r t0 pl@y v1d30s w1th y0_r @cc0_nt. Cr3@t3 0n3 1n S3tt1ngs → Sc3n3s 4nd 4dd 1t t0 th3 sc3n3s y0_ str34m w1th."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget de navegador que reproduce los vídeos de YouTube y clips de Twitch que piden los espectadores, en lugar de su propia página. Los espectadores solo pueden pedirlos mientras haya uno seleccionado. Inicia sesión en YouTube en el navegador de Moblin para reproducir vídeos con tu cuenta. Crea uno en Ajustes → Escenas y añádelo a las escenas con las que emites."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selainwidget, joka toistaa katsojien pyytämät YouTube-videot ja Twitch-klipit oman sivunsa sijaan. Katsojat voivat esittää pyyntöjä vain, kun sellainen on valittuna. Kirjaudu YouTubeen Moblinin selaimessa toistaaksesi videoita omalla tililläsi. Luo sellainen kohdassa Asetukset → Näkymät ja lisää se näkymiin, joilla striimaat."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget navigateur qui lit les vidéos YouTube et les clips Twitch demandés par les spectateurs, au lieu de sa propre page. Les spectateurs ne peuvent en demander que lorsqu'un widget est sélectionné. Connectez-vous à YouTube dans le navigateur de Moblin pour lire les vidéos avec votre compte. Créez-en un dans Réglages → Scènes et ajoutez-le aux scènes que vous utilisez en stream."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ब्राउज़र विजेट जो अपने पेज के बजाय दर्शकों द्वारा अनुरोधित YouTube वीडियो और Twitch क्लिप चलाता है। दर्शक तभी अनुरोध कर सकते हैं जब कोई एक चुना हुआ हो। अपने अकाउंट से वीडियो चलाने के लिए Moblin के ब्राउज़र में YouTube में साइन इन करें। सेटिंग्स → सीन में एक बनाएँ और उसे उन सीन में जोड़ें जिनसे आप स्ट्रीम करते हैं।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget browser yang memutar video YouTube dan klip Twitch yang diminta penonton, bukan halamannya sendiri. Penonton hanya bisa meminta saat salah satunya dipilih. Masuk ke YouTube di browser Moblin untuk memutar video dengan akun Anda. Buat di Pengaturan → Adegan dan tambahkan ke adegan yang Anda gunakan untuk streaming."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget browser che riproduce i video YouTube e le clip Twitch richiesti dagli spettatori, invece della propria pagina. Gli spettatori possono fare richieste solo mentre ne è selezionato uno. Accedi a YouTube nel browser di Moblin per riprodurre i video con il tuo account. Creane uno in Impostazioni → Scene e aggiungilo alle scene con cui fai streaming."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "独自のページの代わりに、視聴者がリクエストしたYouTube動画やTwitchクリップを再生するブラウザウィジェット。選択されている間のみ視聴者はリクエストできます。自分のアカウントで動画を再生するには、Moblinのブラウザで YouTube にサインインしてください。設定 → シーンで作成し、配信に使うシーンに追加してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "자체 페이지 대신 시청자가 요청한 YouTube 동영상과 Twitch 클립을 재생하는 브라우저 위젯입니다. 하나가 선택되어 있을 때만 시청자가 요청할 수 있습니다. 내 계정으로 동영상을 재생하려면 Moblin 브라우저에서 YouTube에 로그인하세요. 설정 → 장면에서 만들고 방송에 사용하는 장면에 추가하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Browserwidget die de YouTube-video's en Twitch-clips afspeelt die kijkers aanvragen, in plaats van een eigen pagina. Kijkers kunnen alleen aanvragen doen als er een is gekozen. Log in bij YouTube in de browser van Moblin om video's met je account af te spelen. Maak er een aan in Instellingen → Scènes en voeg hem toe aan de scènes waarmee je streamt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widżet przeglądarki, który zamiast własnej strony odtwarza filmy z YouTube i klipy z Twitcha zamawiane przez widzów. Widzowie mogą je zamawiać tylko wtedy, gdy jeden jest wybrany. Zaloguj się do YouTube w przeglądarce Moblin, aby odtwarzać filmy ze swojego konta. Utwórz go w Ustawienia → Sceny i dodaj do scen, z których streamujesz."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget de navegador que reproduz os vídeos do YouTube e clipes da Twitch que os espectadores pedem, em vez da sua própria página. Os espectadores só podem fazer pedidos enquanto um estiver selecionado. Entre no YouTube no navegador do Moblin para reproduzir vídeos com sua conta. Crie um em Ajustes → Cenas e adicione-o às cenas que você usa na live."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget de navegador que reproduz os vídeos do YouTube e clips da Twitch que os espectadores pedem, em vez da sua própria página. Os espectadores só podem fazer pedidos enquanto um estiver selecionado. Inicie sessão no YouTube no navegador do Moblin para reproduzir vídeos com a sua conta. Crie um em Definições → Cenas e adicione-o às cenas com que transmite."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Виджет браузера, который вместо своей страницы воспроизводит видео YouTube и клипы Twitch, заказанные зрителями. Зрители могут заказывать, только пока один из них выбран. Войдите в YouTube в браузере Moblin, чтобы воспроизводить видео со своего аккаунта. Создайте его в Настройки → Сцены и добавьте в сцены, с которыми стримите."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget prehliadača, ktorý namiesto vlastnej stránky prehráva videá z YouTube a klipy z Twitchu, ktoré si vyžiadajú diváci. Diváci môžu žiadať, len keď je jeden vybraný. Prihláste sa do YouTube v prehliadači Moblin, aby sa videá prehrávali s vaším účtom. Vytvorte ho v Nastavenia → Scény a pridajte ho do scén, s ktorými streamujete."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Webbläsarwidget som spelar upp de YouTube-videor och Twitch-klipp som tittarna önskar, i stället för sin egen sida. Tittarna kan bara önska medan en är vald. Logga in på YouTube i Moblins webbläsare för att spela upp videor med ditt konto. Skapa en under Inställningar → Scener och lägg till den i scenerna du streamar med."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kendi sayfası yerine izleyicilerin istediği YouTube videolarını ve Twitch kliplerini oynatan tarayıcı widget'ı. İzleyiciler yalnızca biri seçiliyken istekte bulunabilir. Videoları kendi hesabınızla oynatmak için Moblin'in tarayıcısında YouTube'a giriş yapın. Ayarlar → Sahneler'de bir tane oluşturun ve yayın yaptığınız sahnelere ekleyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Віджет браузера, який замість своєї сторінки відтворює відео YouTube і кліпи Twitch, замовлені глядачами. Глядачі можуть замовляти, лише поки один із них вибрано. Увійдіть у YouTube у браузері Moblin, щоб відтворювати відео зі свого облікового запису. Створіть його в Налаштування → Сцени та додайте до сцен, з якими стримите."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widget trình duyệt phát các video YouTube và clip Twitch mà người xem yêu cầu, thay vì trang của chính nó. Người xem chỉ có thể yêu cầu khi có một widget được chọn. Đăng nhập YouTube trong trình duyệt của Moblin để phát video bằng tài khoản của bạn. Tạo một widget trong Cài đặt → Cảnh và thêm vào các cảnh bạn dùng để phát trực tiếp."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "浏览器小组件，播放观众点播的 YouTube 视频和 Twitch 剪辑，而非其自身页面。只有在选中一个时观众才能点播。在 Moblin 的浏览器中登录 YouTube，即可使用你的账号播放视频。在设置 → 场景中创建一个，并将其添加到你直播使用的场景中。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "瀏覽器小工具，播放觀眾點播的 YouTube 影片和 Twitch 剪輯，而非其本身的頁面。只有在選取一個時觀眾才能點播。在 Moblin 的瀏覽器中登入 YouTube，即可使用你的帳號播放影片。在設定 → 場景中建立一個，並將其加入你直播使用的場景。"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "瀏覽器小工具，播放觀眾點播的 YouTube 影片和 Twitch 剪輯，而非其本身的頁面。只有在選取一個時觀眾才能點播。在 Moblin 的瀏覽器中登入 YouTube，即可使用你的帳號播放影片。在設定 → 場景中建立一個，並將其加入你直播使用的場景。"
+          }
+        }
+      }
     },
     "Browser widgets reloaded" : {
       "localizations" : {
@@ -76607,6 +77025,10 @@
           }
         }
       }
+    },
+    "Copy layout" : {
+      "comment" : "A button that copies the current layout.",
+      "isCommentAutoGenerated" : true
     },
     "Copy to clipboard" : {
       "localizations" : {
@@ -127093,7 +127515,146 @@
       }
     },
     "Help and inspiration" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hilfe und Inspiration"
+          }
+        },
+        "eo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "H3lp @nd 1nsp1r@t10n"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ayuda e inspiración"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apua ja inspiraatiota"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aide et inspiration"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सहायता और प्रेरणा"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bantuan dan inspirasi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aiuto e ispirazione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ヘルプとヒント"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "도움말 및 영감"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hulp en inspiratie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pomoc i inspiracje"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajuda e inspiração"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajuda e inspiração"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Помощь и идеи"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pomoc a inšpirácia"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hjälp och inspiration"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yardım ve ilham"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Допомога та ідеї"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Trợ giúp và cảm hứng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "帮助与灵感"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "說明與靈感"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "說明與靈感"
+          }
+        }
+      }
     },
     "Help and support" : {
       "localizations" : {
@@ -146631,154 +147192,6 @@
         }
       }
     },
-    "Load layout" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Layout laden"
-          }
-        },
-        "eo" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L04d l4y0_t"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cargar diseño"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lataa asettelu"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Charger la disposition"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "लेआउट लोड करें"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Muat tata letak"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carica layout"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "レイアウトを読み込む"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "레이아웃 불러오기"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lay-out laden"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wczytaj układ"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Carregar layout"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Carregar layout"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Загрузить макет"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Načítať rozloženie"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ladda layout"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Düzeni yükle"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Завантажити макет"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tải bố cục"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "加载布局"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "載入版面配置"
-          }
-        },
-        "zh-Hant-TW" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "載入版面配置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "讀取佈局"
-          }
-        }
-      }
-    },
     "Load more" : {
       "localizations" : {
         "de" : {
@@ -157667,7 +158080,147 @@
     },
     "Media share" : {
       "comment" : "A heading for the media share widget of a Moblin Cloud page.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Medienfreigabe"
+          }
+        },
+        "eo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "M3d14 sh4r3"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Compartir multimedia"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Median jako"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Partage de médias"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "मीडिया शेयर"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Berbagi media"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Condivisione media"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "メディア共有"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "미디어 공유"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Media delen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Udostępnianie multimediów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Compartilhamento de mídia"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Partilha de multimédia"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Медиазаказ"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zdieľanie médií"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mediadelning"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Medya paylaşımı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Медіазамовлення"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chia sẻ media"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "媒体分享"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "媒體分享"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "媒體分享"
+          }
+        }
+      }
     },
     "MediaMTX WHIP" : {
       "localizations" : {
@@ -192998,6 +193551,10 @@
         }
       }
     },
+    "Paste layout" : {
+      "comment" : "A button that pastes a layout.",
+      "isCommentAutoGenerated" : true
+    },
     "Pause between messages" : {
       "localizations" : {
         "de" : {
@@ -196808,7 +197365,147 @@
     },
     "Play sound" : {
       "comment" : "Text for the \"Play sound\" option in the settings.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ton abspielen"
+          }
+        },
+        "eo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pl4y s0_nd"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reproducir sonido"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toista ääni"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jouer un son"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ध्वनि चलाएँ"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Putar suara"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Riproduci suono"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "サウンドを再生"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "사운드 재생"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geluid afspelen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Odtwórz dźwięk"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tocar som"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reproduzir som"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Воспроизводить звук"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Prehrať zvuk"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Spela upp ljud"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ses çal"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Відтворювати звук"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Phát âm thanh"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "播放声音"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "播放音效"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "播放音效"
+          }
+        }
+      }
     },
     "Play." : {
       "comment" : "A description of how to play music on Spotify.",
@@ -216846,7 +217543,147 @@
     },
     "Requested a video" : {
       "comment" : "Text describing a video request.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hat ein Video angefordert"
+          }
+        },
+        "eo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "R3q_3st3d @ v1d30"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pidió un vídeo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pyysi videota"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A demandé une vidéo"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "एक वीडियो का अनुरोध किया"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Meminta video"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ha richiesto un video"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "動画をリクエストしました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "동영상을 요청함"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Heeft een video aangevraagd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zamówił(a) film"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pediu um vídeo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pediu um vídeo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Заказал(а) видео"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vyžiadal(a) si video"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Önskade en video"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bir video istedi"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Замовив(-ла) відео"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Đã yêu cầu một video"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "点播了视频"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "點播了影片"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "點播了影片"
+          }
+        }
+      }
     },
     "Reset" : {
       "localizations" : {
@@ -225688,154 +226525,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "儲存現在位置"
-          }
-        }
-      }
-    },
-    "Save layout" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Layout speichern"
-          }
-        },
-        "eo" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "S@v3 l@y0_t"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Guardar diseño"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tallenna asettelu"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Enregistrer la disposition"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "लेआउट सहेजें"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Simpan tata letak"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salva layout"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "レイアウトを保存"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "레이아웃 저장"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Indeling opslaan"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zapisz układ"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Salvar layout"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Guardar layout"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сохранить макет"
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Uložiť rozloženie"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spara layout"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Düzeni kaydet"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Зберегти макет"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lưu bố cục"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "保存布局"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "儲存版面配置"
-          }
-        },
-        "zh-Hant-TW" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "儲存版面配置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "儲存佈局"
           }
         }
       }
@@ -306017,6 +306706,10 @@
         }
       }
     },
+    "Use copy/paste layout to position a widget in the same place in multiple scenes. Alternatively, use a Scene widget to easily show the same widgets in multiple scenes." : {
+      "comment" : "A description of how to copy and paste a widget's layout.",
+      "isCommentAutoGenerated" : true
+    },
     "Use game controllers to zoom, set scene, and more, from a distance." : {
       "localizations" : {
         "de" : {
@@ -306595,154 +307288,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "使用遠端來源"
-          }
-        }
-      }
-    },
-    "Use save/load layout to position a widget in the same place in multiple scenes. Alternatively, use a Scene widget to easily show the same widgets in multiple scenes." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verwende Layout speichern/laden, um ein Widget an derselben Stelle in mehreren Szenen zu positionieren. Alternativ kann ein Szenen-Widget verwenden werden, um dieselben Widgets ganz einfach in mehreren Szenen anzuzeigen."
-          }
-        },
-        "eo" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "_s3 s4v3/l04d l4y0_t t0 p0s1t10n 4 w1dg3t 1n th3 s4m3 pl4c3 1n m_lt1pl3 sc3n3s. 4lt3rn4t1v3ly, _s3 4 Sc3n3 w1dg3t t0 34s1ly sh0w th3 s4m3 w1dg3ts 1n m_lt1pl3 sc3n3s."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Usa guardar/cargar diseño para colocar un widget en el mismo lugar en varias escenas. También puedes usar un widget Escena para mostrar fácilmente los mismos widgets en varias escenas."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Asettelun tallennuksen ja lataamisen avulla voit sijoittaa widgetin samaan paikkaan eri näkymässä. Vaihtoehtoisesti voit näyttää samat widgetit useissa näkymissä helposti käyttämällä Näkymä-widgettiä."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utilisez l'enregistrement/chargement de la disposition pour placer un widget au même endroit dans plusieurs scènes. Sinon, utilisez un widget Scène pour afficher facilement les mêmes widgets dans plusieurs scènes."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "एक विजेट को कई सीन में एक ही जगह रखने के लिए लेआउट सेव/लोड करें। वैकल्पिक रूप से, कई सीन में वही विजेट आसानी से दिखाने के लिए सीन विजेट का उपयोग करें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gunakan simpan/muat tata letak untuk menempatkan widget di posisi yang sama di beberapa scene. Atau, gunakan widget Scene untuk menampilkan widget yang sama di beberapa scene dengan mudah."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usa Salva/Carica layout per mettere un widget nello stesso punto in più scene. In alternativa, usa un widget Scena per mostrare gli stessi widget in più scene."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "レイアウトの保存/読み込みを使うと、複数のシーンでウィジェットを同じ位置に配置できます。または、シーンウィジェットを使って同じウィジェットを複数のシーンに簡単に表示できます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "레이아웃 저장/불러오기를 사용하여 다른 장면에 위젯을 동일한 위치에 배치합니다. 또는 장면 위젯을 사용하여 여러 장면에 동일한 위젯을 쉽게 표시할 수 있습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gebruik layout opslaan/laden om een widget in meerdere scènes op dezelfde plek te zetten. Of gebruik een Scène-widget om dezelfde widgets eenvoudig in meerdere scènes te tonen."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Użyj zapisu/wczytywania układu, aby umieścić widżet w tym samym miejscu w wielu scenach. Możesz też użyć widżetu Scena, aby łatwo pokazać te same widżety w wielu scenach."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Use salvar/carregar layout para posicionar um widget no mesmo lugar em várias cenas. Ou use um widget Cena para mostrar facilmente os mesmos widgets em várias cenas."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utilize guardar/carregar disposição para posicionar um widget no mesmo local em várias cenas. Em alternativa, utilize um widget Cena para mostrar facilmente os mesmos widgets em várias cenas."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Используйте макет сохранения/загрузки, чтобы расположить виджет в одном и том же месте на нескольких сценах. Альтернативно, используйте виджет «Сцена», чтобы легко отображать одни и те же виджеты в нескольких сценах."
-          }
-        },
-        "sk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Použite uloženie/načítanie rozloženia na umiestnenie widgetu na rovnaké miesto vo viacerých scénach. Prípadne použite widget Scéna na jednoduché zobrazenie rovnakých widgetov vo viacerých scénach."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Använd spara/ladda layout för att placera en widget på samma plats i flera scener. Alternativt kan du använda en scenwidget för att enkelt visa samma widgets i flera scener."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bir widget'ı birden fazla sahnede aynı yere yerleştirmek için düzeni kaydet/yükle özelliğini kullanın. Alternatif olarak, aynı widget'ları birden fazla sahnede kolayca göstermek için Sahne widget'ı kullanın."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Використовуйте збереження/завантаження макета, щоб розміщувати віджет в одному місці в кількох сценах. Або використайте віджет «Сцена», щоб легко показувати ті самі віджети в кількох сценах."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Dùng lưu/tải bố cục để đặt widget ở cùng vị trí trong nhiều cảnh. Hoặc dùng widget Cảnh để dễ dàng hiển thị cùng các widget trong nhiều cảnh."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "使用保存/加载布局，可让小组件在多个场景中位于同一位置。或者使用场景小组件，在多个场景中轻松显示相同的小组件。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "使用儲存/載入版面配置，可讓小工具在多個場景中位於相同位置。或者使用場景小工具，在多個場景中輕鬆顯示相同的小工具。"
-          }
-        },
-        "zh-Hant-TW" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "使用「儲存/載入版面配置」功能，將小工具定位在多個場景中的相同位置。或者，使用「場景小工具」來輕鬆在多個場景中顯示相同的小工具。"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "儲存或讀取佈局在不同場景同步相同位置。或使用場景小工具在不同場景中顯示相同小工具"
           }
         }
       }
@@ -312912,7 +313457,146 @@
       }
     },
     "Videos" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Videos"
+          }
+        },
+        "eo" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V1d30s"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vídeos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Videot"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vidéos"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "वीडियो"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Video"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Video"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "動画"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "동영상"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Video's"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filmy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vídeos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vídeos"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Видео"
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Videá"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Videor"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Videolar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Відео"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Video"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "视频"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "影片"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "影片"
+          }
+        }
+      }
     },
     "Viewer" : {
       "localizations" : {
