@@ -290,7 +290,6 @@ extension Model {
         effects.replayLayout.apply(&layout.y, newReplay.layout.y)
         effects.replayLayout.apply(&layout.size, newReplay.layout.size)
         effects.replayLayout.apply(&layout.alignment, newReplay.layout.alignment)
-        effects.replayLayout.apply(&layout.positioningLock, newReplay.layout.positioningLock)
         if effects.replayLayout.changed {
             replay.layout = layout
         }

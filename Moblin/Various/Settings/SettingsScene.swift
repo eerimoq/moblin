@@ -675,10 +675,6 @@ enum SettingsAlignment: String, Codable, CaseIterable {
         self == .leftCenter || self == .rightCenter || self == .center
     }
 
-    func isHorizontalOrVerticalCenter() -> Bool {
-        isHorizontalCenter() || isVerticalCenter()
-    }
-
     func isTop() -> Bool {
         self == .topLeft || self == .topRight || self == .topCenter
     }
@@ -2842,7 +2838,6 @@ struct SettingsWidgetLayout: Equatable {
     var y: Double = 0.0
     var size: Double = 100.0
     var alignment: SettingsAlignment = .topLeft
-    var positioningLock: Bool = false
 
     func extent() -> CGRect {
         .init(x: x, y: y, width: size, height: size)
@@ -2920,7 +2915,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         case y
         case size
         case alignment
-        case positioningLock
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -2931,7 +2925,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         try container.encode(.y, layout.y)
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
-        try container.encode(.positioningLock, layout.positioningLock)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -2942,7 +2935,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         layout.y = container.decode(.y, Double.self, 0.0)
         layout.size = container.decode(.size, Double.self, 100.0)
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
-        layout.positioningLock = container.decode(.positioningLock, Bool.self, false)
     }
 
     func clone() -> SettingsSceneWidget {

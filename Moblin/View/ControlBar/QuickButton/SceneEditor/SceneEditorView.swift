@@ -36,14 +36,6 @@ private func distance(_ first: CGPoint, _ second: CGPoint) -> Double {
     hypot(first.x - second.x, first.y - second.y)
 }
 
-private func movesDiagonally(_ layout: SettingsWidgetLayout) -> Bool {
-    layout.positioningLock && !layout.alignment.isHorizontalOrVerticalCenter()
-}
-
-private func diagonalDirection(_ alignment: SettingsAlignment) -> CGSize {
-    CGSize(width: alignment.isLeft() ? 1 : -1, height: alignment.isTop() ? 1 : -1)
-}
-
 private func widgetOutlineViewRect(_ rect: CGRect, _ canvasSize: CGSize, _ mirror: Bool,
                                    _ size: CGSize) -> CGRect
 {
@@ -174,14 +166,6 @@ private struct SceneEditorCanvasView: View {
         outline.sized && outline.widget.hasSize()
     }
 
-    private func resizeAnchors(_ outline: WidgetOutline) -> [SettingsAlignment] {
-        if movesDiagonally(outline.sceneWidget.layout) {
-            [outline.alignment]
-        } else {
-            [.topLeft, .topRight, .bottomLeft, .bottomRight]
-        }
-    }
-
     private func startEdit(
         _ outline: WidgetOutline,
         _ mode: SceneEditorEditMode,
@@ -192,24 +176,6 @@ private struct SceneEditorCanvasView: View {
                                anchor: anchor,
                                startSize: outline.sceneWidget.layout.size,
                                rect: outline.rect)
-    }
-
-    private func diagonalPosition(_ alignment: SettingsAlignment,
-                                  _ size: CGSize,
-                                  _ position: CGPoint,
-                                  _ threshold: Double) -> CGPoint
-    {
-        let direction = diagonalDirection(alignment)
-        let start = CGPoint(x: alignment.isLeft() ? 0 : canvasSize.width - size.width,
-                            y: alignment.isTop() ? 0 : canvasSize.height - size.height)
-        let maximum = min(canvasSize.width, canvasSize.height)
-        var offset = ((position.x - start.x) * direction.width + (position.y - start.y) * direction.height) /
-            2
-        offset = offset.clamped(to: 0 ... maximum)
-        if offset < threshold {
-            offset = 0
-        }
-        return CGPoint(x: start.x + direction.width * offset, y: start.y + direction.height * offset)
     }
 
     private func snapTargetsX(_ outline: WidgetOutline) -> [Double] {
@@ -234,32 +200,28 @@ private struct SceneEditorCanvasView: View {
         let rect = edit.outline.rect
         let position = CGPoint(x: rect.minX + delta.width, y: rect.minY + delta.height)
         let layout = edit.outline.sceneWidget.layout
-        if movesDiagonally(layout) {
-            edit.rect.origin = diagonalPosition(layout.alignment, rect.size, position, snapThreshold)
+        let others = sceneEditor.outlines.filter { $0.id != edit.outline.id }
+        let x = if layout.alignment.isHorizontalCenter() {
+            SceneEditorSnap(position: rect.minX)
         } else {
-            let others = sceneEditor.outlines.filter { $0.id != edit.outline.id }
-            let x = if layout.alignment.isHorizontalCenter() {
-                SceneEditorSnap(position: rect.minX)
-            } else {
-                sceneEditorSnapAxis(position.x,
-                                    rect.width,
-                                    canvasSize.width,
-                                    snapThreshold,
-                                    others.flatMap(snapTargetsX))
-            }
-            let y = if layout.alignment.isVerticalCenter() {
-                SceneEditorSnap(position: rect.minY)
-            } else {
-                sceneEditorSnapAxis(position.y,
-                                    rect.height,
-                                    canvasSize.height,
-                                    snapThreshold,
-                                    others.flatMap(snapTargetsY))
-            }
-            edit.rect.origin = CGPoint(x: x.position, y: y.position)
-            edit.guideX = x.guide
-            edit.guideY = y.guide
+            sceneEditorSnapAxis(position.x,
+                                rect.width,
+                                canvasSize.width,
+                                snapThreshold,
+                                others.flatMap(snapTargetsX))
         }
+        let y = if layout.alignment.isVerticalCenter() {
+            SceneEditorSnap(position: rect.minY)
+        } else {
+            sceneEditorSnapAxis(position.y,
+                                rect.height,
+                                canvasSize.height,
+                                snapThreshold,
+                                others.flatMap(snapTargetsY))
+        }
+        edit.rect.origin = CGPoint(x: x.position, y: y.position)
+        edit.guideX = x.guide
+        edit.guideY = y.guide
         self.edit = edit
         model.sceneEditorMoveWidget(sceneWidget: edit.outline.sceneWidget, rect: edit.rect)
     }
@@ -374,15 +336,6 @@ private struct SceneEditorCanvasView: View {
         .stroke(.yellow, lineWidth: 1)
     }
 
-    private func diagonalGuideLine(_ alignment: SettingsAlignment) -> some View {
-        let direction = diagonalDirection(alignment)
-        let length = min(canvasSize.width, canvasSize.height)
-        let corner = CGPoint(x: alignment.isLeft() ? 0 : canvasSize.width,
-                             y: alignment.isTop() ? 0 : canvasSize.height)
-        let end = CGPoint(x: corner.x + direction.width * length, y: corner.y + direction.height * length)
-        return guideLine(corner, end)
-    }
-
     private func guidesView() -> some View {
         ZStack {
             if let edit {
@@ -391,10 +344,6 @@ private struct SceneEditorCanvasView: View {
                 }
                 if let guideY = edit.guideY {
                     guideLine(CGPoint(x: 0, y: guideY), CGPoint(x: canvasSize.width, y: guideY))
-                }
-                let layout = edit.outline.sceneWidget.layout
-                if edit.mode == .move, movesDiagonally(layout) {
-                    diagonalGuideLine(layout.alignment)
                 }
             }
         }
@@ -437,7 +386,9 @@ private struct SceneEditorCanvasView: View {
             }
             guidesView()
             if let selectedOutline, isResizable(selectedOutline), edit?.mode != .move {
-                ForEach(resizeAnchors(selectedOutline), id: \.self) { anchor in
+                ForEach([SettingsAlignment.topLeft, .topRight, .bottomLeft, .bottomRight],
+                        id: \.self)
+                { anchor in
                     resizeHandleView(selectedOutline, anchor)
                 }
             }

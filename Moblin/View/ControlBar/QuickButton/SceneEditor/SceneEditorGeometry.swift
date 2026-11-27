@@ -117,9 +117,6 @@ func sceneEditorAlignedLayout(_ layout: SettingsWidgetLayout,
     let rect = CGRect(origin: layoutPosition(layout, size, canvasSize), size: size)
     var layout = layout
     layout.alignment = alignment
-    if alignment.isHorizontalOrVerticalCenter() {
-        layout.positioningLock = false
-    }
     return sceneEditorLayout(layout, rect, canvasSize)
 }
 

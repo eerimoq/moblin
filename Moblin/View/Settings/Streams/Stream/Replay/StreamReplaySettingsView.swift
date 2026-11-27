@@ -110,28 +110,6 @@ private struct LayoutView: View {
         model.stream.resolution.dimensions(portrait: model.stream.portrait)
     }
 
-    private func horizontalIncrement() -> Double {
-        100 / Double(dimensions().width)
-    }
-
-    private func verticalIncrement() -> Double {
-        100 / Double(dimensions().height)
-    }
-
-    private func setXBasedOnYIfLocked() {
-        guard replay.layout.positioningLock else {
-            return
-        }
-        replay.layout.x = replay.layout.y * horizontalIncrement() / verticalIncrement()
-    }
-
-    private func setYBasedOnXIfLocked() {
-        guard replay.layout.positioningLock else {
-            return
-        }
-        replay.layout.y = replay.layout.x * verticalIncrement() / horizontalIncrement()
-    }
-
     private func generalAndAlignmentPicker() -> some View {
         HStack {
             HStack {
@@ -146,40 +124,7 @@ private struct LayoutView: View {
     var body: some View {
         Section {
             generalAndAlignmentPicker()
-            if !replay.layout.alignment.isHorizontalCenter(),
-               !replay.layout.alignment.isVerticalCenter()
-            {
-                HStack(alignment: .center) {
-                    VStack {
-                        PositionEditView(
-                            number: $replay.layout.x,
-                            onSubmit: { setYBasedOnXIfLocked() },
-                            incrementImageName: "arrow.forward.circle",
-                            decrementImageName: "arrow.backward.circle",
-                            mirror: replay.layout.alignment.mirrorPositionHorizontally(),
-                            total: Double(dimensions().width)
-                        )
-                        .padding(.bottom, 10)
-                        PositionEditView(
-                            number: $replay.layout.y,
-                            onSubmit: { setXBasedOnYIfLocked() },
-                            incrementImageName: "arrow.down.circle",
-                            decrementImageName: "arrow.up.circle",
-                            mirror: replay.layout.alignment.mirrorPositionVertically(),
-                            total: Double(dimensions().height)
-                        )
-                    }
-                    Button {
-                        replay.layout.positioningLock.toggle()
-                        setYBasedOnXIfLocked()
-                    } label: {
-                        Image(systemName: replay.layout.positioningLock ? "lock" : "lock.open")
-                            .font(.title)
-                            .frame(width: 35)
-                    }
-                    .buttonStyle(.borderless)
-                }
-            } else if !replay.layout.alignment.isHorizontalCenter() {
+            if !replay.layout.alignment.isHorizontalCenter() {
                 PositionEditView(
                     number: $replay.layout.x,
                     onSubmit: {},
@@ -188,7 +133,8 @@ private struct LayoutView: View {
                     mirror: replay.layout.alignment.mirrorPositionHorizontally(),
                     total: Double(dimensions().width)
                 )
-            } else if !replay.layout.alignment.isVerticalCenter() {
+            }
+            if !replay.layout.alignment.isVerticalCenter() {
                 PositionEditView(
                     number: $replay.layout.y,
                     onSubmit: {},

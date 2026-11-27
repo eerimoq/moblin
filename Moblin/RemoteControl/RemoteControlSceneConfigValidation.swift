@@ -176,18 +176,10 @@ func remoteControlMergeSceneWidgets(_ sceneWidgets: [SettingsSceneWidget],
                                     _ newSceneWidgets: [SettingsSceneWidget]) -> [SettingsSceneWidget]
 {
     newSceneWidgets.map { sceneWidget in
-        let oldSceneWidget = sceneWidgets.first { $0.id == sceneWidget.id }
-        var layout = sceneWidget.layout
-        if layout.alignment != (oldSceneWidget?.layout.alignment ?? SettingsWidgetLayout().alignment),
-           layout.alignment.isHorizontalOrVerticalCenter()
-        {
-            layout.positioningLock = false
-        }
-        guard let oldSceneWidget else {
-            sceneWidget.layout = layout
+        guard let oldSceneWidget = sceneWidgets.first(where: { $0.id == sceneWidget.id }) else {
             return sceneWidget
         }
-        oldSceneWidget.layout = layout
+        oldSceneWidget.layout = sceneWidget.layout
         return oldSceneWidget
     }
 }

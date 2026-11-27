@@ -714,22 +714,20 @@ struct RemoteControlSceneConfigValidationSuite {
     }
 
     @Test
-    func centeringSceneWidgetUnlocksPosition() {
+    func mergeKeepsExistingSceneWidgetAndAppliesLayout() {
         let sceneWidget = SettingsSceneWidget(widgetId: UUID())
-        sceneWidget.layout.positioningLock = true
-        let kept = remoteControlMergeSceneWidgets([sceneWidget], [roundTrip(sceneWidget)])
-        #expect(kept.first === sceneWidget)
-        #expect(sceneWidget.layout.positioningLock)
-        _ = remoteControlMergeSceneWidgets([sceneWidget], [modified(sceneWidget) {
+        let merged = remoteControlMergeSceneWidgets([sceneWidget], [modified(sceneWidget) {
             $0.layout.alignment = .center
         }])
-        #expect(!sceneWidget.layout.positioningLock)
+        #expect(merged.first === sceneWidget)
+        #expect(sceneWidget.layout.alignment == .center)
+    }
+
+    @Test
+    func mergeAddsNewSceneWidget() {
+        let sceneWidget = SettingsSceneWidget(widgetId: UUID())
         let new = SettingsSceneWidget(widgetId: UUID())
-        new.layout.positioningLock = true
-        new.layout.alignment = .topCenter
-        let merged = remoteControlMergeSceneWidgets([sceneWidget], [new])
-        #expect(merged.first === new)
-        #expect(!new.layout.positioningLock)
+        #expect(remoteControlMergeSceneWidgets([sceneWidget], [new]).first === new)
     }
 
     @Test

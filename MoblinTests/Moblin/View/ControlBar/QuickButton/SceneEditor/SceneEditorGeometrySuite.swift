@@ -71,25 +71,6 @@ struct SceneEditorGeometrySuite {
         }
     }
 
-    @Test
-    func alignCenteredClearsPositioningLock() {
-        var layout = makeLayout(.topLeft)
-        layout.positioningLock = true
-        #expect(!sceneEditorAlignedLayout(layout, .leftCenter, .zero, canvasSize).positioningLock)
-        #expect(sceneEditorAlignedLayout(layout, .bottomRight, .zero, canvasSize).positioningLock)
-    }
-
-    @Test
-    func moveWithPositioningLockKeepsCorner() {
-        var layout = makeLayout(.topLeft)
-        layout.positioningLock = true
-        let rect = CGRect(x: 1500, y: 780, width: 400, height: 300)
-        layout = sceneEditorLayout(layout, rect, canvasSize)
-        #expect(layout.alignment == .topLeft)
-        #expect(layout.positioningLock)
-        #expect(isEqual(layoutPosition(layout, rect.size, canvasSize), rect.origin))
-    }
-
     @Test(arguments: SettingsAlignment.allCases)
     func resizeKeepsAlignedPoint(alignment: SettingsAlignment) {
         let rect = CGRect(x: 500, y: 300, width: 400, height: 300)

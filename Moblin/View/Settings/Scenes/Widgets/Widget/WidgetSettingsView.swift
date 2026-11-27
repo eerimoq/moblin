@@ -8,9 +8,6 @@ struct AlignmentOptionView: View {
     var body: some View {
         Button {
             layout.alignment = alignment
-            if alignment.isHorizontalOrVerticalCenter() {
-                layout.positioningLock = false
-            }
         } label: {
             Image(systemName: layout.alignment == alignment ? "square.fill" : "square")
         }
@@ -118,67 +115,6 @@ struct WidgetLayoutView: View {
         )
     }
 
-    private func horizontalIncrement() -> Double {
-        100 / Double(dimensions().width)
-    }
-
-    private func verticalIncrement() -> Double {
-        100 / Double(dimensions().height)
-    }
-
-    private func setXBasedOnYIfLocked() {
-        guard layout.positioningLock else {
-            return
-        }
-        layout.x = layout.y * horizontalIncrement() / verticalIncrement()
-    }
-
-    private func setYBasedOnXIfLocked() {
-        guard layout.positioningLock else {
-            return
-        }
-        layout.y = layout.x * verticalIncrement() / horizontalIncrement()
-    }
-
-    private func horizontalAndVerticalPositioning() -> some View {
-        HStack(alignment: .center) {
-            VStack {
-                PositionEditView(
-                    number: $layout.x,
-                    onSubmit: {
-                        setYBasedOnXIfLocked()
-                        model.sceneUpdatedThrottled()
-                    },
-                    incrementImageName: "arrow.forward.circle",
-                    decrementImageName: "arrow.backward.circle",
-                    mirror: layout.alignment.mirrorPositionHorizontally(),
-                    total: Double(dimensions().width)
-                )
-                .padding(.bottom, 10)
-                PositionEditView(
-                    number: $layout.y,
-                    onSubmit: {
-                        setXBasedOnYIfLocked()
-                        model.sceneUpdatedThrottled()
-                    },
-                    incrementImageName: "arrow.down.circle",
-                    decrementImageName: "arrow.up.circle",
-                    mirror: layout.alignment.mirrorPositionVertically(),
-                    total: Double(dimensions().height)
-                )
-            }
-            Button {
-                layout.positioningLock.toggle()
-                setYBasedOnXIfLocked()
-            } label: {
-                Image(systemName: layout.positioningLock ? "lock" : "lock.open")
-                    .font(.title)
-                    .frame(width: 35)
-            }
-            .buttonStyle(.borderless)
-        }
-    }
-
     private func horizontalPositioning() -> some View {
         PositionEditView(
             number: $layout.x,
@@ -213,11 +149,10 @@ struct WidgetLayoutView: View {
                     LoadLayoutButtonView(layout: $layout)
                 }
                 if widget.hasPosition() {
-                    if !layout.alignment.isHorizontalCenter(), !layout.alignment.isVerticalCenter() {
-                        horizontalAndVerticalPositioning()
-                    } else if !layout.alignment.isHorizontalCenter() {
+                    if !layout.alignment.isHorizontalCenter() {
                         horizontalPositioning()
-                    } else if !layout.alignment.isVerticalCenter() {
+                    }
+                    if !layout.alignment.isVerticalCenter() {
                         verticalPositioning()
                     }
                 }
