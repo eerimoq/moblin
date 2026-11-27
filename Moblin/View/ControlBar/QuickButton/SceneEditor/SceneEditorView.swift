@@ -673,6 +673,17 @@ private struct SceneEditorScenesButtonView: View {
     }
 }
 
+private struct SceneEditorEnableSceneButtonView: View {
+    let model: Model
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        SceneEditorButtonView(image: scene.enabled ? "eye" : "eye.slash") {
+            model.sceneEditorToggleSceneEnabled(scene: scene)
+        }
+    }
+}
+
 private struct SceneEditorDeleteSceneButtonView: View {
     let model: Model
     let scene: SettingsScene
@@ -814,6 +825,7 @@ private struct SceneEditorToolbarView: View {
                 }
             } else {
                 group {
+                    SceneEditorEnableSceneButtonView(model: model, scene: scene)
                     SceneEditorAddWidgetButtonView(model: model,
                                                    database: database,
                                                    scene: scene,

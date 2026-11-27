@@ -52,6 +52,12 @@ extension Model {
         updateWidgetOutlines()
     }
 
+    func sceneEditorToggleSceneEnabled(scene: SettingsScene) {
+        scene.enabled.toggle()
+        sceneEnabledChanged(scene: scene)
+        sceneEditorSelectScene(id: scene.id)
+    }
+
     func sceneEditorMoveWidget(sceneWidget: SettingsSceneWidget, rect: CGRect) {
         sceneWidget.layout = sceneEditorLayout(sceneWidget.layout, rect, sceneEditor.canvasSize)
         sceneUpdatedThrottled()
