@@ -115,22 +115,6 @@ struct WidgetLayoutView: View {
         layout.yString = String(layout.y)
     }
 
-    private func generalAndAlignmentPicker() -> some View {
-        HStack {
-            HStack {
-                SaveLoadLayoutView(layout: $layout)
-                Spacer()
-            }
-            if widget.hasAlignment() {
-                Divider()
-                AlignmentPickerView(layout: $layout)
-                    .onChange(of: layout.alignment) { _ in
-                        model.sceneUpdated()
-                    }
-            }
-        }
-    }
-
     private func horizontalAndVerticalPositioning() -> some View {
         HStack(alignment: .center) {
             VStack {
@@ -205,9 +189,9 @@ struct WidgetLayoutView: View {
     }
 
     var body: some View {
-        if widget.hasAlignment() || widget.hasPosition() || widget.hasSize() {
+        if widget.hasPosition() || widget.hasSize() {
             Section {
-                generalAndAlignmentPicker()
+                SaveLoadLayoutView(layout: $layout)
                 if widget.hasPosition() {
                     if !layout.alignment.isHorizontalCenter(), !layout.alignment.isVerticalCenter() {
                         horizontalAndVerticalPositioning()
