@@ -671,6 +671,30 @@ private struct SceneEditorDeleteSceneButtonView: View {
     }
 }
 
+private struct SceneEditorSelectWidgetButtonView: View {
+    @ObservedObject var sceneEditor: SceneEditor
+    let selection: SceneEditorSelection
+    @State private var presentingWidgets = false
+
+    var body: some View {
+        let outlines = sceneEditor.outlines.filter(\.inScene)
+        SceneEditorButtonView(image: "list.bullet", disabled: outlines.isEmpty) {
+            presentingWidgets = true
+        }
+        .popover(isPresented: $presentingWidgets) {
+            SceneEditorPopoverListView {
+                ForEach(outlines) { outline in
+                    SceneEditorPopoverRowView(image: outline.widget.image(), text: outline.widget.name) {
+                        selection.sceneWidgetId = outline.id
+                        presentingWidgets = false
+                    }
+                    .foregroundStyle(.primary)
+                }
+            }
+        }
+    }
+}
+
 private struct SceneEditorAddWidgetButtonView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -793,6 +817,7 @@ private struct SceneEditorToolbarView: View {
                                                    database: database,
                                                    scene: scene,
                                                    selection: selection)
+                    SceneEditorSelectWidgetButtonView(sceneEditor: model.sceneEditor, selection: selection)
                     SceneEditorButtonView(image: "slider.horizontal.3") {
                         selection.showingSettings.toggle()
                     }
