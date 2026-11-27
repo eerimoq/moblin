@@ -7,6 +7,9 @@ struct StreamWizardChzzkSettingsView: View {
     var body: some View {
         Form {
             Section {
+                ChzzkSetupGuideLink()
+            }
+            Section {
                 TextField("Channel id", text: $createStreamWizard.chzzkChannelId)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)

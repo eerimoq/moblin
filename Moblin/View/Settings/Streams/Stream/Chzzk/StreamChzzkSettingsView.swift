@@ -6,6 +6,54 @@ struct ChzzkChannelIdFooterView: View {
     }
 }
 
+struct ChzzkSetupGuideLink: View {
+    var body: some View {
+        NavigationLink("CHZZK setup guide") {
+            Form {
+                Section("Stream URL and key") {
+                    Text("Copy the stream URL and stream key from Settings in CHZZK Studio on your computer.")
+                    Text(
+                        "In the stream wizard, choose CHZZK, then Moblin → CHZZK, and paste the URL and key."
+                    )
+                }
+                Section("Register an application") {
+                    Link(
+                        "CHZZK developer center",
+                        destination: URL(string: "https://developers.chzzk.naver.com")!
+                    )
+                    Text("Create an application and enter the URL below exactly as its login redirect URL.")
+                    Text(verbatim: chzzkRedirectUri)
+                        .textSelection(.enabled)
+                    Button("Copy login redirect URL") {
+                        UIPasteboard.general.string = chzzkRedirectUri
+                    }
+                }
+                Section("API permissions") {
+                    Text(
+                        "Register an app with permission to read user information, chat messages and donations."
+                    )
+                    Text("To send or hide messages, enable chat write permission.")
+                    Text("To apply or remove restrictions, enable restriction write permission.")
+                }
+                Section("Connect your CHZZK account") {
+                    Text("In the active stream’s settings, open CHZZK under Streaming platforms.")
+                    Text(
+                        "Enter the channel ID to show viewer counts, or leave it blank to fill it in at login."
+                    )
+                    Text(
+                        "Paste the Client ID and Client Secret from your registered application and tap Save."
+                    )
+                    Text("Tap Login, sign in with the account that owns the channel, and approve access.")
+                    Text(
+                        "If you change the app permissions later, log out of CHZZK in Moblin and log in again."
+                    )
+                }
+            }
+            .navigationTitle("CHZZK setup guide")
+        }
+    }
+}
+
 struct StreamChzzkSettingsView: View {
     @ObservedObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -28,7 +76,6 @@ struct StreamChzzkSettingsView: View {
 
     private var credentials: some View {
         Section {
-            Link("CHZZK developer center", destination: URL(string: "https://developers.chzzk.naver.com")!)
             TextField("Client ID", text: $clientId)
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
@@ -41,20 +88,14 @@ struct StreamChzzkSettingsView: View {
             .disabled(!credentialsChanged || clientId.trim().isEmpty != clientSecret.trim().isEmpty)
         } header: {
             Text("API credentials")
-        } footer: {
-            VStack(alignment: .leading) {
-                Text("Register an app with permission to read user information, chat messages and donations.")
-                Text("To send or hide messages, enable chat write permission.")
-                Text("To apply or remove restrictions, enable restriction write permission.")
-                Text("Login redirect URL")
-                Text(verbatim: chzzkRedirectUri)
-                    .textSelection(.enabled)
-            }
         }
     }
 
     var body: some View {
         Form {
+            Section {
+                ChzzkSetupGuideLink()
+            }
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel id"),
