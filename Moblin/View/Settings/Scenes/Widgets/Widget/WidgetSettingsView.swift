@@ -43,40 +43,59 @@ struct AlignmentPickerView: View {
     }
 }
 
-struct SaveLoadLayoutView: View {
+struct SaveLayoutButtonView: View {
     @EnvironmentObject private var model: Model
+    @Binding var layout: SettingsWidgetLayout
+
+    var body: some View {
+        Button {
+            model.layout = layout
+        } label: {
+            HCenter {
+                Text("Save layout")
+            }
+        }
+        .buttonStyle(.bordered)
+        .lineLimit(1)
+        .minimumScaleFactor(0.5)
+    }
+}
+
+struct LoadLayoutButtonView: View {
+    @EnvironmentObject private var model: Model
+    @Binding var layout: SettingsWidgetLayout
+
+    var body: some View {
+        Button {
+            layout = model.layout ?? layout
+            model.sceneUpdated()
+        } label: {
+            HStack {
+                Text("")
+                Spacer(minLength: 0)
+                Text("Load layout")
+                Spacer(minLength: 0)
+                Text("")
+            }
+        }
+        .buttonStyle(.bordered)
+        .disabled(model.layout == nil)
+        .lineLimit(1)
+        .minimumScaleFactor(0.5)
+    }
+}
+
+struct SaveLoadLayoutView: View {
     @Binding var layout: SettingsWidgetLayout
 
     var body: some View {
         VStack(alignment: .leading) {
             Spacer()
-            Button {
-                model.layout = layout
-            } label: {
-                HCenter {
-                    Text("Save layout")
-                }
-            }
-            .buttonStyle(.bordered)
+            SaveLayoutButtonView(layout: $layout)
             Spacer()
-            Button {
-                layout = model.layout ?? layout
-                model.sceneUpdated()
-            } label: {
-                HStack {
-                    Text("")
-                    Spacer(minLength: 0)
-                    Text("Load layout")
-                    Spacer(minLength: 0)
-                    Text("")
-                }
-            }
-            .buttonStyle(.bordered)
-            .disabled(model.layout == nil)
+            LoadLayoutButtonView(layout: $layout)
             Spacer()
         }
-        .lineLimit(1)
-        .minimumScaleFactor(0.5)
     }
 }
 
@@ -191,7 +210,10 @@ struct WidgetLayoutView: View {
     var body: some View {
         if widget.hasPosition() || widget.hasSize() {
             Section {
-                SaveLoadLayoutView(layout: $layout)
+                HStack {
+                    SaveLayoutButtonView(layout: $layout)
+                    LoadLayoutButtonView(layout: $layout)
+                }
                 if widget.hasPosition() {
                     if !layout.alignment.isHorizontalCenter(), !layout.alignment.isVerticalCenter() {
                         horizontalAndVerticalPositioning()
