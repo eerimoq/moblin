@@ -59,12 +59,6 @@ class WhepClient: @unchecked Sendable {
         }
     }
 
-    func isConnected() -> Bool {
-        dispatchQueue.sync {
-            connected
-        }
-    }
-
     func updateStats() -> BitrateStatsInstant {
         dispatchQueue.sync {
             bitrateStats.update()

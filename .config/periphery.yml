@@ -3,4 +3,5 @@ schemes:
 - Moblin
 index_exclude:
 - Moblin/Integrations/Tesla/Protobuf/*
+- Moblin/Integrations/GoPro/Protobuf/*
 disable_update_check: true

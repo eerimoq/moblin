@@ -4,32 +4,10 @@ class ByteWriter {
     private(set) var data = Data()
     private var position = 0
 
-    var length: Int {
-        get {
-            data.count
-        }
-        set {
-            if newValue > data.count {
-                data.append(Data(count: newValue - data.count))
-            } else if newValue < data.count {
-                data = data.subdata(in: 0 ..< newValue)
-            }
-        }
-    }
-
     init() {}
 
     init(data: Data) {
         self.data = data
-    }
-
-    subscript(i: Int) -> UInt8 {
-        get {
-            data[i]
-        }
-        set {
-            data[i] = newValue
-        }
     }
 
     func writeUInt8(_ value: UInt8) {
@@ -115,31 +93,5 @@ class ByteWriter {
         } else {
             writeBytes(Data(value))
         }
-    }
-
-    func sequence(_ length: Int, lambda: (ByteWriter) -> Void) {
-        let r = (data.count - position) % length
-        for index in stride(
-            from: data.startIndex.advanced(by: position),
-            to: data.endIndex.advanced(by: -r),
-            by: length
-        ) {
-            lambda(ByteWriter(data: data.subdata(in: index ..< index.advanced(by: length))))
-        }
-        if r > 0 {
-            lambda(ByteWriter(data: data.advanced(by: data.endIndex - r)))
-        }
-    }
-
-    func toUInt32() -> [UInt32] {
-        let size = MemoryLayout<UInt32>.size
-        if (data.endIndex - position) % size != 0 {
-            return []
-        }
-        var result: [UInt32] = []
-        for index in stride(from: data.startIndex.advanced(by: position), to: data.endIndex, by: size) {
-            result.append(UInt32(data: data[index ..< index.advanced(by: size)]))
-        }
-        return result
     }
 }

@@ -482,14 +482,6 @@ struct StreamYouTubeSettingsView: View {
         }
     }
 
-    private func tokenExpiresIn() -> Duration? {
-        guard let expirationDate = stream.youTubeAuthState?.lastTokenResponse?.accessTokenExpirationDate
-        else {
-            return nil
-        }
-        return .seconds(max(Date().distance(to: expirationDate), 0))
-    }
-
     private func showFailedToFetchVideoIdsToast() {
         model.makeErrorToast(
             title: String(localized: "Failed to fetch YouTube Video IDs"),

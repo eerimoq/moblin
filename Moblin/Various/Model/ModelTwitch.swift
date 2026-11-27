@@ -584,12 +584,6 @@ extension Model {
         }
     }
 
-    func removeRaid() {
-        raid.state = .idle
-        raid.channelImage = ""
-        raid.channelLogin = ""
-    }
-
     private func appendTwitchRaidSent(channelId: String, channelName: String) {
         stream.twitchRaidsSent = appendTwitchRaidChannel(stream.twitchRaidsSent,
                                                          channelId: channelId,

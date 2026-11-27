@@ -112,10 +112,6 @@ final class GoProDevice: NSObject {
         }
     }
 
-    func getState() -> GoProDeviceState {
-        state
-    }
-
     func getBatteryPercentage() -> Int? {
         batteryPercentage
     }

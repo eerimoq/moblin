@@ -220,7 +220,6 @@ struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEventRewa
     // periphery:ignore
     var id: String
     var title: String
-    // periphery:ignore
     var cost: Int
     // periphery:ignore
     var prompt: String
@@ -240,7 +239,6 @@ struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent: De
     var broadcaster_user_login: String
     // periphery:ignore
     var broadcaster_user_name: String
-    // periphery:ignore
     var status: String
     var reward: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEventReward
     // periphery:ignore

@@ -1015,8 +1015,6 @@ extension RtspClient: RtspTransportDelegate {
         performOptions()
     }
 
-    func rtspTransportDisconnected() {}
-
     func rtspTransportReceivedRtspMessage(header: Data, content: Data?) {
         do {
             try handleRtspMessage(header: header, content: content)
