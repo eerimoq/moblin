@@ -47,6 +47,27 @@ private func widgetOutlineViewRect(_ rect: CGRect, _ canvasSize: CGSize, _ mirro
                   height: rect.height / scale)
 }
 
+private struct KeepInsideLayout: Layout {
+    let position: CGPoint
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews _: Subviews, cache _: inout ()) -> CGSize {
+        proposal.replacingUnspecifiedDimensions()
+    }
+
+    func placeSubviews(in bounds: CGRect,
+                       proposal _: ProposedViewSize,
+                       subviews: Subviews,
+                       cache _: inout ())
+    {
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            let x = min(max(position.x, 0), max(bounds.width - size.width, 0))
+            let y = min(max(position.y, 0), max(bounds.height - size.height, 0))
+            subview.place(at: CGPoint(x: bounds.minX + x, y: bounds.minY + y), proposal: .unspecified)
+        }
+    }
+}
+
 private struct WidgetOutlineLabelView: View {
     @ObservedObject var widget: SettingsWidget
     var selected = false
@@ -320,9 +341,13 @@ private struct SceneEditorCanvasView: View {
                     .frame(width: dotSize, height: dotSize)
                     .offset(x: rect.minX - dotSize / 2, y: rect.minY - dotSize / 2)
             }
-            WidgetOutlineLabelView(widget: outline.widget, selected: selected)
-                .offset(x: rect.minX + 4,
-                        y: rect.minY > 24 && !outline.sized ? rect.minY - 24 : rect.minY + 4)
+            KeepInsideLayout(position: CGPoint(
+                x: rect.minX + 4,
+                y: rect.minY > 24 && !outline.sized ? rect.minY - 24 : rect.minY + 4
+            )) {
+                WidgetOutlineLabelView(widget: outline.widget, selected: selected)
+            }
+            .frame(width: size.width, height: size.height)
         }
         .frame(width: size.width, height: size.height, alignment: .topLeading)
         .allowsHitTesting(false)
