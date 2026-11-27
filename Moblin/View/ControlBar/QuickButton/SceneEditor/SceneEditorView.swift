@@ -506,79 +506,6 @@ private struct SceneEditorDrawOrderButtonsView: View {
     }
 }
 
-private func alignmentImage(_ alignment: SettingsAlignment) -> String {
-    switch alignment {
-    case .topLeft:
-        "square.grid.3x3.topleft.filled"
-    case .topCenter:
-        "square.grid.3x3.topmiddle.filled"
-    case .topRight:
-        "square.grid.3x3.topright.filled"
-    case .leftCenter:
-        "square.grid.3x3.middleleft.filled"
-    case .center:
-        "square.grid.3x3.middle.filled"
-    case .rightCenter:
-        "square.grid.3x3.middleright.filled"
-    case .bottomLeft:
-        "square.grid.3x3.bottomleft.filled"
-    case .bottomCenter:
-        "square.grid.3x3.bottommiddle.filled"
-    case .bottomRight:
-        "square.grid.3x3.bottomright.filled"
-    }
-}
-
-private struct SceneEditorAlignmentButtonView: View {
-    let model: Model
-    @ObservedObject var sceneWidget: SettingsSceneWidget
-    let size: CGSize
-    @State private var presentingAlignment = false
-
-    private func option(_ alignment: SettingsAlignment) -> some View {
-        Button {
-            model.sceneEditorSetWidgetAlignment(sceneWidget: sceneWidget, size: size, alignment: alignment)
-        } label: {
-            Image(systemName: sceneWidget.layout.alignment == alignment ? "square.fill" : "square")
-                .font(.title)
-                .frame(width: 44, height: 44)
-        }
-        .buttonStyle(.borderless)
-    }
-
-    var body: some View {
-        SceneEditorButtonView(image: alignmentImage(sceneWidget.layout.alignment)) {
-            presentingAlignment = true
-        }
-        .popover(isPresented: $presentingAlignment) {
-            VStack(spacing: 0) {
-                SceneEditorPopoverTitleView(text: String(localized: "Alignment"))
-                Grid(horizontalSpacing: 0, verticalSpacing: 0) {
-                    GridRow {
-                        option(.topLeft)
-                        option(.topCenter)
-                        option(.topRight)
-                    }
-                    GridRow {
-                        option(.leftCenter)
-                        option(.center)
-                        option(.rightCenter)
-                    }
-                    GridRow {
-                        option(.bottomLeft)
-                        option(.bottomCenter)
-                        option(.bottomRight)
-                    }
-                }
-                .padding([.horizontal, .bottom], 5)
-            }
-            .fixedSize()
-            .padding(5)
-            .presentationCompactAdaptation(.none)
-        }
-    }
-}
-
 private struct SceneEditorPopoverRowView: View {
     let image: String
     let text: String
@@ -808,11 +735,6 @@ private struct SceneEditorToolbarView: View {
         let sceneWidget = selected.sceneWidget
         let widget = selected.widget
         SceneEditorEnableButtonView(model: model, widget: widget)
-        if widget.hasAlignment() {
-            SceneEditorAlignmentButtonView(model: model,
-                                           sceneWidget: sceneWidget,
-                                           size: selected.rect.size)
-        }
         SceneEditorDrawOrderButtonsView(model: model, scene: scene, sceneWidget: sceneWidget)
         SceneEditorButtonView(image: "slider.horizontal.3") {
             selection.showingSettings.toggle()
@@ -968,7 +890,8 @@ struct SceneEditorView: View {
                         SceneWidgetSettingsView(model: model,
                                                 database: database,
                                                 sceneWidget: selected.sceneWidget,
-                                                widget: selected.widget)
+                                                widget: selected.widget,
+                                                size: selected.rect.size)
                     } else if let scene {
                         SceneSettingsView(database: database, scene: scene)
                     } else {

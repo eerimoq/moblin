@@ -2,14 +2,15 @@ import CoreMedia
 import SwiftUI
 
 struct AlignmentOptionView: View {
-    @Binding var layout: SettingsWidgetLayout
+    let selected: SettingsAlignment
     let alignment: SettingsAlignment
+    let onChange: (SettingsAlignment) -> Void
 
     var body: some View {
         Button {
-            layout.alignment = alignment
+            onChange(alignment)
         } label: {
-            Image(systemName: layout.alignment == alignment ? "square.fill" : "square")
+            Image(systemName: selected == alignment ? "square.fill" : "square")
         }
         .buttonStyle(.borderless)
         .font(.title)
@@ -17,24 +18,29 @@ struct AlignmentOptionView: View {
 }
 
 struct AlignmentPickerView: View {
-    @Binding var layout: SettingsWidgetLayout
+    let alignment: SettingsAlignment
+    let onChange: (SettingsAlignment) -> Void
+
+    private func option(_ alignment: SettingsAlignment) -> some View {
+        AlignmentOptionView(selected: self.alignment, alignment: alignment, onChange: onChange)
+    }
 
     var body: some View {
         VStack(spacing: 5) {
             HStack(spacing: 3) {
-                AlignmentOptionView(layout: $layout, alignment: .topLeft)
-                AlignmentOptionView(layout: $layout, alignment: .topCenter)
-                AlignmentOptionView(layout: $layout, alignment: .topRight)
+                option(.topLeft)
+                option(.topCenter)
+                option(.topRight)
             }
             HStack(spacing: 3) {
-                AlignmentOptionView(layout: $layout, alignment: .leftCenter)
-                AlignmentOptionView(layout: $layout, alignment: .center)
-                AlignmentOptionView(layout: $layout, alignment: .rightCenter)
+                option(.leftCenter)
+                option(.center)
+                option(.rightCenter)
             }
             HStack(spacing: 3) {
-                AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
-                AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
-                AlignmentOptionView(layout: $layout, alignment: .bottomRight)
+                option(.bottomLeft)
+                option(.bottomCenter)
+                option(.bottomRight)
             }
         }
     }
@@ -98,8 +104,13 @@ struct CopyPasteLayoutView: View {
 
 struct WidgetLayoutView: View {
     let model: Model
-    @Binding var layout: SettingsWidgetLayout
+    @ObservedObject var sceneWidget: SettingsSceneWidget
     @ObservedObject var widget: SettingsWidget
+    let size: CGSize
+
+    private var layout: SettingsWidgetLayout {
+        sceneWidget.layout
+    }
 
     private func dimensions() -> CMVideoDimensions {
         model.stream.resolution.dimensions(portrait: model.stream.portrait)
@@ -115,9 +126,26 @@ struct WidgetLayoutView: View {
         )
     }
 
+    private func generalAndAlignmentPicker() -> some View {
+        HStack {
+            HStack {
+                CopyPasteLayoutView(layout: $sceneWidget.layout)
+                Spacer()
+            }
+            Divider()
+            AlignmentPickerView(alignment: layout.alignment) { alignment in
+                model.sceneEditorSetWidgetAlignment(
+                    sceneWidget: sceneWidget,
+                    size: size,
+                    alignment: alignment
+                )
+            }
+        }
+    }
+
     private func horizontalPositioning() -> some View {
         PositionEditView(
-            number: $layout.x,
+            number: $sceneWidget.layout.x,
             onSubmit: {
                 model.sceneUpdatedThrottled()
             },
@@ -130,7 +158,7 @@ struct WidgetLayoutView: View {
 
     private func verticalPositioning() -> some View {
         PositionEditView(
-            number: $layout.y,
+            number: $sceneWidget.layout.y,
             onSubmit: {
                 model.sceneUpdatedThrottled()
             },
@@ -142,11 +170,15 @@ struct WidgetLayoutView: View {
     }
 
     var body: some View {
-        if widget.hasPosition() || widget.hasSize() {
+        if widget.hasAlignment() || widget.hasPosition() || widget.hasSize() {
             Section {
-                HStack {
-                    CopyLayoutButtonView(layout: $layout)
-                    PasteLayoutButtonView(layout: $layout)
+                if widget.hasAlignment() {
+                    generalAndAlignmentPicker()
+                } else {
+                    HStack {
+                        CopyLayoutButtonView(layout: $sceneWidget.layout)
+                        PasteLayoutButtonView(layout: $sceneWidget.layout)
+                    }
                 }
                 if widget.hasPosition() {
                     if !layout.alignment.isHorizontalCenter() {
@@ -158,7 +190,7 @@ struct WidgetLayoutView: View {
                 }
                 if widget.hasSize() {
                     SizeEditView(
-                        number: $layout.size,
+                        number: $sceneWidget.layout.size,
                         zero: width(size: 0),
                         total: width(size: 100),
                         onSubmit: {

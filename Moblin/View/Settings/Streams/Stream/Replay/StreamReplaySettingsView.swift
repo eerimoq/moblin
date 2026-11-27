@@ -117,7 +117,9 @@ private struct LayoutView: View {
                 Spacer()
             }
             Divider()
-            AlignmentPickerView(layout: $replay.layout)
+            AlignmentPickerView(alignment: replay.layout.alignment) { alignment in
+                replay.layout.alignment = alignment
+            }
         }
     }
 
