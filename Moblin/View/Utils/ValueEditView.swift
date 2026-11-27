@@ -77,56 +77,106 @@ struct ValueEditView: View {
     }
 }
 
+private struct RepeatButtonView: View {
+    let image: String
+    let disabled: Bool
+    let action: () -> Void
+    @State private var repeater: Task<Void, Never>?
+
+    private func pressingChanged(_ pressing: Bool) {
+        repeater?.cancel()
+        repeater = nil
+        guard pressing, !disabled else {
+            return
+        }
+        action()
+        repeater = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            while !Task.isCancelled {
+                action()
+                try? await Task.sleep(nanoseconds: 15_000_000)
+            }
+        }
+    }
+
+    var body: some View {
+        Image(systemName: image)
+            .font(.title)
+            .foregroundStyle(disabled ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.tint))
+            .contentShape(Rectangle())
+            .onLongPressGesture(minimumDuration: .infinity, maximumDistance: 50) {} onPressingChanged: {
+                pressingChanged($0)
+            }
+            .onDisappear {
+                repeater?.cancel()
+            }
+    }
+}
+
 struct ValueEditCompactView: View {
     @Binding var number: Double
-    @Binding var value: String
     let minimum: Double
     let maximum: Double
-    let onSubmit: (String) -> String
+    var zero: Double = 0
+    let total: Double
+    let onSubmit: () -> Void
     let incrementImageName: String
     let decrementImageName: String
     let mirror: Bool
-    var increment: Double = 1
+    @State private var value = ""
 
-    func add(offset: Double) {
-        if let value = Double(value) {
-            number = (value + offset).clamped(to: minimum ... maximum)
-            self.value = String(number)
+    private func pixels(_ number: Double) -> Double {
+        zero + toPixels(number, total - zero)
+    }
+
+    private func format(_ number: Double) -> String {
+        String(format: "%.2f", pixels(number))
+    }
+
+    private func set(pixels: Double) {
+        number = ((pixels - zero) * 100 / (total - zero)).clamped(to: minimum ... maximum)
+        value = format(number)
+        onSubmit()
+    }
+
+    private func submit() {
+        if let pixels = Double(value.trim()) {
+            set(pixels: pixels)
+        } else {
+            value = format(number)
         }
+    }
+
+    private func add(offset: Double) {
+        set(pixels: pixels(number) + offset)
     }
 
     var body: some View {
         HStack {
             TextField("", text: $value, onEditingChanged: { isEditing in
                 if !isEditing {
-                    value = onSubmit(value.trim())
-                    add(offset: 0)
+                    submit()
                 }
             })
             .keyboardType(.numbersAndPunctuation)
             .onSubmit {
-                value = onSubmit(value.trim())
-                add(offset: 0)
+                submit()
             }
-            Button {
-                add(offset: mirror ? increment : -increment)
-                value = onSubmit(value.trim())
-                add(offset: 0)
-            } label: {
-                Image(systemName: decrementImageName)
-                    .font(.title)
+            RepeatButtonView(image: decrementImageName, disabled: number == (mirror ? maximum : minimum)) {
+                add(offset: mirror ? 1 : -1)
             }
-            .disabled(number == (mirror ? maximum : minimum))
-            Button {
-                add(offset: mirror ? -increment : increment)
-                value = onSubmit(value.trim())
-                add(offset: 0)
-            } label: {
-                Image(systemName: incrementImageName)
-                    .font(.title)
+            RepeatButtonView(image: incrementImageName, disabled: number == (mirror ? minimum : maximum)) {
+                add(offset: mirror ? -1 : 1)
             }
-            .disabled(number == (mirror ? minimum : maximum))
         }
-        .buttonStyle(.borderless)
+        .onAppear {
+            value = format(number)
+        }
+        .onChange(of: number) {
+            value = format($0)
+        }
+        .onChange(of: total) { _ in
+            value = format(number)
+        }
     }
 }

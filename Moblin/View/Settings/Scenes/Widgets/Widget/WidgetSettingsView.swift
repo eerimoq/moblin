@@ -108,6 +108,16 @@ struct WidgetLayoutView: View {
         model.stream.resolution.dimensions(portrait: model.stream.portrait)
     }
 
+    private func width(size: Double) -> Double {
+        let dimensions = dimensions()
+        return model.sceneEditorWidgetWidth(
+            widget: widget,
+            layout: layout,
+            size: size,
+            canvasSize: CGSize(width: Double(dimensions.width), height: Double(dimensions.height))
+        )
+    }
+
     private func horizontalIncrement() -> Double {
         100 / Double(dimensions().width)
     }
@@ -121,7 +131,6 @@ struct WidgetLayoutView: View {
             return
         }
         layout.x = layout.y * horizontalIncrement() / verticalIncrement()
-        layout.xString = String(layout.x)
     }
 
     private func setYBasedOnXIfLocked() {
@@ -129,7 +138,6 @@ struct WidgetLayoutView: View {
             return
         }
         layout.y = layout.x * verticalIncrement() / horizontalIncrement()
-        layout.yString = String(layout.y)
     }
 
     private func horizontalAndVerticalPositioning() -> some View {
@@ -137,7 +145,6 @@ struct WidgetLayoutView: View {
             VStack {
                 PositionEditView(
                     number: $layout.x,
-                    value: $layout.xString,
                     onSubmit: {
                         setYBasedOnXIfLocked()
                         model.sceneUpdatedThrottled()
@@ -145,12 +152,11 @@ struct WidgetLayoutView: View {
                     incrementImageName: "arrow.forward.circle",
                     decrementImageName: "arrow.backward.circle",
                     mirror: layout.alignment.mirrorPositionHorizontally(),
-                    increment: horizontalIncrement()
+                    total: Double(dimensions().width)
                 )
                 .padding(.bottom, 10)
                 PositionEditView(
                     number: $layout.y,
-                    value: $layout.yString,
                     onSubmit: {
                         setXBasedOnYIfLocked()
                         model.sceneUpdatedThrottled()
@@ -158,7 +164,7 @@ struct WidgetLayoutView: View {
                     incrementImageName: "arrow.down.circle",
                     decrementImageName: "arrow.up.circle",
                     mirror: layout.alignment.mirrorPositionVertically(),
-                    increment: verticalIncrement()
+                    total: Double(dimensions().height)
                 )
             }
             Button {
@@ -176,28 +182,26 @@ struct WidgetLayoutView: View {
     private func horizontalPositioning() -> some View {
         PositionEditView(
             number: $layout.x,
-            value: $layout.xString,
             onSubmit: {
                 model.sceneUpdatedThrottled()
             },
             incrementImageName: "arrow.forward.circle",
             decrementImageName: "arrow.backward.circle",
             mirror: layout.alignment.mirrorPositionHorizontally(),
-            increment: horizontalIncrement()
+            total: Double(dimensions().width)
         )
     }
 
     private func verticalPositioning() -> some View {
         PositionEditView(
             number: $layout.y,
-            value: $layout.yString,
             onSubmit: {
                 model.sceneUpdatedThrottled()
             },
             incrementImageName: "arrow.down.circle",
             decrementImageName: "arrow.up.circle",
             mirror: layout.alignment.mirrorPositionVertically(),
-            increment: verticalIncrement()
+            total: Double(dimensions().height)
         )
     }
 
@@ -220,7 +224,8 @@ struct WidgetLayoutView: View {
                 if widget.hasSize() {
                     SizeEditView(
                         number: $layout.size,
-                        value: $layout.sizeString,
+                        zero: width(size: 0),
+                        total: width(size: 100),
                         onSubmit: {
                             model.sceneUpdatedThrottled()
                         }

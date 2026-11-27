@@ -12,8 +12,8 @@ private func isValidChange<T: Equatable>(_ old: T, _ new: T, _ isValid: (T) -> B
 }
 
 private func isValidLayoutChange(_ old: SettingsWidgetLayout, _ new: SettingsWidgetLayout) -> Bool {
-    isValidChange(old.x, new.x) { (0 ... 100).contains($0) }
-        && isValidChange(old.y, new.y) { (0 ... 100).contains($0) }
+    isValidChange(old.x, new.x) { (-100 ... 100).contains($0) }
+        && isValidChange(old.y, new.y) { (-100 ... 100).contains($0) }
         && isValidChange(old.size, new.size) { (1 ... 100).contains($0) }
 }
 

@@ -292,9 +292,6 @@ extension Model {
         effects.replayLayout.apply(&layout.alignment, newReplay.layout.alignment)
         effects.replayLayout.apply(&layout.positioningLock, newReplay.layout.positioningLock)
         if effects.replayLayout.changed {
-            layout.updateXString()
-            layout.updateYString()
-            layout.updateSizeString()
             replay.layout = layout
         }
     }

@@ -2839,25 +2839,10 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
 
 struct SettingsWidgetLayout: Equatable {
     var x: Double = 0.0
-    var xString: String = "0.0"
     var y: Double = 0.0
-    var yString: String = "0.0"
     var size: Double = 100.0
-    var sizeString: String = "100.0"
     var alignment: SettingsAlignment = .topLeft
     var positioningLock: Bool = false
-
-    mutating func updateXString() {
-        xString = String(x)
-    }
-
-    mutating func updateYString() {
-        yString = String(y)
-    }
-
-    mutating func updateSizeString() {
-        sizeString = String(size)
-    }
 
     func extent() -> CGRect {
         .init(x: x, y: y, width: size, height: size)
@@ -2926,9 +2911,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         default:
             break
         }
-        layout.updateXString()
-        layout.updateYString()
-        layout.updateSizeString()
     }
 
     enum CodingKeys: CodingKey {
@@ -2957,11 +2939,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         widgetId = container.decode(.widgetId, UUID.self, .init())
         id = container.decode(.id, UUID.self, .init())
         layout.x = container.decode(.x, Double.self, 0.0)
-        layout.updateXString()
         layout.y = container.decode(.y, Double.self, 0.0)
-        layout.updateYString()
         layout.size = container.decode(.size, Double.self, 100.0)
-        layout.updateSizeString()
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
         layout.positioningLock = container.decode(.positioningLock, Bool.self, false)
     }

@@ -8,6 +8,7 @@ private enum SceneEditorEditMode {
 private struct SceneEditorEdit {
     let outline: WidgetOutline
     let mode: SceneEditorEditMode
+    let anchor: SettingsAlignment
     let startSize: Double
     var rect: CGRect
     var guideX: Double?
@@ -173,17 +174,22 @@ private struct SceneEditorCanvasView: View {
         outline.sized && outline.widget.hasSize()
     }
 
-    private func fixedPoint(_ outline: WidgetOutline) -> CGPoint {
-        sceneEditorFixedPoint(outline.rect, outline.alignment)
+    private func resizeAnchors(_ outline: WidgetOutline) -> [SettingsAlignment] {
+        if movesDiagonally(outline.sceneWidget.layout) {
+            [outline.alignment]
+        } else {
+            [.topLeft, .topRight, .bottomLeft, .bottomRight]
+        }
     }
 
-    private func handlePoint(_ outline: WidgetOutline, _ rect: CGRect) -> CGPoint {
-        sceneEditorHandlePoint(rect, outline.alignment)
-    }
-
-    private func startEdit(_ outline: WidgetOutline, _ mode: SceneEditorEditMode) {
+    private func startEdit(
+        _ outline: WidgetOutline,
+        _ mode: SceneEditorEditMode,
+        _ anchor: SettingsAlignment
+    ) {
         edit = SceneEditorEdit(outline: outline,
                                mode: mode,
+                               anchor: anchor,
                                startSize: outline.sceneWidget.layout.size,
                                rect: outline.rect)
     }
@@ -219,7 +225,7 @@ private struct SceneEditorCanvasView: View {
             guard let outline = selectedOutline, outline.widget.hasPosition() else {
                 return
             }
-            startEdit(outline, .move)
+            startEdit(outline, .move, outline.alignment)
         }
         guard var edit, edit.mode == .move else {
             return
@@ -239,7 +245,6 @@ private struct SceneEditorCanvasView: View {
                                     rect.width,
                                     canvasSize.width,
                                     snapThreshold,
-                                    layout.alignment.isLeft(),
                                     others.flatMap(snapTargetsX))
             }
             let y = if layout.alignment.isVerticalCenter() {
@@ -249,7 +254,6 @@ private struct SceneEditorCanvasView: View {
                                     rect.height,
                                     canvasSize.height,
                                     snapThreshold,
-                                    layout.alignment.isTop(),
                                     others.flatMap(snapTargetsY))
             }
             edit.rect.origin = CGPoint(x: x.position, y: y.position)
@@ -265,11 +269,11 @@ private struct SceneEditorCanvasView: View {
             return
         }
         let rect = edit.outline.rect
-        let fixed = fixedPoint(edit.outline)
+        let fixed = sceneEditorFixedPoint(rect, edit.outline.alignment, edit.anchor)
         let factors = 1 / edit.startSize ... 100 / edit.startSize
         var factor = factor.clamped(to: factors)
         let others = sceneEditor.outlines.filter { $0.id != edit.outline.id }
-        let threshold = snapThreshold / distance(handlePoint(edit.outline, rect), fixed)
+        let threshold = snapThreshold / distance(sceneEditorHandlePoint(rect, edit.anchor), fixed)
         let x = sceneEditorSnapResizeAxis([rect.minX, rect.maxX, rect.midX],
                                           fixed.x,
                                           factor,
@@ -295,18 +299,24 @@ private struct SceneEditorCanvasView: View {
         }
         edit.rect = sceneEditorResizedRect(rect, fixed, factor)
         self.edit = edit
-        model.sceneEditorResizeWidget(sceneWidget: edit.outline.sceneWidget, size: edit.startSize * factor)
+        model.sceneEditorResizeWidget(sceneWidget: edit.outline.sceneWidget,
+                                      size: edit.startSize * factor,
+                                      rect: edit.rect)
     }
 
-    private func handleChanged(_ outline: WidgetOutline, _ value: DragGesture.Value) {
+    private func handleChanged(_ outline: WidgetOutline,
+                               _ anchor: SettingsAlignment,
+                               _ value: DragGesture.Value)
+    {
         if edit == nil {
-            startEdit(outline, .resize)
+            startEdit(outline, .resize, anchor)
         }
-        guard let outline = edit?.outline else {
+        guard let edit else {
             return
         }
-        let fixed = fixedPoint(outline)
-        let start = handlePoint(outline, outline.rect)
+        let outline = edit.outline
+        let fixed = sceneEditorFixedPoint(outline.rect, outline.alignment, edit.anchor)
+        let start = sceneEditorHandlePoint(outline.rect, edit.anchor)
         let delta = canvasDelta(value.translation)
         let current = CGPoint(x: start.x + delta.width, y: start.y + delta.height)
         let startDistance = distance(start, fixed)
@@ -392,8 +402,8 @@ private struct SceneEditorCanvasView: View {
         .allowsHitTesting(false)
     }
 
-    private func resizeHandleView(_ outline: WidgetOutline) -> some View {
-        let point = viewPoint(handlePoint(outline, currentRect(outline)))
+    private func resizeHandleView(_ outline: WidgetOutline, _ anchor: SettingsAlignment) -> some View {
+        let point = viewPoint(sceneEditorHandlePoint(currentRect(outline), anchor))
         return Circle()
             .fill(Color.accentColor)
             .overlay(Circle().stroke(.white, lineWidth: 2))
@@ -404,7 +414,7 @@ private struct SceneEditorCanvasView: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
-                        handleChanged(outline, value)
+                        handleChanged(outline, anchor, value)
                     }
                     .onEnded { _ in
                         edit = nil
@@ -427,7 +437,9 @@ private struct SceneEditorCanvasView: View {
             }
             guidesView()
             if let selectedOutline, isResizable(selectedOutline), edit?.mode != .move {
-                resizeHandleView(selectedOutline)
+                ForEach(resizeAnchors(selectedOutline), id: \.self) { anchor in
+                    resizeHandleView(selectedOutline, anchor)
+                }
             }
         }
         .frame(width: size.width, height: size.height)

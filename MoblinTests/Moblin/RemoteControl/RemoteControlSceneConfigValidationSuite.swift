@@ -541,9 +541,9 @@ struct RemoteControlSceneConfigValidationSuite {
 
     @Test(arguments: [
         (101.0, 0.0, 10.0),
-        (-1, 0, 10),
+        (-101, 0, 10),
         (0, 101, 10),
-        (0, -1, 10),
+        (0, -101, 10),
         (0, 0, 0),
         (0, 0, 101),
     ])
@@ -577,6 +577,13 @@ struct RemoteControlSceneConfigValidationSuite {
                                                     $0.widgets[0].layout.y = 100
                                                     $0.widgets[0].layout.size = 1
                                                     $0.widgets[0].layout.alignment = .bottomRight
+                                                },
+                                                database: fixture.database,
+                                                cameras: fixture.cameras))
+        #expect(isValidRemoteControlSceneUpdate(scene: fixture.mainScene,
+                                                new: modified(fixture.mainScene) {
+                                                    $0.widgets[0].layout.x = -100
+                                                    $0.widgets[0].layout.y = -100
                                                 },
                                                 database: fixture.database,
                                                 cameras: fixture.cameras))

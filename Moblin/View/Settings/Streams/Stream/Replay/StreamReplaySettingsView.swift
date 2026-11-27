@@ -123,7 +123,6 @@ private struct LayoutView: View {
             return
         }
         replay.layout.x = replay.layout.y * horizontalIncrement() / verticalIncrement()
-        replay.layout.xString = String(replay.layout.x)
     }
 
     private func setYBasedOnXIfLocked() {
@@ -131,7 +130,6 @@ private struct LayoutView: View {
             return
         }
         replay.layout.y = replay.layout.x * verticalIncrement() / horizontalIncrement()
-        replay.layout.yString = String(replay.layout.y)
     }
 
     private func generalAndAlignmentPicker() -> some View {
@@ -155,22 +153,20 @@ private struct LayoutView: View {
                     VStack {
                         PositionEditView(
                             number: $replay.layout.x,
-                            value: $replay.layout.xString,
                             onSubmit: { setYBasedOnXIfLocked() },
                             incrementImageName: "arrow.forward.circle",
                             decrementImageName: "arrow.backward.circle",
                             mirror: replay.layout.alignment.mirrorPositionHorizontally(),
-                            increment: horizontalIncrement()
+                            total: Double(dimensions().width)
                         )
                         .padding(.bottom, 10)
                         PositionEditView(
                             number: $replay.layout.y,
-                            value: $replay.layout.yString,
                             onSubmit: { setXBasedOnYIfLocked() },
                             incrementImageName: "arrow.down.circle",
                             decrementImageName: "arrow.up.circle",
                             mirror: replay.layout.alignment.mirrorPositionVertically(),
-                            increment: verticalIncrement()
+                            total: Double(dimensions().height)
                         )
                     }
                     Button {
@@ -186,27 +182,25 @@ private struct LayoutView: View {
             } else if !replay.layout.alignment.isHorizontalCenter() {
                 PositionEditView(
                     number: $replay.layout.x,
-                    value: $replay.layout.xString,
                     onSubmit: {},
                     incrementImageName: "arrow.forward.circle",
                     decrementImageName: "arrow.backward.circle",
                     mirror: replay.layout.alignment.mirrorPositionHorizontally(),
-                    increment: horizontalIncrement()
+                    total: Double(dimensions().width)
                 )
             } else if !replay.layout.alignment.isVerticalCenter() {
                 PositionEditView(
                     number: $replay.layout.y,
-                    value: $replay.layout.yString,
                     onSubmit: {},
                     incrementImageName: "arrow.down.circle",
                     decrementImageName: "arrow.up.circle",
                     mirror: replay.layout.alignment.mirrorPositionVertically(),
-                    increment: verticalIncrement()
+                    total: Double(dimensions().height)
                 )
             }
             SizeEditView(
                 number: $replay.layout.size,
-                value: $replay.layout.sizeString,
+                total: Double(dimensions().width),
                 onSubmit: {}
             )
         } header: {

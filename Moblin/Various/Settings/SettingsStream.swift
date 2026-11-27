@@ -913,11 +913,8 @@ class SettingsStreamReplay: Codable, ObservableObject {
         outStinger = container.decode(.outStinger, SettingsStreamReplayStinger.self, .init())
         postTriggerDelay = container.decode(.postTriggerDelay, Int.self, 3)
         layout.x = container.decode(.x, Double.self, 0.0)
-        layout.updateXString()
         layout.y = container.decode(.y, Double.self, 0.0)
-        layout.updateYString()
         layout.size = container.decode(.size, Double.self, 100.0)
-        layout.updateSizeString()
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
         layout.positioningLock = container.decode(.positioningLock, Bool.self, false)
         enterForegroundCountAtLatestUsage = container.decode(.enterForegroundCountAtLatestUsage,

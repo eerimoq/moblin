@@ -93,10 +93,37 @@ struct SceneEditorGeometrySuite {
     @Test(arguments: SettingsAlignment.allCases)
     func resizeKeepsAlignedPoint(alignment: SettingsAlignment) {
         let rect = CGRect(x: 500, y: 300, width: 400, height: 300)
-        let fixed = sceneEditorFixedPoint(rect, alignment)
+        let fixed = sceneEditorFixedPoint(rect, alignment, alignment)
         let resized = sceneEditorResizedRect(rect, fixed, 1.5)
-        #expect(isEqual(sceneEditorFixedPoint(resized, alignment), fixed))
+        #expect(isEqual(sceneEditorFixedPoint(resized, alignment, alignment), fixed))
         #expect(resized.size == CGSize(width: 600, height: 450))
+    }
+
+    @Test(arguments: [
+        (SettingsAlignment.topLeft, SettingsAlignment.bottomRight, CGPoint(x: 900, y: 600)),
+        (.topLeft, .topRight, CGPoint(x: 900, y: 300)),
+        (.bottomRight, .topLeft, CGPoint(x: 500, y: 300)),
+        (.topCenter, .bottomRight, CGPoint(x: 700, y: 600)),
+        (.leftCenter, .bottomRight, CGPoint(x: 900, y: 450)),
+        (.center, .topLeft, CGPoint(x: 700, y: 450)),
+    ])
+    func resizeFixedPointIsOppositeHandleUnlessCentered(alignment: SettingsAlignment,
+                                                        anchor: SettingsAlignment,
+                                                        expected: CGPoint)
+    {
+        let rect = CGRect(x: 500, y: 300, width: 400, height: 300)
+        #expect(sceneEditorFixedPoint(rect, alignment, anchor) == expected)
+    }
+
+    @Test(arguments: [SettingsAlignment.topLeft, .topRight, .bottomLeft, .bottomRight])
+    func resizeFromAnyCornerKeepsOppositeCorner(anchor: SettingsAlignment) {
+        let rect = CGRect(x: 500, y: 300, width: 400, height: 300)
+        let fixed = sceneEditorFixedPoint(rect, .topLeft, anchor)
+        let resized = sceneEditorResizedRect(rect, fixed, 0.5)
+        let layout = sceneEditorLayout(makeLayout(.topLeft), resized, canvasSize)
+        let position = layoutPosition(layout, resized.size, canvasSize)
+        let moved = CGRect(origin: position, size: resized.size)
+        #expect(isEqual(sceneEditorFixedPoint(moved, .topLeft, anchor), fixed))
     }
 
     @Test
@@ -109,47 +136,45 @@ struct SceneEditorGeometrySuite {
         #expect(sceneEditorHandlePoint(rect, .center) == CGPoint(x: 900, y: 600))
     }
 
-    @Test
-    func snapAxisKeepsOffsetWithinBounds() {
-        #expect(sceneEditorSnapAxis(-300, 400, 1920, 10, true, []).position == 0)
-        #expect(sceneEditorSnapAxis(1800, 400, 1920, 10, true, []).position == 1800)
-        #expect(sceneEditorSnapAxis(2500, 400, 1920, 10, true, []).position == 1920)
-        #expect(sceneEditorSnapAxis(-300, 400, 1920, 10, false, []).position == -300)
-        #expect(sceneEditorSnapAxis(-500, 400, 1920, 10, false, []).position == -400)
-        #expect(sceneEditorSnapAxis(1800, 400, 1920, 10, false, []).position == 1520)
-        #expect(sceneEditorSnapAxis(300, 2000, 1920, 10, true, []).position == 300)
+    @Test(arguments: [
+        (-300.0, 400.0, -300.0),
+        (-500, 400, -400),
+        (1800, 400, 1800),
+        (2500, 400, 1920),
+        (300, 2000, 300),
+    ])
+    func snapAxisKeepsWidgetTouchingCanvas(position: Double, length: Double, expected: Double) {
+        #expect(sceneEditorSnapAxis(position, length, 1920, 10, []).position == expected)
     }
 
     @Test(arguments: [SettingsAlignment.topLeft, .topRight, .bottomLeft, .bottomRight])
     func snapAxisBoundsMatchLayoutBounds(alignment: SettingsAlignment) {
         let size = CGSize(width: 400, height: 300)
         for position in [CGPoint(x: -1000, y: -1000), CGPoint(x: 3000, y: 3000)] {
-            let x = sceneEditorSnapAxis(position.x, size.width, 1920, 10, alignment.isLeft(), [])
-            let y = sceneEditorSnapAxis(position.y, size.height, 1080, 10, alignment.isTop(), [])
+            let x = sceneEditorSnapAxis(position.x, size.width, 1920, 10, [])
+            let y = sceneEditorSnapAxis(position.y, size.height, 1080, 10, [])
             let rect = CGRect(origin: CGPoint(x: x.position, y: y.position), size: size)
             let layout = sceneEditorLayout(makeLayout(alignment), rect, canvasSize)
-            #expect((0 ... 100).contains(layout.x))
-            #expect((0 ... 100).contains(layout.y))
-            #expect([0, 100].contains(layout.x))
-            #expect([0, 100].contains(layout.y))
+            #expect((-100 ... 100).contains(layout.x))
+            #expect((-100 ... 100).contains(layout.y))
         }
     }
 
     @Test
     func snapAxisSnapsToEdgesAndCenter() {
-        #expect(sceneEditorSnapAxis(-5, 400, 1920, 10, true, []).position == 0)
-        #expect(sceneEditorSnapAxis(1525, 400, 1920, 10, true, []).position == 1520)
-        let center = sceneEditorSnapAxis(765, 400, 1920, 10, true, [])
+        #expect(sceneEditorSnapAxis(-5, 400, 1920, 10, []).position == 0)
+        #expect(sceneEditorSnapAxis(1525, 400, 1920, 10, []).position == 1520)
+        let center = sceneEditorSnapAxis(765, 400, 1920, 10, [])
         #expect(center.position == 760)
         #expect(center.guide == 960)
-        let unsized = sceneEditorSnapAxis(955, 0, 1920, 10, true, [])
+        let unsized = sceneEditorSnapAxis(955, 0, 1920, 10, [])
         #expect(unsized.position == 960)
         #expect(unsized.guide == 960)
     }
 
     @Test
     func snapAxisSnapsToOtherWidgets() {
-        let snap = sceneEditorSnapAxis(1003, 400, 1920, 10, true, [1000])
+        let snap = sceneEditorSnapAxis(1003, 400, 1920, 10, [1000])
         #expect(snap.position == 1000)
         #expect(snap.guide == 1000)
     }

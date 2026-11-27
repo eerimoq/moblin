@@ -10,10 +10,9 @@ func sceneEditorSnapAxis(_ position: Double,
                          _ length: Double,
                          _ total: Double,
                          _ threshold: Double,
-                         _ near: Bool,
                          _ targets: [Double]) -> SceneEditorSnap
 {
-    let positions = near ? 0 ... total : -length ... total - length
+    let positions = -length ... total
     let position = position.clamped(to: positions)
     var candidates = [
         SceneEditorSnap(position: 0),
@@ -68,9 +67,12 @@ func sceneEditorHandlePoint(_ rect: CGRect, _ alignment: SettingsAlignment) -> C
             y: alignment.mirrorPositionVertically() ? rect.minY : rect.maxY)
 }
 
-func sceneEditorFixedPoint(_ rect: CGRect, _ alignment: SettingsAlignment) -> CGPoint {
-    CGPoint(x: alignment.isHorizontalCenter() ? rect.midX : alignment.isLeft() ? rect.minX : rect.maxX,
-            y: alignment.isVerticalCenter() ? rect.midY : alignment.isTop() ? rect.minY : rect.maxY)
+func sceneEditorFixedPoint(_ rect: CGRect,
+                           _ alignment: SettingsAlignment,
+                           _ anchor: SettingsAlignment) -> CGPoint
+{
+    CGPoint(x: alignment.isHorizontalCenter() ? rect.midX : anchor.isLeft() ? rect.minX : rect.maxX,
+            y: alignment.isVerticalCenter() ? rect.midY : anchor.isTop() ? rect.minY : rect.maxY)
 }
 
 func sceneEditorResizedRect(_ rect: CGRect, _ fixed: CGPoint, _ factor: Double) -> CGRect {
@@ -100,11 +102,9 @@ func sceneEditorLayout(_ layout: SettingsWidgetLayout,
     let alignment = layout.alignment
     if !alignment.isHorizontalCenter() {
         layout.x = layoutOffsetFromPosition(rect.minX, rect.width, canvasSize.width, alignment.isLeft())
-        layout.updateXString()
     }
     if !alignment.isVerticalCenter() {
         layout.y = layoutOffsetFromPosition(rect.minY, rect.height, canvasSize.height, alignment.isTop())
-        layout.updateYString()
     }
     return layout
 }
