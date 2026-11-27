@@ -1,5 +1,9 @@
 import Foundation
 
+func isValidChzzkChannelId(_ id: String) -> Bool {
+    id.count == 32 && id.allSatisfy { $0.isHexDigit && $0.isASCII }
+}
+
 struct ChzzkTokens: Codable {
     let accessToken: String
     let refreshToken: String
@@ -207,7 +211,7 @@ final class ChzzkApi {
                            get: (URLRequest) async throws -> (Data, HTTPURLResponse) = httpGet(request:))
         async throws -> PlatformStatus
     {
-        guard channelId.count == 32, channelId.allSatisfy({ $0.isHexDigit && $0.isASCII }) else {
+        guard isValidChzzkChannelId(channelId) else {
             throw ChzzkApiError.invalidResponse
         }
         func fetch<T: Decodable>(_ path: String) async throws -> T {

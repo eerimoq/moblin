@@ -54,6 +54,8 @@ func chzzkWriteErrorDetail(_ error: Error, action: ChzzkModerationAction?) -> St
     switch error {
     case ChzzkChatSendError.messageTooLong:
         return String(localized: "CHZZK chat messages are limited to 100 characters.")
+    case ChzzkApiError.status(400) where action == .hideMessage:
+        return String(localized: "Log in with the streaming account to hide CHZZK messages.")
     case ChzzkApiError.status(401):
         return String(localized: "Log in to CHZZK again.")
     case ChzzkApiError.status(403):
@@ -271,7 +273,8 @@ extension Model {
                                      barColor: .mint,
                                      image: "gift.fill",
                                      titleSegments: makeChatPostTextSegments(text: title)),
-            live: true
+            live: true,
+            chzzkTarget: event.moderationTarget
         )
     }
 }

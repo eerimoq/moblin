@@ -149164,6 +149164,16 @@
         }
       }
     },
+    "Log in with the streaming account to hide CHZZK messages." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 메시지를 숨기려면 방송 계정으로 로그인해 주세요."
+          }
+        }
+      }
+    },
     "Log in with your streaming account to receive chat messages and donations." : {
       "localizations" : {
         "ko" : {

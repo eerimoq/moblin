@@ -37,6 +37,14 @@ struct ChzzkDonation: Decodable {
     let donationText: String?
     let payAmount: String
 
+    var moderationTarget: ChzzkModerationTarget? {
+        guard let donatorChannelId, isValidChzzkChannelId(donatorChannelId) else {
+            return nil
+        }
+        return ChzzkModerationTarget(channelId: channelId, senderChannelId: donatorChannelId,
+                                     chatChannelId: nil, messageTime: nil)
+    }
+
     private enum CodingKeys: CodingKey {
         case channelId, donatorChannelId, donatorNickname, donationText, payAmount
     }

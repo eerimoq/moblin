@@ -59,6 +59,19 @@ struct ChzzkEventSuite {
         #expect(donation.payAmount == "1000")
         #expect(donation.donatorChannelId == "anonymous")
         #expect(donation.donationText == nil)
+        #expect(donation.moderationTarget == nil)
+    }
+
+    @Test
+    func identifiedDonorSupportsUserRestrictions() throws {
+        let sender = String(repeating: "a", count: 32)
+        let json = #"{"channelId":"host","donatorChannelId":"\#(sender)","payAmount":1000}"#
+        let donation = try JSONDecoder().decode(ChzzkDonation.self, from: Data(json.utf8))
+        let target = try #require(donation.moderationTarget)
+        #expect(target.senderChannelId == sender)
+        #expect(target.supports(.restrict))
+        #expect(!target.supports(.temporaryRestrict))
+        #expect(!target.supports(.hideMessage))
     }
 
     @Test
