@@ -207,10 +207,16 @@ struct ChatActionButtonsView: View {
                         HStack {
                             Spacer(minLength: 0)
                             banButton(selectedPost: selectedPost)
+                                .disabled(selectedPost.platform == .chzzk && selectedPost.chzzkTarget?
+                                    .supports(.restrict) != true)
                             Spacer(minLength: 0)
                             timeoutButton(selectedPost: selectedPost)
+                                .disabled(selectedPost.platform == .chzzk && selectedPost.chzzkTarget?
+                                    .supports(.temporaryRestrict) != true)
                             Spacer(minLength: 0)
                             deleteButton(selectedPost: selectedPost)
+                                .disabled(selectedPost.platform == .chzzk && selectedPost.chzzkTarget?
+                                    .supports(.hideMessage) != true)
                             Spacer(minLength: 0)
                             copyButton(selectedPost: selectedPost)
                             Spacer(minLength: 0)

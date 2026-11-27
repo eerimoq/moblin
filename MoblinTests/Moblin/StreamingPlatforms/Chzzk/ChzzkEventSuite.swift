@@ -92,4 +92,169 @@ struct ChzzkEventSuite {
             try ChzzkLiveStatus(status: "OPEN", concurrentUserCount: nil).platformStatus()
         }
     }
+
+    enum ViewerCase: String, CaseIterable, CustomTestStringConvertible {
+        case zero, closed, offlineChannel, openChannel, wrongChannel, missingCount, missingContent,
+             metadataFailure
+
+        var testDescription: String {
+            rawValue
+        }
+    }
+
+    @MainActor
+    @Test(arguments: ViewerCase.allCases)
+    func viewerRequests(scenario: ViewerCase) async {
+        let channel = String(repeating: "a", count: 32)
+        let polling = "/polling/v2/channels/\(channel)/live-status"
+        let metadata = "/service/v1/channels/\(channel)"
+        var paths: [String] = []
+        let status = try? await ChzzkApi.liveStatus(channelId: channel) { request in
+            let url = try #require(request.url)
+            paths.append(url.path)
+            let json: String
+            if url.path == polling {
+                json = switch scenario {
+                case .zero: #"{"code":200,"content":{"status":"OPEN","concurrentUserCount":0}}"#
+                case .closed: #"{"code":200,"content":{"status":"CLOSE"}}"#
+                case .missingCount: #"{"code":200,"content":{"status":"OPEN"}}"#
+                case .missingContent: #"{"code":200}"#
+                default: #"{"code":200,"content":null}"#
+                }
+            } else {
+                #expect(url.path == metadata)
+                if scenario == .metadataFailure {
+                    throw URLError(.timedOut)
+                }
+                let id = scenario == .wrongChannel ? "other" : channel
+                json = #"{"code":200,"content":{"channelId":"\#(id)","openLive":\#(scenario == .openChannel)}}"#
+            }
+            return try (Data(json.utf8), #require(HTTPURLResponse(url: url, statusCode: 200,
+                                                                  httpVersion: nil, headerFields: nil)))
+        }
+        switch scenario {
+        case .zero:
+            #expect(paths == [polling])
+            #expect(status == .live(viewerCount: 0))
+        case .closed:
+            #expect(paths == [polling])
+            #expect(status == .offline)
+        case .offlineChannel:
+            #expect(paths == [polling, metadata])
+            #expect(status == .offline)
+        case .missingCount, .missingContent:
+            #expect(paths == [polling])
+            #expect(status == nil)
+        case .openChannel, .wrongChannel, .metadataFailure:
+            #expect(paths == [polling, metadata])
+            #expect(status == nil)
+        }
+    }
+
+    @Test
+    func viewerHistoryExpiresAndRecovers() {
+        var history = ChzzkViewerHistory()
+        let start = ContinuousClock.now
+        let live = PlatformStatus.live(viewerCount: 4)
+        let initial = history.update(live, at: start)
+        let held = history.update(nil, at: start.advanced(by: .seconds(119)))
+        let expired = history.update(nil, at: start.advanced(by: .seconds(120)))
+        let recovered = history.update(.live(viewerCount: 0), at: start.advanced(by: .seconds(150)))
+        let ended = history.update(.offline, at: start.advanced(by: .seconds(180)))
+        #expect(initial == live)
+        #expect(held == live)
+        #expect(expired == .unknown)
+        #expect(recovered == .live(viewerCount: 0))
+        #expect(ended == .offline)
+    }
+
+    enum TargetCase: String, CaseIterable, CustomTestStringConvertible {
+        case anonymous, senderOnly, roomOnly, emptyRoom, complete
+
+        var testDescription: String {
+            rawValue
+        }
+    }
+
+    @Test(arguments: TargetCase.allCases)
+    func moderationActions(scenario: TargetCase) {
+        let room: String? = switch scenario {
+        case .senderOnly: nil
+        case .emptyRoom: ""
+        default: "room"
+        }
+        let target = ChzzkModerationTarget(channelId: "host",
+                                           senderChannelId: scenario == .anonymous ? "" : "user",
+                                           chatChannelId: room,
+                                           messageTime: scenario == .roomOnly ? nil : 123)
+        #expect(target.supports(.restrict) == (scenario != .anonymous))
+        #expect(target.supports(.unrestrict) == (scenario != .anonymous))
+        #expect(target.supports(.temporaryRestrict) == (scenario == .roomOnly || scenario == .complete))
+        #expect(target.supports(.temporaryUnrestrict) == (scenario == .roomOnly || scenario == .complete))
+        #expect(target.supports(.hideMessage) == (scenario == .complete))
+    }
+
+    @MainActor
+    @Test(arguments: [200, 401, 403, 404, 429])
+    func writeRetry(status: Int) async {
+        var refresh: [Bool] = []
+        var attempts: [String] = []
+        var finalStatus = 200
+        do {
+            try await performChzzkWrite { force in
+                refresh.append(force)
+                return force ? "new" : "old"
+            } write: { token in
+                attempts.append(token)
+                if status != 200 {
+                    throw ChzzkApiError.status(status)
+                }
+            }
+        } catch let ChzzkApiError.status(code) {
+            finalStatus = code
+        } catch {
+            Issue.record("Unexpected error")
+        }
+        #expect(refresh == (status == 401 ? [false, true] : [false]))
+        #expect(attempts == (status == 401 ? ["old", "new"] : ["old"]))
+        #expect(finalStatus == status)
+    }
+
+    @Test
+    func writePermissions() {
+        let forbidden = ChzzkApiError.status(403)
+        let chat = String(
+            localized: "Check the CHZZK chat write permission and log in again.",
+            bundle: Bundle(for: Model.self)
+        )
+        let restriction = String(
+            localized: "Check the CHZZK restriction write permission and log in again.",
+            bundle: Bundle(for: Model.self)
+        )
+        #expect(chzzkWriteErrorDetail(forbidden, action: nil) == chat)
+        #expect(chzzkWriteErrorDetail(forbidden, action: .hideMessage) == chat)
+        #expect(chzzkWriteErrorDetail(forbidden, action: .restrict) == restriction)
+        #expect(chzzkWriteErrorDetail(forbidden, action: .temporaryUnrestrict) == restriction)
+    }
+
+    @MainActor
+    @Test(arguments: ["chat", "donation", "both", "neither"])
+    func subscriptionPermissions(denied: String) async {
+        var requests: [String] = []
+        var stopped = false
+        do {
+            try await subscribeToChzzkEvents { event in
+                requests.append(event)
+                if denied == event || denied == "both" {
+                    throw ChzzkApiError.status(403)
+                }
+            }
+        } catch ChzzkSubscriptionError.permissionsDenied {
+            stopped = true
+        } catch {
+            Issue.record("Unexpected error")
+        }
+        #expect(requests == ["chat", "donation"])
+        #expect(stopped == (denied == "both"))
+    }
 }

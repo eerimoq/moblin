@@ -23,6 +23,56 @@ func makeChzzkChatSegments(message: String, emojis: [String: String]?) -> [ChatP
     return segments
 }
 
+struct ChzzkViewerHistory {
+    private var lastSeen: (status: PlatformStatus, time: ContinuousClock.Instant)?
+
+    mutating func update(_ status: PlatformStatus?, at now: ContinuousClock.Instant) -> PlatformStatus {
+        if let status {
+            lastSeen = (status, now)
+        }
+        if let lastSeen, lastSeen.time.duration(to: now) < .seconds(120) {
+            return lastSeen.status
+        }
+        return .unknown
+    }
+}
+
+@MainActor
+func performChzzkWrite(accessToken: (Bool) async throws -> String,
+                       write: (String) async throws -> Void) async throws
+{
+    let token = try await accessToken(false)
+    do {
+        try await write(token)
+    } catch ChzzkApiError.status(401) {
+        let refreshed = try await accessToken(true)
+        try await write(refreshed)
+    }
+}
+
+func chzzkWriteErrorDetail(_ error: Error, action: ChzzkModerationAction?) -> String {
+    switch error {
+    case ChzzkChatSendError.messageTooLong:
+        return String(localized: "CHZZK chat messages are limited to 100 characters.")
+    case ChzzkApiError.status(401):
+        return String(localized: "Log in to CHZZK again.")
+    case ChzzkApiError.status(403):
+        if action == nil || action == .hideMessage {
+            return String(localized: "Check the CHZZK chat write permission and log in again.")
+        }
+        return String(localized: "Check the CHZZK restriction write permission and log in again.")
+    case ChzzkApiError.status(404) where action != nil:
+        return String(localized: "CHZZK could not find the selected message or user.")
+    case ChzzkApiError.status(429):
+        return String(localized: "Too many CHZZK requests. Try again later.")
+    case is URLError:
+        return String(localized: "Could not connect to CHZZK. Check your network and try again.")
+    default:
+        return action == nil ? String(localized: "Could not send a message to CHZZK.") :
+            String(localized: "CHZZK could not complete this moderation action.")
+    }
+}
+
 extension Model {
     func chzzkChannelUpdated() {
         reloadChzzkChat()
@@ -43,19 +93,11 @@ extension Model {
             return
         }
         chzzkViewersTask = Task { [weak self] in
-            var lastSeen: (status: PlatformStatus, time: ContinuousClock.Instant)?
+            var history = ChzzkViewerHistory()
             while !Task.isCancelled {
                 let status = try? await ChzzkApi.liveStatus(channelId: channelId)
                 try Task.checkCancellation()
-                let now = ContinuousClock.now
-                if let status {
-                    lastSeen = (status, now)
-                }
-                if let lastSeen, lastSeen.time.duration(to: now) < .seconds(120) {
-                    self?.chzzkPlatformStatus = lastSeen.status
-                } else {
-                    self?.chzzkPlatformStatus = .unknown
-                }
+                self?.chzzkPlatformStatus = history.update(status, at: .now)
                 try await sleep(seconds: 30)
             }
         }
@@ -70,6 +112,44 @@ extension Model {
     }
 
     func sendChzzkChatMessage(message: String, isBotReply: Bool = false, showError: Bool = false) {
+        let text: String
+        do {
+            text = try prepareChzzkChatMessage(message, isBotReply: isBotReply)
+        } catch ChzzkChatSendError.emptyMessage {
+            return
+        } catch {
+            if showError {
+                makeErrorToast(title: String(localized: "Message not sent"),
+                               subTitle: chzzkWriteErrorDetail(error, action: nil))
+            }
+            return
+        }
+        performChzzkChatAction(action: nil, showError: showError) { api, token in
+            try await api.sendChatMessage(message: text, accessToken: token)
+        }
+    }
+
+    func moderateChzzkChat(post: ChatPost, action: ChzzkModerationAction) {
+        guard let target = post.chzzkTarget, target.supports(action),
+              target.channelId == stream.chzzkChannelId, chzzkLoggedIn
+        else {
+            makeErrorToast(title: String(localized: "Could not manage this CHZZK message."))
+            return
+        }
+        performChzzkChatAction(action: action, showError: true) { api, token in
+            try await api.moderate(action, target: target, accessToken: token)
+        } onSuccess: {
+            if action == .hideMessage, let messageId = target.messageId {
+                self.deleteChatMessage(messageId: messageId)
+            }
+            self.makeToast(title: String(localized: "CHZZK moderation updated."))
+        }
+    }
+
+    private func performChzzkChatAction(action: ChzzkModerationAction?, showError: Bool,
+                                        write: @escaping (ChzzkApi, String) async throws -> Void,
+                                        onSuccess: @escaping () -> Void = {})
+    {
         guard chzzkLoggedIn, let api = chzzkApi else {
             return
         }
@@ -79,94 +159,31 @@ extension Model {
             let isCurrentChannel = {
                 self.stream.id == streamId && self.stream.chzzkChannelId == channelId && self.chzzkLoggedIn
             }
-            guard isCurrentChannel() else {
-                return
-            }
             do {
-                let text = try prepareChzzkChatMessage(message, isBotReply: isBotReply)
-                let token = try await chzzkAccessToken()
-                guard isCurrentChannel() else {
-                    return
-                }
-                do {
-                    try await api.sendChatMessage(message: text, accessToken: token)
-                } catch ChzzkApiError.status(401) {
+                try await performChzzkWrite { forceRefresh in
                     guard isCurrentChannel() else {
-                        return
+                        throw CancellationError()
                     }
-                    let token = try await chzzkAccessToken(forceRefresh: true)
+                    return try await self.chzzkAccessToken(forceRefresh: forceRefresh)
+                } write: { token in
                     guard isCurrentChannel() else {
-                        return
+                        throw CancellationError()
                     }
-                    try await api.sendChatMessage(message: text, accessToken: token)
+                    try await write(api, token)
                 }
-            } catch ChzzkChatSendError.emptyMessage {
-                return
+                if isCurrentChannel() {
+                    onSuccess()
+                }
             } catch {
                 guard isCurrentChannel() else {
                     return
                 }
-                logger.debug("chzzk: Could not send chat message")
+                logger.debug("chzzk: Chat action failed")
                 if showError {
-                    let detail = switch error {
-                    case ChzzkChatSendError.messageTooLong:
-                        String(localized: "CHZZK chat messages are limited to 100 characters.")
-                    case ChzzkApiError.status(403):
-                        String(localized: "Check the CHZZK chat write permission and log in again.")
-                    default:
-                        String(localized: "Could not send a message to CHZZK.")
-                    }
-                    makeErrorToast(title: String(localized: "Message not sent"), subTitle: detail)
+                    let title = action == nil ? String(localized: "Message not sent") :
+                        String(localized: "Could not manage this CHZZK message.")
+                    makeErrorToast(title: title, subTitle: chzzkWriteErrorDetail(error, action: action))
                 }
-            }
-        }
-    }
-
-    func moderateChzzkChat(post: ChatPost, action: ChzzkModerationAction) {
-        guard let target = post.chzzkTarget, let api = chzzkApi, chzzkLoggedIn,
-              target.channelId == stream.chzzkChannelId
-        else {
-            makeErrorToast(title: String(localized: "Could not manage this CHZZK message."))
-            return
-        }
-        let streamId = stream.id
-        Task {
-            let isCurrentChannel = {
-                self.stream.id == streamId && self.stream.chzzkChannelId == target.channelId
-                    && self.chzzkLoggedIn
-            }
-            do {
-                let token = try await chzzkAccessToken()
-                guard isCurrentChannel() else {
-                    return
-                }
-                do {
-                    try await api.moderate(action, target: target, accessToken: token)
-                } catch ChzzkApiError.status(401) {
-                    guard isCurrentChannel() else {
-                        return
-                    }
-                    let refreshed = try await chzzkAccessToken(forceRefresh: true)
-                    guard isCurrentChannel() else {
-                        return
-                    }
-                    try await api.moderate(action, target: target, accessToken: refreshed)
-                }
-                guard isCurrentChannel() else {
-                    return
-                }
-                if action == .hideMessage, let messageId = target.messageId {
-                    deleteChatMessage(messageId: messageId)
-                }
-                makeToast(title: String(localized: "CHZZK moderation updated."))
-            } catch {
-                guard isCurrentChannel() else {
-                    return
-                }
-                makeErrorToast(title: String(localized: "Could not manage this CHZZK message."),
-                               subTitle: String(
-                                   localized: "Check CHZZK moderation permissions and log in again."
-                               ))
             }
         }
     }
@@ -174,7 +191,7 @@ extension Model {
     func reloadChzzkChat() {
         chzzkChat?.stop()
         chzzkChat = nil
-        if isChzzkEventsConfigured(), let api = chzzkApi {
+        if isChzzkEventsConfigured(), !chzzkReadPermissionsDenied, let api = chzzkApi {
             let chat = ChzzkChat(api: api, accessToken: { [weak self] forceRefresh in
                 guard let self else {
                     throw CancellationError()
@@ -184,6 +201,14 @@ extension Model {
                 self?.appendChzzkChat(event)
             }, onDonation: { [weak self] event in
                 self?.appendChzzkDonation(event)
+            }, onPermissionsDenied: { [weak self] in
+                self?.chzzkReadPermissionsDenied = true
+                self?
+                    .makeErrorToast(
+                        title: String(
+                            localized: "Check the CHZZK chat and donation read permissions and log in again."
+                        )
+                    )
             })
             chzzkChat = chat
             chat.start()

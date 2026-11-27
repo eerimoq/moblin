@@ -102,11 +102,35 @@ struct ChzzkLiveStatus: Decodable {
     }
 }
 
+private struct ChzzkChannelStatus: Decodable {
+    let channelId: String
+    let openLive: Bool
+}
+
+private struct ChzzkPublicResponse<Content: Decodable>: Decodable {
+    let code: Int
+    let content: Content
+}
+
 struct ChzzkModerationTarget: Sendable {
     let channelId: String
     let senderChannelId: String
     let chatChannelId: String?
     let messageTime: Int64?
+
+    func supports(_ action: ChzzkModerationAction) -> Bool {
+        guard !senderChannelId.isEmpty else {
+            return false
+        }
+        switch action {
+        case .restrict, .unrestrict:
+            return true
+        case .temporaryRestrict, .temporaryUnrestrict:
+            return chatChannelId?.isEmpty == false
+        case .hideMessage:
+            return chatChannelId?.isEmpty == false && (messageTime ?? 0) > 0
+        }
+    }
 
     var messageId: String? {
         guard let chatChannelId, let messageTime else {
@@ -179,28 +203,43 @@ final class ChzzkApi {
         try await content(path: "/open/v1/users/me", accessToken: accessToken)
     }
 
-    static func liveStatus(channelId: String) async throws -> PlatformStatus {
+    static func liveStatus(channelId: String,
+                           get: (URLRequest) async throws -> (Data, HTTPURLResponse) = httpGet(request:))
+        async throws -> PlatformStatus
+    {
         guard channelId.count == 32, channelId.allSatisfy({ $0.isHexDigit && $0.isASCII }) else {
             throw ChzzkApiError.invalidResponse
         }
-        let url = URL(string: "https://api.chzzk.naver.com/polling/v2/channels/\(channelId)/live-status")!
-        var request = URLRequest(url: url)
-        request.cachePolicy = .reloadIgnoringLocalCacheData
-        request.timeoutInterval = 15
-        let (data, response) = try await httpGet(request: request)
-        guard response.isSuccessful else {
-            throw ChzzkApiError.status(response.statusCode)
+        func fetch<T: Decodable>(_ path: String) async throws -> T {
+            var request = URLRequest(url: URL(string: "https://api.chzzk.naver.com\(path)")!)
+            request.cachePolicy = .reloadIgnoringLocalCacheData
+            request.timeoutInterval = 15
+            let (data, response) = try await get(request)
+            guard response.statusCode == 200 else {
+                throw ChzzkApiError.status(response.statusCode)
+            }
+            let envelope = try JSONDecoder().decode(ChzzkPublicResponse<T>.self, from: data)
+            guard envelope.code == 200 else {
+                throw ChzzkApiError.status(envelope.code)
+            }
+            return envelope.content
         }
-        let envelope = try JSONDecoder().decode(ChzzkResponse<ChzzkLiveStatus>.self, from: data)
-        guard envelope.code == 200, let content = envelope.content else {
+        if let live: ChzzkLiveStatus = try await fetch("/polling/v2/channels/\(channelId)/live-status") {
+            return try live.platformStatus()
+        }
+        let channel: ChzzkChannelStatus = try await fetch("/service/v1/channels/\(channelId)")
+        guard channel.channelId == channelId, !channel.openLive else {
             throw ChzzkApiError.invalidResponse
         }
-        return try content.platformStatus()
+        return .offline
     }
 
     func moderate(_ action: ChzzkModerationAction, target: ChzzkModerationTarget,
                   accessToken: String) async throws
     {
+        guard target.supports(action) else {
+            throw ChzzkApiError.invalidResponse
+        }
         let path: String
         let method: String
         var body: [String: Any] = ["targetChannelId": target.senderChannelId]
@@ -268,11 +307,11 @@ final class ChzzkApi {
     }
 
     private func content<T: Decodable>(path: String, method: String = "GET", body: [String: String]? = nil,
-                                       query: [URLQueryItem] = [], accessToken: String? = nil,
-                                       clientAuth: Bool = false) async throws -> T
+                                       query: [URLQueryItem] = [],
+                                       accessToken: String? = nil) async throws -> T
     {
         guard let result: T = try await request(path: path, method: method, body: body, query: query,
-                                                accessToken: accessToken, clientAuth: clientAuth)
+                                                accessToken: accessToken)
         else {
             throw ChzzkApiError.invalidResponse
         }
@@ -281,7 +320,7 @@ final class ChzzkApi {
 
     private func request<T: Decodable>(path: String, method: String, body: [String: String]? = nil,
                                        query: [URLQueryItem] = [], accessToken: String? = nil,
-                                       clientAuth: Bool = false, bodyData: Data? = nil) async throws -> T?
+                                       bodyData: Data? = nil) async throws -> T?
     {
         var url = URLComponents(string: "https://openapi.chzzk.naver.com")!
         url.path = path
@@ -295,10 +334,6 @@ final class ChzzkApi {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         if let accessToken {
             request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        }
-        if clientAuth {
-            request.setValue(clientId, forHTTPHeaderField: "Client-Id")
-            request.setValue(clientSecret, forHTTPHeaderField: "Client-Secret")
         }
         if let body {
             request.httpBody = try JSONEncoder().encode(body)

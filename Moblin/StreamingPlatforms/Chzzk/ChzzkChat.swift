@@ -98,12 +98,34 @@ private struct ChzzkHandshake: Decodable {
     let pingTimeout: Int
 }
 
+enum ChzzkSubscriptionError: Error {
+    case permissionsDenied
+}
+
+@MainActor
+func subscribeToChzzkEvents(_ subscribe: (String) async throws -> Void) async throws {
+    var allowed = false
+    for event in ["chat", "donation"] {
+        try Task.checkCancellation()
+        do {
+            try await subscribe(event)
+            allowed = true
+        } catch ChzzkApiError.status(403) {
+            logger.debug("chzzk: Missing \(event) permission")
+        }
+    }
+    if !allowed {
+        throw ChzzkSubscriptionError.permissionsDenied
+    }
+}
+
 @MainActor
 final class ChzzkChat {
     private let api: ChzzkApi
     private let accessToken: @MainActor (Bool) async throws -> String
     private let onChat: (ChzzkChatMessage) -> Void
     private let onDonation: (ChzzkDonation) -> Void
+    private let onPermissionsDenied: () -> Void
     private var task: Task<Void, Never>?
     private var socket: URLSessionWebSocketTask?
     private let heartbeat = MainTimer()
@@ -113,12 +135,14 @@ final class ChzzkChat {
     private var donationSubscribed = false
 
     init(api: ChzzkApi, accessToken: @escaping @MainActor (Bool) async throws -> String,
-         onChat: @escaping (ChzzkChatMessage) -> Void, onDonation: @escaping (ChzzkDonation) -> Void)
+         onChat: @escaping (ChzzkChatMessage) -> Void, onDonation: @escaping (ChzzkDonation) -> Void,
+         onPermissionsDenied: @escaping () -> Void)
     {
         self.api = api
         self.accessToken = accessToken
         self.onChat = onChat
         self.onDonation = onDonation
+        self.onPermissionsDenied = onPermissionsDenied
     }
 
     func start() {
@@ -136,6 +160,13 @@ final class ChzzkChat {
                         let refreshed = try await accessToken(true)
                         try await connect(token: refreshed)
                     }
+                } catch ChzzkSubscriptionError.permissionsDenied {
+                    guard !Task.isCancelled else {
+                        return
+                    }
+                    closeSocket()
+                    onPermissionsDenied()
+                    return
                 } catch {
                     guard !Task.isCancelled else {
                         return
@@ -238,13 +269,8 @@ final class ChzzkChat {
                 guard let sessionKey = system.data.sessionKey, !sessionKey.isEmpty else {
                     throw ChzzkApiError.invalidResponse
                 }
-                for event in ["chat", "donation"] {
-                    try Task.checkCancellation()
-                    do {
-                        try await api.subscribe(event, sessionKey: sessionKey, accessToken: token)
-                    } catch ChzzkApiError.status(403) {
-                        logger.debug("chzzk: Missing \(event) permission")
-                    }
+                try await subscribeToChzzkEvents { event in
+                    try await self.api.subscribe(event, sessionKey: sessionKey, accessToken: token)
                 }
             case "subscribed", "unsubscribed", "revoked":
                 let subscribed = system.type == "subscribed"

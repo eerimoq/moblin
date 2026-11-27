@@ -93,6 +93,7 @@ extension Model {
     }
 
     private func cancelChzzkAuth() {
+        chzzkReadPermissionsDenied = false
         chzzkLoginRequest = nil
         chzzkPresentingLogin = false
         chzzkRefreshTask?.cancel()
@@ -142,6 +143,7 @@ extension Model {
                 }
                 chzzkRefreshTask?.cancel()
                 chzzkRefreshTask = nil
+                chzzkReadPermissionsDenied = false
                 stream.chzzkChannelId = user.channelId
                 chzzkAccount.channelId = user.channelId
                 chzzkAccount.tokens = tokens

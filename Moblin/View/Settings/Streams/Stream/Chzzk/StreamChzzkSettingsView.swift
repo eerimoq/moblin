@@ -44,6 +44,8 @@ struct StreamChzzkSettingsView: View {
         } footer: {
             VStack(alignment: .leading) {
                 Text("Register an app with permission to read user information, chat messages and donations.")
+                Text("To send or hide messages, enable chat write permission.")
+                Text("To apply or remove restrictions, enable restriction write permission.")
                 Text("Login redirect URL")
                 Text(verbatim: chzzkRedirectUri)
                     .textSelection(.enabled)

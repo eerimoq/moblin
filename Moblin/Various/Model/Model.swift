@@ -618,6 +618,7 @@ final class Model: NSObject, ObservableObject {
     var youTubeLiveChats: [String: YouTubeLiveChat] = [:]
     var soopChat: SoopChat?
     var soopPlatformStatus: SoopPlatformStatus?
+    var chzzkReadPermissionsDenied = false
     var chzzkChat: ChzzkChat?
     var chzzkViewersTask: Task<Void, Error>?
     var chzzkPlatformStatus: PlatformStatus = .unknown

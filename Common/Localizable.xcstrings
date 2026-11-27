@@ -65840,12 +65840,12 @@
         }
       }
     },
-    "Check CHZZK moderation permissions and log in again." : {
+    "Check the CHZZK chat and donation read permissions and log in again." : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "치지직 활동제한 쓰기·채팅 메시지 쓰기 권한을 확인하고 다시 로그인해 주세요."
+            "value" : "치지직 앱의 ‘채팅 메시지 조회’와 ‘후원 조회’ 권한을 확인하고 다시 로그인해 주세요."
           }
         }
       }
@@ -65856,6 +65856,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "치지직 채팅 메시지 쓰기 권한을 확인하고 다시 로그인해 주세요."
+          }
+        }
+      }
+    },
+    "Check the CHZZK restriction write permission and log in again." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 앱의 ‘활동제한 쓰기’ 권한을 확인하고 다시 로그인해 주세요."
           }
         }
       }
@@ -67060,6 +67070,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "치지직 채팅은 100자까지 보낼 수 있어요."
+          }
+        }
+      }
+    },
+    "CHZZK could not complete this moderation action." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직에서 이 관리 작업을 처리할 수 없습니다."
+          }
+        }
+      }
+    },
+    "CHZZK could not find the selected message or user." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택한 메시지 또는 사용자를 치지직에서 찾을 수 없습니다."
           }
         }
       }
@@ -77734,6 +77764,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "圓角半徑"
+          }
+        }
+      }
+    },
+    "Could not connect to CHZZK. Check your network and try again." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직에 연결할 수 없습니다. 네트워크를 확인한 뒤 다시 시도해 주세요."
           }
         }
       }
@@ -293120,6 +293160,26 @@
         }
       }
     },
+    "To apply or remove restrictions, enable restriction write permission." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "활동을 제한하거나 제한을 해제하려면 ‘활동제한 쓰기’ 권한을 선택하세요."
+          }
+        }
+      }
+    },
+    "To send or hide messages, enable chat write permission." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메시지를 보내거나 숨기려면 ‘채팅 메시지 쓰기’ 권한을 선택하세요."
+          }
+        }
+      }
+    },
     "To show the widget in sync with high latency cameras." : {
       "localizations" : {
         "de" : {
@@ -294004,6 +294064,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "太大"
+          }
+        }
+      }
+    },
+    "Too many CHZZK requests. Try again later." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 요청 횟수를 초과했습니다. 잠시 후 다시 시도해 주세요."
           }
         }
       }
