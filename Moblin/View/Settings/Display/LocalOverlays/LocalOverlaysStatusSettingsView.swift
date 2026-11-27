@@ -115,11 +115,6 @@ struct LocalOverlaysStatusSettingsView: View {
                         Image(systemName: "deskclock")
                     }
                     Label {
-                        Toggle("Browser widgets", isOn: $show.browserWidgets)
-                    } icon: {
-                        Image(systemName: "globe")
-                    }
-                    Label {
                         Toggle("Bonding", isOn: $show.bonding)
                     } icon: {
                         Image(systemName: "phone.connection")

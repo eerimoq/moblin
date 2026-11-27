@@ -166,7 +166,6 @@ class SettingsShow: Codable, ObservableObject {
     @Published var location: Bool = false
     @Published var remoteControl: Bool = true
     @Published var moblinCloud: Bool = true
-    @Published var browserWidgets: Bool = true
     @Published var bonding: Bool = true
     @Published var events: Bool = true
     @Published var djiDevices: Bool = true
@@ -197,7 +196,6 @@ class SettingsShow: Codable, ObservableObject {
         case location
         case remoteControl
         case moblinCloud
-        case browserWidgets
         case bonding
         case events
         case djiDevices
@@ -228,7 +226,6 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.location, location)
         try container.encode(.remoteControl, remoteControl)
         try container.encode(.moblinCloud, moblinCloud)
-        try container.encode(.browserWidgets, browserWidgets)
         try container.encode(.bonding, bonding)
         try container.encode(.events, events)
         try container.encode(.djiDevices, djiDevices)
@@ -259,7 +256,6 @@ class SettingsShow: Codable, ObservableObject {
         location = container.decode(.location, Bool.self, false)
         remoteControl = container.decode(.remoteControl, Bool.self, true)
         moblinCloud = container.decode(.moblinCloud, Bool.self, true)
-        browserWidgets = container.decode(.browserWidgets, Bool.self, true)
         bonding = container.decode(.bonding, Bool.self, true)
         events = container.decode(.events, Bool.self, true)
         djiDevices = container.decode(.djiDevices, Bool.self, true)
@@ -964,6 +960,10 @@ private nonisolated(unsafe) let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "Sunglasses"),
     SettingsAlertsMediaGalleryItem(name: "Salty"),
     SettingsAlertsMediaGalleryItem(name: "-100"),
+    SettingsAlertsMediaGalleryItem(name: "Pope hat"),
+    SettingsAlertsMediaGalleryItem(name: "Chef hat"),
+    SettingsAlertsMediaGalleryItem(name: "Moustache"),
+    SettingsAlertsMediaGalleryItem(name: "Poop"),
 ]
 
 private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
@@ -980,7 +980,6 @@ private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
     SettingsAlertsMediaGalleryItem(name: "Fart 2"),
     SettingsAlertsMediaGalleryItem(name: "Bad chili fart"),
     SettingsAlertsMediaGalleryItem(name: "Perfect fart"),
-    SettingsAlertsMediaGalleryItem(name: "Silence"),
 ]
 
 class SettingsAlertsMediaGallery: Codable, ObservableObject {
@@ -1024,6 +1023,22 @@ class SettingsAlertsMediaGallery: Codable, ObservableObject {
 
     func getGlassesImageId() -> UUID {
         bundledImages[5].id
+    }
+
+    func getPopeHatImageId() -> UUID {
+        bundledImages[8].id
+    }
+
+    func getChefHatImageId() -> UUID {
+        bundledImages[9].id
+    }
+
+    func getMoustacheImageId() -> UUID {
+        bundledImages[10].id
+    }
+
+    func getPoopImageId() -> UUID {
+        bundledImages[11].id
     }
 
     func allImages() -> [SettingsAlertsMediaGalleryItem] {
@@ -1259,6 +1274,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
     @Published var key: String = ""
     @Published var wheelOfLuckWidgetId: UUID?
     @Published var alertsWidgetId: UUID?
+    @Published var mediaWidgetId: UUID?
     @Published var url: String = moblinCloudApiUrl
 
     init() {}
@@ -1268,6 +1284,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         case key
         case wheelOfLuckWidgetId
         case alertsWidgetId
+        case mediaWidgetId
         case url
     }
 
@@ -1277,6 +1294,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         try container.encode(.key, key)
         try container.encode(.wheelOfLuckWidgetId, wheelOfLuckWidgetId)
         try container.encode(.alertsWidgetId, alertsWidgetId)
+        try container.encode(.mediaWidgetId, mediaWidgetId)
         try container.encode(.url, url)
     }
 
@@ -1286,6 +1304,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         key = container.decode(.key, String.self, "")
         wheelOfLuckWidgetId = container.decode(.wheelOfLuckWidgetId, UUID?.self, nil)
         alertsWidgetId = container.decode(.alertsWidgetId, UUID?.self, nil)
+        mediaWidgetId = container.decode(.mediaWidgetId, UUID?.self, nil)
         url = container.decode(.url, String.self, moblinCloudApiUrl)
     }
 }
@@ -1352,7 +1371,6 @@ class Database: Codable, ObservableObject {
     var workoutDevices: SettingsWorkoutDevices = .init()
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
-    @Published var sceneNumericInput: Bool = false
     @Published var savedWifiNetworks: [SettingsWiFi] = []
     var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
@@ -1481,7 +1499,6 @@ class Database: Codable, ObservableObject {
         case heartRateDevices
         case phoneCoolerDevices
         case remoteSceneId
-        case sceneNumericInput
         case goPro
         case replay
         case portraitVideoOffsetFromTop
@@ -1578,7 +1595,6 @@ class Database: Codable, ObservableObject {
         try container.encode(.heartRateDevices, workoutDevices)
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
-        try container.encode(.sceneNumericInput, sceneNumericInput)
         try container.encode(.goPro, goPro)
         try container.encode(.replay, replay)
         try container.encode(.portraitVideoOffsetFromTop, portraitVideoOffsetFromTop)
@@ -1720,7 +1736,6 @@ class Database: Codable, ObservableObject {
             .init()
         )
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
-        sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())
         replay = container.decode(.replay, SettingsReplay.self, .init())
         portraitVideoOffsetFromTop = container.decode(.portraitVideoOffsetFromTop, Double.self, 0.0)
@@ -2290,6 +2305,19 @@ private func updateBundledAlertsMediaGallery(database: Database) {
         }
     }
     database.alertsMediaGallery.bundledImages = bundledImages
+    if let silence = database.alertsMediaGallery.bundledSounds.first(where: { $0.name == "Silence" }) {
+        for widget in database.widgets {
+            for alert in remoteControlAllAlerts(widget.alerts) where alert.soundId == silence.id {
+                alert.soundId = nil
+            }
+            if widget.pomodoroTimer.focusToBreakSoundId == silence.id {
+                widget.pomodoroTimer.focusToBreakSoundId = nil
+            }
+            if widget.pomodoroTimer.breakToFocusSoundId == silence.id {
+                widget.pomodoroTimer.breakToFocusSoundId = nil
+            }
+        }
+    }
     var bundledSounds: [SettingsAlertsMediaGalleryItem] = []
     for sound in allBundledAlertsMediaGallerySounds {
         if let existingSound = database.alertsMediaGallery.bundledSounds

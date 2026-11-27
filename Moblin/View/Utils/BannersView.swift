@@ -358,6 +358,7 @@ struct BannersView: View {
                                 contentHeight = height
                             }
                         }
+                        .scrollBounceBehavior(.basedOnSize)
                         .frame(height: min(contentHeight, metrics.size.height - 1))
                     }
                 }

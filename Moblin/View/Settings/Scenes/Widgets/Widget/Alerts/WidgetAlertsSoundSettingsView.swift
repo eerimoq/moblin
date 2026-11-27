@@ -78,16 +78,15 @@ private struct SoundGalleryItemView: View {
     }
 }
 
-private struct SoundGalleryView: View {
+struct SoundGalleryView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var gallery: SettingsAlertsMediaGallery
-    let alert: SettingsWidgetAlertsAlert
-    @Binding var soundId: UUID
+    let onDeleted: () -> Void
 
     private func deleteSound(at offsets: IndexSet) {
         gallery.customSounds.remove(atOffsets: offsets)
         model.fixAlertMedias()
-        soundId = alert.soundId
+        onDeleted()
     }
 
     var body: some View {
@@ -118,11 +117,10 @@ private struct SoundGalleryView: View {
 @MainActor
 private var player: AudioPlayer?
 
-struct AlertSoundSelectorView: View {
-    @EnvironmentObject var model: Model
+private struct SoundSelectorView: View {
+    let model: Model
     @ObservedObject var gallery: SettingsAlertsMediaGallery
-    let alert: SettingsWidgetAlertsAlert
-    @Binding var soundId: UUID
+    @Binding var soundId: UUID?
 
     var body: some View {
         Form {
@@ -139,18 +137,17 @@ struct AlertSoundSelectorView: View {
                                 Image(systemName: "play.fill")
                             }
                         }
+                        .tag(sound.id as UUID?)
                     }
+                    Text("-- None --")
+                        .tag(nil as UUID?)
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
-                .onChange(of: soundId) {
-                    alert.soundId = $0
-                    model.updateAlertsSettings()
-                }
             }
             Section {
                 NavigationLink {
-                    SoundGalleryView(gallery: gallery, alert: alert, soundId: $soundId)
+                    SoundGalleryView(gallery: gallery) {}
                 } label: {
                     Text("My sounds")
                 }
@@ -160,5 +157,24 @@ struct AlertSoundSelectorView: View {
             player = nil
         }
         .navigationTitle("Sound")
+    }
+}
+
+struct SoundSelectorNavigationView: View {
+    let model: Model
+    @ObservedObject var gallery: SettingsAlertsMediaGallery
+    let title: LocalizedStringKey
+    @Binding var soundId: UUID?
+
+    private func soundName() -> String {
+        gallery.allSounds().first(where: { $0.id == soundId })?.name ?? String(localized: "-- None --")
+    }
+
+    var body: some View {
+        NavigationLink {
+            SoundSelectorView(model: model, gallery: gallery, soundId: $soundId)
+        } label: {
+            TextItemLocalizedView(name: title, value: soundName())
+        }
     }
 }

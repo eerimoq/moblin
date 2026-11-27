@@ -215,7 +215,7 @@ extension Model {
     }
 
     func updateYouTubeStream(monotonicNow: ContinuousClock.Instant) {
-        guard isLive, isYouTubeViewersConfigured() else {
+        guard isYouTubeViewersConfigured() else {
             youTubePlatformStatus = .unknown
             return
         }

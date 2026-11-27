@@ -109,12 +109,16 @@ class AlertsEffectMedia: @unchecked Sendable {
                                            _ mediaStorage: AlertMediaStorage,
                                            _ bundledSounds: [SettingsAlertsMediaGalleryItem])
     {
+        guard let soundId = alert.soundId else {
+            soundUrl = nil
+            return
+        }
         let sound: AlertsEffectMediaItem = if let bundledSound = bundledSounds
-            .first(where: { $0.id == alert.soundId })
+            .first(where: { $0.id == soundId })
         {
             .bundledName(bundledSound.name)
         } else {
-            .customUrl(mediaStorage.makePath(id: alert.soundId))
+            .customUrl(mediaStorage.makePath(id: soundId))
         }
         switch sound {
         case let .bundledName(name):

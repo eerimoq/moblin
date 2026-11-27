@@ -71,6 +71,11 @@ struct ControllerButtonView: View {
                         .tag($0.id as UUID?)
                 }
             }
+        case .playSound:
+            SoundSelectorNavigationView(model: model,
+                                        gallery: model.database.alertsMediaGallery,
+                                        title: "Sound",
+                                        soundId: $functionData.soundId)
         default:
             EmptyView()
         }

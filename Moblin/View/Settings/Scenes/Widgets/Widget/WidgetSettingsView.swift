@@ -2,17 +2,15 @@ import CoreMedia
 import SwiftUI
 
 struct AlignmentOptionView: View {
-    @Binding var layout: SettingsWidgetLayout
+    let selected: SettingsAlignment
     let alignment: SettingsAlignment
+    let onChange: (SettingsAlignment) -> Void
 
     var body: some View {
         Button {
-            layout.alignment = alignment
-            if alignment.isHorizontalOrVerticalCenter() {
-                layout.positioningLock = false
-            }
+            onChange(alignment)
         } label: {
-            Image(systemName: layout.alignment == alignment ? "square.fill" : "square")
+            Image(systemName: selected == alignment ? "square.fill" : "square")
         }
         .buttonStyle(.borderless)
         .font(.title)
@@ -20,219 +18,191 @@ struct AlignmentOptionView: View {
 }
 
 struct AlignmentPickerView: View {
-    @Binding var layout: SettingsWidgetLayout
+    let alignment: SettingsAlignment
+    let onChange: (SettingsAlignment) -> Void
+
+    private func option(_ alignment: SettingsAlignment) -> some View {
+        AlignmentOptionView(selected: self.alignment, alignment: alignment, onChange: onChange)
+    }
 
     var body: some View {
         VStack(spacing: 5) {
             HStack(spacing: 3) {
-                AlignmentOptionView(layout: $layout, alignment: .topLeft)
-                AlignmentOptionView(layout: $layout, alignment: .topCenter)
-                AlignmentOptionView(layout: $layout, alignment: .topRight)
+                option(.topLeft)
+                option(.topCenter)
+                option(.topRight)
             }
             HStack(spacing: 3) {
-                AlignmentOptionView(layout: $layout, alignment: .leftCenter)
-                AlignmentOptionView(layout: $layout, alignment: .center)
-                AlignmentOptionView(layout: $layout, alignment: .rightCenter)
+                option(.leftCenter)
+                option(.center)
+                option(.rightCenter)
             }
             HStack(spacing: 3) {
-                AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
-                AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
-                AlignmentOptionView(layout: $layout, alignment: .bottomRight)
+                option(.bottomLeft)
+                option(.bottomCenter)
+                option(.bottomRight)
             }
         }
     }
 }
 
-struct SaveLoadLayoutView: View {
+struct CopyLayoutButtonView: View {
     @EnvironmentObject private var model: Model
     @Binding var layout: SettingsWidgetLayout
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Spacer()
-            Button {
-                model.layout = layout
-            } label: {
-                HCenter {
-                    Text("Save layout")
-                }
+        Button {
+            model.layout = layout
+        } label: {
+            HCenter {
+                Text("Copy layout")
             }
-            .buttonStyle(.bordered)
-            Spacer()
-            Button {
-                layout = model.layout ?? layout
-                model.sceneUpdated()
-            } label: {
-                HStack {
-                    Text("")
-                    Spacer(minLength: 0)
-                    Text("Load layout")
-                    Spacer(minLength: 0)
-                    Text("")
-                }
-            }
-            .buttonStyle(.bordered)
-            .disabled(model.layout == nil)
-            Spacer()
         }
+        .buttonStyle(.bordered)
         .lineLimit(1)
         .minimumScaleFactor(0.5)
     }
 }
 
+struct PasteLayoutButtonView: View {
+    @EnvironmentObject private var model: Model
+    @Binding var layout: SettingsWidgetLayout
+
+    var body: some View {
+        Button {
+            layout = model.layout ?? layout
+            model.sceneUpdated()
+        } label: {
+            HStack {
+                Text("")
+                Spacer(minLength: 0)
+                Text("Paste layout")
+                Spacer(minLength: 0)
+                Text("")
+            }
+        }
+        .buttonStyle(.bordered)
+        .disabled(model.layout == nil)
+        .lineLimit(1)
+        .minimumScaleFactor(0.5)
+    }
+}
+
+struct CopyPasteLayoutView: View {
+    @Binding var layout: SettingsWidgetLayout
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Spacer()
+            CopyLayoutButtonView(layout: $layout)
+            Spacer()
+            PasteLayoutButtonView(layout: $layout)
+            Spacer()
+        }
+    }
+}
+
 struct WidgetLayoutView: View {
     let model: Model
-    @ObservedObject var database: Database
-    @Binding var layout: SettingsWidgetLayout
+    @ObservedObject var sceneWidget: SettingsSceneWidget
     @ObservedObject var widget: SettingsWidget
-    @Binding var numericInput: Bool
+    let size: CGSize
+
+    private var layout: SettingsWidgetLayout {
+        sceneWidget.layout
+    }
 
     private func dimensions() -> CMVideoDimensions {
         model.stream.resolution.dimensions(portrait: model.stream.portrait)
     }
 
-    private func horizontalIncrement() -> Double {
-        100 / Double(dimensions().width)
-    }
-
-    private func verticalIncrement() -> Double {
-        100 / Double(dimensions().height)
-    }
-
-    private func setXBasedOnYIfLocked() {
-        guard layout.positioningLock else {
-            return
-        }
-        layout.x = layout.y * horizontalIncrement() / verticalIncrement()
-        layout.xString = String(layout.x)
-    }
-
-    private func setYBasedOnXIfLocked() {
-        guard layout.positioningLock else {
-            return
-        }
-        layout.y = layout.x * verticalIncrement() / horizontalIncrement()
-        layout.yString = String(layout.y)
+    private func width(size: Double) -> Double {
+        let dimensions = dimensions()
+        return model.sceneEditorWidgetWidth(
+            widget: widget,
+            layout: layout,
+            size: size,
+            canvasSize: CGSize(width: Double(dimensions.width), height: Double(dimensions.height))
+        )
     }
 
     private func generalAndAlignmentPicker() -> some View {
         HStack {
             HStack {
-                SaveLoadLayoutView(layout: $layout)
+                CopyPasteLayoutView(layout: $sceneWidget.layout)
                 Spacer()
             }
-            if widget.hasAlignment() {
-                Divider()
-                AlignmentPickerView(layout: $layout)
-                    .onChange(of: layout.alignment) { _ in
-                        model.sceneUpdated()
-                    }
-            }
-        }
-    }
-
-    private func horizontalAndVerticalPositioning() -> some View {
-        HStack(alignment: .center) {
-            VStack {
-                PositionEditView(
-                    number: $layout.x,
-                    value: $layout.xString,
-                    onSubmit: {
-                        setYBasedOnXIfLocked()
-                        model.sceneUpdatedThrottled()
-                    },
-                    numericInput: $numericInput,
-                    incrementImageName: "arrow.forward.circle",
-                    decrementImageName: "arrow.backward.circle",
-                    mirror: layout.alignment.mirrorPositionHorizontally(),
-                    increment: horizontalIncrement()
-                )
-                .padding(.bottom, 10)
-                PositionEditView(
-                    number: $layout.y,
-                    value: $layout.yString,
-                    onSubmit: {
-                        setXBasedOnYIfLocked()
-                        model.sceneUpdatedThrottled()
-                    },
-                    numericInput: $numericInput,
-                    incrementImageName: "arrow.down.circle",
-                    decrementImageName: "arrow.up.circle",
-                    mirror: layout.alignment.mirrorPositionVertically(),
-                    increment: verticalIncrement()
+            Divider()
+            AlignmentPickerView(alignment: layout.alignment) { alignment in
+                model.sceneEditorSetWidgetAlignment(
+                    sceneWidget: sceneWidget,
+                    size: size,
+                    alignment: alignment
                 )
             }
-            Button {
-                layout.positioningLock.toggle()
-                setYBasedOnXIfLocked()
-            } label: {
-                Image(systemName: layout.positioningLock ? "lock" : "lock.open")
-                    .font(.title)
-                    .frame(width: 35)
-            }
-            .buttonStyle(.borderless)
         }
     }
 
     private func horizontalPositioning() -> some View {
         PositionEditView(
-            number: $layout.x,
-            value: $layout.xString,
+            number: $sceneWidget.layout.x,
             onSubmit: {
                 model.sceneUpdatedThrottled()
             },
-            numericInput: $numericInput,
             incrementImageName: "arrow.forward.circle",
             decrementImageName: "arrow.backward.circle",
             mirror: layout.alignment.mirrorPositionHorizontally(),
-            increment: horizontalIncrement()
+            total: Double(dimensions().width)
         )
     }
 
     private func verticalPositioning() -> some View {
         PositionEditView(
-            number: $layout.y,
-            value: $layout.yString,
+            number: $sceneWidget.layout.y,
             onSubmit: {
                 model.sceneUpdatedThrottled()
             },
-            numericInput: $numericInput,
             incrementImageName: "arrow.down.circle",
             decrementImageName: "arrow.up.circle",
             mirror: layout.alignment.mirrorPositionVertically(),
-            increment: verticalIncrement()
+            total: Double(dimensions().height)
         )
     }
 
     var body: some View {
         if widget.hasAlignment() || widget.hasPosition() || widget.hasSize() {
             Section {
-                generalAndAlignmentPicker()
+                if widget.hasAlignment() {
+                    generalAndAlignmentPicker()
+                } else {
+                    HStack {
+                        CopyLayoutButtonView(layout: $sceneWidget.layout)
+                        PasteLayoutButtonView(layout: $sceneWidget.layout)
+                    }
+                }
                 if widget.hasPosition() {
-                    if !layout.alignment.isHorizontalCenter(), !layout.alignment.isVerticalCenter() {
-                        horizontalAndVerticalPositioning()
-                    } else if !layout.alignment.isHorizontalCenter() {
+                    if !layout.alignment.isHorizontalCenter() {
                         horizontalPositioning()
-                    } else if !layout.alignment.isVerticalCenter() {
+                    }
+                    if !layout.alignment.isVerticalCenter() {
                         verticalPositioning()
                     }
                 }
                 if widget.hasSize() {
                     SizeEditView(
-                        number: $layout.size,
-                        value: $layout.sizeString,
+                        number: $sceneWidget.layout.size,
+                        zero: width(size: 0),
+                        total: width(size: 100),
                         onSubmit: {
                             model.sceneUpdatedThrottled()
-                        },
-                        numericInput: $numericInput
+                        }
                     )
                 }
-                Toggle("Numeric input", isOn: $database.sceneNumericInput)
             } header: {
                 Text("Layout")
             } footer: {
                 Text("""
-                Use save/load layout to position a widget in the same place in multiple \
+                Use copy/paste layout to position a widget in the same place in multiple \
                 scenes. Alternatively, use a Scene widget to easily show the same widgets \
                 in multiple scenes.
                 """)

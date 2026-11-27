@@ -398,6 +398,7 @@ struct RemoteControlSceneConfigValidationSuite {
             $1.alerts.twitch.follows.imageId = image.id
             $1.alerts.twitch.follows.soundId = sound.id
         },
+        WidgetCase("Alert without sound", .alerts) { $1.alerts.twitch.follows.soundId = nil },
         WidgetCase("Configured AI", .alerts) {
             $1.alerts.ai.apiKey = "key"
             $1.alerts.aiEnabled = true
@@ -540,9 +541,9 @@ struct RemoteControlSceneConfigValidationSuite {
 
     @Test(arguments: [
         (101.0, 0.0, 10.0),
-        (-1, 0, 10),
+        (-101, 0, 10),
         (0, 101, 10),
-        (0, -1, 10),
+        (0, -101, 10),
         (0, 0, 0),
         (0, 0, 101),
     ])
@@ -576,6 +577,13 @@ struct RemoteControlSceneConfigValidationSuite {
                                                     $0.widgets[0].layout.y = 100
                                                     $0.widgets[0].layout.size = 1
                                                     $0.widgets[0].layout.alignment = .bottomRight
+                                                },
+                                                database: fixture.database,
+                                                cameras: fixture.cameras))
+        #expect(isValidRemoteControlSceneUpdate(scene: fixture.mainScene,
+                                                new: modified(fixture.mainScene) {
+                                                    $0.widgets[0].layout.x = -100
+                                                    $0.widgets[0].layout.y = -100
                                                 },
                                                 database: fixture.database,
                                                 cameras: fixture.cameras))
@@ -706,22 +714,20 @@ struct RemoteControlSceneConfigValidationSuite {
     }
 
     @Test
-    func centeringSceneWidgetUnlocksPosition() {
+    func mergeKeepsExistingSceneWidgetAndAppliesLayout() {
         let sceneWidget = SettingsSceneWidget(widgetId: UUID())
-        sceneWidget.layout.positioningLock = true
-        let kept = remoteControlMergeSceneWidgets([sceneWidget], [roundTrip(sceneWidget)])
-        #expect(kept.first === sceneWidget)
-        #expect(sceneWidget.layout.positioningLock)
-        _ = remoteControlMergeSceneWidgets([sceneWidget], [modified(sceneWidget) {
+        let merged = remoteControlMergeSceneWidgets([sceneWidget], [modified(sceneWidget) {
             $0.layout.alignment = .center
         }])
-        #expect(!sceneWidget.layout.positioningLock)
+        #expect(merged.first === sceneWidget)
+        #expect(sceneWidget.layout.alignment == .center)
+    }
+
+    @Test
+    func mergeAddsNewSceneWidget() {
+        let sceneWidget = SettingsSceneWidget(widgetId: UUID())
         let new = SettingsSceneWidget(widgetId: UUID())
-        new.layout.positioningLock = true
-        new.layout.alignment = .topCenter
-        let merged = remoteControlMergeSceneWidgets([sceneWidget], [new])
-        #expect(merged.first === new)
-        #expect(!new.layout.positioningLock)
+        #expect(remoteControlMergeSceneWidgets([sceneWidget], [new]).first === new)
     }
 
     @Test

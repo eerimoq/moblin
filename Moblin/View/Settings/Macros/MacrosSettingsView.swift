@@ -207,6 +207,11 @@ private struct ActionView: View {
                         } label: {
                             TextItemLocalizedView(name: "Message", value: action.notificationMessage)
                         }
+                    case .playSound:
+                        SoundSelectorNavigationView(model: model,
+                                                    gallery: database.alertsMediaGallery,
+                                                    title: "Sound",
+                                                    soundId: $action.soundId)
                     case .sendTwitchShoutout:
                         EmptyView()
                     case .delay:
@@ -427,6 +432,14 @@ private struct ActionView: View {
                 case .notification:
                     Spacer()
                     GrayTextView(text: action.notificationMessage)
+                case .playSound:
+                    if let soundName = database.alertsMediaGallery.allSounds()
+                        .first(where: { $0.id == action.soundId })?
+                        .name
+                    {
+                        Spacer()
+                        GrayTextView(text: soundName)
+                    }
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")

@@ -168,7 +168,6 @@ export interface RemoteControlStatusTopRight {
   srtlaRtts?: RemoteControlStatusItem;
   recording?: RemoteControlStatusItem;
   replay?: RemoteControlStatusItem;
-  browserWidgets?: RemoteControlStatusItem;
   moblink?: RemoteControlStatusItem;
   djiDevices?: RemoteControlStatusItem;
   systemMonitor?: RemoteControlStatusItem;

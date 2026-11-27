@@ -878,7 +878,6 @@ class SettingsStreamReplay: Codable, ObservableObject {
         case y
         case size
         case alignment
-        case positioningLock
         case enterForegroundCountAtLatestUsage
     }
 
@@ -893,7 +892,6 @@ class SettingsStreamReplay: Codable, ObservableObject {
         try container.encode(.y, layout.y)
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
-        try container.encode(.positioningLock, layout.positioningLock)
         try container.encode(.enterForegroundCountAtLatestUsage, enterForegroundCountAtLatestUsage)
     }
 
@@ -913,13 +911,9 @@ class SettingsStreamReplay: Codable, ObservableObject {
         outStinger = container.decode(.outStinger, SettingsStreamReplayStinger.self, .init())
         postTriggerDelay = container.decode(.postTriggerDelay, Int.self, 3)
         layout.x = container.decode(.x, Double.self, 0.0)
-        layout.updateXString()
         layout.y = container.decode(.y, Double.self, 0.0)
-        layout.updateYString()
         layout.size = container.decode(.size, Double.self, 100.0)
-        layout.updateSizeString()
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
-        layout.positioningLock = container.decode(.positioningLock, Bool.self, false)
         enterForegroundCountAtLatestUsage = container.decode(.enterForegroundCountAtLatestUsage,
                                                              Int?.self,
                                                              nil)

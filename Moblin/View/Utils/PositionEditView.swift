@@ -2,35 +2,22 @@ import SwiftUI
 
 struct PositionEditView: View {
     @Binding var number: Double
-    @Binding var value: String
     let onSubmit: () -> Void
-    @Binding var numericInput: Bool
     let incrementImageName: String
     let decrementImageName: String
     let mirror: Bool
-    let increment: Double
-
-    func submit(value: String) -> String {
-        if var value = Float(value) {
-            value = value.clamped(to: 0 ... 100)
-            onSubmit()
-            return String(value)
-        }
-        return value
-    }
+    let total: Double
 
     var body: some View {
         ValueEditCompactView(
             number: $number,
-            value: $value,
-            minimum: 0,
+            minimum: -100,
             maximum: 100,
-            onSubmit: submit,
-            numericInput: $numericInput,
+            total: total,
+            onSubmit: onSubmit,
             incrementImageName: incrementImageName,
             decrementImageName: decrementImageName,
-            mirror: mirror,
-            increment: increment
+            mirror: mirror
         )
     }
 }

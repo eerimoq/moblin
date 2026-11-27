@@ -21,7 +21,6 @@ private final class VTuberVrmRenderer {
     private let entity: VRMEntity
     private let renderer: RealityRenderer
     private let camera: PerspectiveCamera
-    private let device: MTLDevice
     private let boneRests: [HumanoidBone: VTuberVrmBoneRest]
     private let mouthOpen: ExpressionHandle?
     private let blink: ExpressionHandle?
@@ -33,7 +32,6 @@ private final class VTuberVrmRenderer {
     private init(entity: VRMEntity, renderer: RealityRenderer, device: MTLDevice) {
         self.entity = entity
         self.renderer = renderer
-        self.device = device
         camera = PerspectiveCamera()
         camera.camera.fieldOfViewOrientation = .vertical
         if entity.frontDirection.z > 0 {

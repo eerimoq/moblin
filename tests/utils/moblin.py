@@ -250,34 +250,35 @@ class Moblin:
             self._wait_until_streamer_is_connected(log=False)
 
     def import_settings_archive(self, archive: Path) -> dict:
-        response = self._request(
+        return self._request_result(
             {"importSettings": {"data": b64encode(archive.read_bytes()).decode("utf-8")}}
         )
-        return response["result"]
 
     def get_scenes(self) -> list[dict]:
         return self._request({"getScenes": {}})["data"]["getScenes"]["scenes"]
 
     def get_widgets(self) -> list[dict]:
-        return self._request({"getWidgets": {}})["data"]["getWidgets"]["widgets"]
+        return self._request({"getWidgets": {"secrets": True}})["data"]["getWidgets"]["widgets"]
 
     def create_scene(self, scene: dict) -> dict:
-        return self._request({"createScene": {"scene": scene}})["result"]
+        return self._request_result({"createScene": {"scene": scene}})
 
     def update_scene(self, scene: dict) -> dict:
-        return self._request({"updateScene": {"scene": scene}})["result"]
+        return self._request_result({"updateScene": {"scene": scene}})
 
     def delete_scene(self, scene_id: str) -> dict:
-        return self._request({"deleteScene": {"id": scene_id}})["result"]
+        return self._request_result({"deleteScene": {"id": scene_id}})
 
     def create_widget(self, widget: dict, scene_ids: list[str]) -> dict:
-        return self._request({"createWidget": {"widget": widget, "sceneIds": scene_ids}})["result"]
+        return self._request_result(
+            {"createWidget": {"widget": widget, "sceneIds": scene_ids, "secrets": True}}
+        )
 
     def update_widget(self, widget: dict) -> dict:
-        return self._request({"updateWidget": {"widget": widget}})["result"]
+        return self._request_result({"updateWidget": {"widget": widget, "secrets": True}})
 
     def delete_widget(self, widget_id: str) -> dict:
-        return self._request({"deleteWidget": {"id": widget_id}})["result"]
+        return self._request_result({"deleteWidget": {"id": widget_id}})
 
     def get_video_sources(self) -> list[dict]:
         return self._request({"getVideoSources": {}})["data"]["getVideoSources"]["videoSources"]
@@ -289,7 +290,7 @@ class Moblin:
         return self._request({"getEditorOptions": {}})["data"]["getEditorOptions"]["options"]
 
     def set_scoreboard_players(self, players: list[dict]) -> dict:
-        return self._request({"setScoreboardPlayers": {"players": players}})["result"]
+        return self._request_result({"setScoreboardPlayers": {"players": players}})
 
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
@@ -724,6 +725,9 @@ class Moblin:
 
     def _request(self, data):
         return make_client_request(self._remote_control_port, data)
+
+    def _request_result(self, data) -> dict:
+        return self._request_with_timeout(data, 30)["result"]
 
     def _request_with_timeout(self, data, timeout: float):
         with connect(f"ws://localhost:{self._remote_control_port}/client", max_size=None) as server:

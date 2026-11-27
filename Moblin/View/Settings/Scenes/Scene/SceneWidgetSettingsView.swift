@@ -5,14 +5,11 @@ struct SceneWidgetSettingsView: View {
     @ObservedObject var database: Database
     @ObservedObject var sceneWidget: SettingsSceneWidget
     @ObservedObject var widget: SettingsWidget
+    let size: CGSize
 
     var body: some View {
         Form {
-            WidgetLayoutView(model: model,
-                             database: database,
-                             layout: $sceneWidget.layout,
-                             widget: widget,
-                             numericInput: $database.sceneNumericInput)
+            WidgetLayoutView(model: model, sceneWidget: sceneWidget, widget: widget, size: size)
             WidgetSettingsSectionsView(model: model, database: database, widget: widget)
         }
         .navigationTitle(widget.name)

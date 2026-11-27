@@ -59,29 +59,20 @@ private struct SceneWidgetView: View {
 
     var body: some View {
         if let widget = database.findWidget(id: sceneWidget.widgetId) {
-            NavigationLink {
-                SceneWidgetSettingsView(
-                    model: model,
-                    database: database,
-                    sceneWidget: sceneWidget,
-                    widget: widget
-                )
-            } label: {
-                Toggle(isOn: Binding(get: {
-                    widget.enabled
-                }, set: { value in
-                    widget.enabled = value
-                    model.widgetEnabledChanged(widget: widget)
-                })) {
+            Toggle(isOn: Binding(get: {
+                widget.enabled
+            }, set: { value in
+                widget.enabled = value
+                model.widgetEnabledChanged(widget: widget)
+            })) {
+                HStack {
+                    DraggableItemPrefixView()
                     HStack {
-                        DraggableItemPrefixView()
-                        HStack {
-                            Text("")
-                            Image(systemName: widget.image())
-                            Text(widget.name)
-                        }
-                        Spacer()
+                        Text("")
+                        Image(systemName: widget.image())
+                        Text(widget.name)
                     }
+                    Spacer()
                 }
             }
         }

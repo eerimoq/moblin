@@ -12,8 +12,8 @@ private func isValidChange<T: Equatable>(_ old: T, _ new: T, _ isValid: (T) -> B
 }
 
 private func isValidLayoutChange(_ old: SettingsWidgetLayout, _ new: SettingsWidgetLayout) -> Bool {
-    isValidChange(old.x, new.x) { (0 ... 100).contains($0) }
-        && isValidChange(old.y, new.y) { (0 ... 100).contains($0) }
+    isValidChange(old.x, new.x) { (-100 ... 100).contains($0) }
+        && isValidChange(old.y, new.y) { (-100 ... 100).contains($0) }
         && isValidChange(old.size, new.size) { (1 ... 100).contains($0) }
 }
 
@@ -176,18 +176,10 @@ func remoteControlMergeSceneWidgets(_ sceneWidgets: [SettingsSceneWidget],
                                     _ newSceneWidgets: [SettingsSceneWidget]) -> [SettingsSceneWidget]
 {
     newSceneWidgets.map { sceneWidget in
-        let oldSceneWidget = sceneWidgets.first { $0.id == sceneWidget.id }
-        var layout = sceneWidget.layout
-        if layout.alignment != (oldSceneWidget?.layout.alignment ?? SettingsWidgetLayout().alignment),
-           layout.alignment.isHorizontalOrVerticalCenter()
-        {
-            layout.positioningLock = false
-        }
-        guard let oldSceneWidget else {
-            sceneWidget.layout = layout
+        guard let oldSceneWidget = sceneWidgets.first(where: { $0.id == sceneWidget.id }) else {
             return sceneWidget
         }
-        oldSceneWidget.layout = layout
+        oldSceneWidget.layout = sceneWidget.layout
         return oldSceneWidget
     }
 }
@@ -421,7 +413,11 @@ private func isValidAlertUpdate(_ old: SettingsWidgetAlertsAlert,
               isValidChange(
                   old.soundId,
                   new.soundId,
-                  { soundId in mediaDatabase.alertsMediaGallery.allSounds().contains { $0.id == soundId } }
+                  { soundId in
+                      soundId.map { soundId in
+                          mediaDatabase.alertsMediaGallery.allSounds().contains { $0.id == soundId }
+                      } ?? true
+                  }
               )
         else {
             return false

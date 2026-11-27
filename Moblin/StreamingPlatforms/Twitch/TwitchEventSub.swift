@@ -220,7 +220,6 @@ struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEventRewa
     // periphery:ignore
     var id: String
     var title: String
-    // periphery:ignore
     var cost: Int
     // periphery:ignore
     var prompt: String
@@ -240,7 +239,6 @@ struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent: De
     var broadcaster_user_login: String
     // periphery:ignore
     var broadcaster_user_name: String
-    // periphery:ignore
     var status: String
     var reward: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEventReward
     // periphery:ignore
@@ -427,6 +425,19 @@ private struct NotificationChannelShoutoutCreateMessage: Decodable {
     var payload: NotificationChannelShoutoutCreatePayload
 }
 
+struct TwitchEventSubChannelShoutoutReceiveEvent: Decodable {
+    var from_broadcaster_user_name: String
+    var viewer_count: Int
+}
+
+private struct NotificationChannelShoutoutReceivePayload: Decodable {
+    var event: TwitchEventSubChannelShoutoutReceiveEvent
+}
+
+private struct NotificationChannelShoutoutReceiveMessage: Decodable {
+    var payload: NotificationChannelShoutoutReceivePayload
+}
+
 private let url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 @MainActor
@@ -459,6 +470,7 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelPredictionEnd(event: TwitchEventSubChannelPredictionEvent)
     func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent)
     func twitchEventSubChannelShoutoutCreate(event: TwitchEventSubChannelShoutoutCreateEvent)
+    func twitchEventSubChannelShoutoutReceive(event: TwitchEventSubChannelShoutoutReceiveEvent)
     func twitchEventSubUnauthorized()
     func twitchEventSubNotification(message: String)
 }
@@ -482,6 +494,7 @@ private let subTypeChannelPredictionProgress = "channel.prediction.progress"
 private let subTypeChannelPredictionLock = "channel.prediction.lock"
 private let subTypeChannelPredictionEnd = "channel.prediction.end"
 private let subTypeChannelShoutoutCreate = "channel.shoutout.create"
+private let subTypeChannelShoutoutReceive = "channel.shoutout.receive"
 
 private let initialReconnectDelay = 5.0
 
@@ -631,6 +644,7 @@ final class TwitchEventSub: NSObject {
             .init(type: subTypeChannelPredictionLock, version: 1, condition: broadcaster),
             .init(type: subTypeChannelPredictionEnd, version: 1, condition: broadcaster),
             .init(type: subTypeChannelShoutoutCreate, version: 1, condition: broadcasterAndModerator),
+            .init(type: subTypeChannelShoutoutReceive, version: 1, condition: broadcasterAndModerator),
         ]
     }
 
@@ -730,6 +744,8 @@ final class TwitchEventSub: NSObject {
                 try handleChannelPredictionEnd(messageData: messageData)
             case subTypeChannelShoutoutCreate:
                 try handleChannelShoutoutCreate(messageData: messageData)
+            case subTypeChannelShoutoutReceive:
+                try handleChannelShoutoutReceive(messageData: messageData)
             default:
                 if let type = message.metadata.subscription_type {
                     logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -998,6 +1014,14 @@ final class TwitchEventSub: NSObject {
             from: messageData
         )
         delegate.twitchEventSubChannelShoutoutCreate(event: message.payload.event)
+    }
+
+    private func handleChannelShoutoutReceive(messageData: Data) throws {
+        let message = try JSONDecoder().decode(
+            NotificationChannelShoutoutReceiveMessage.self,
+            from: messageData
+        )
+        delegate.twitchEventSubChannelShoutoutReceive(event: message.payload.event)
     }
 }
 

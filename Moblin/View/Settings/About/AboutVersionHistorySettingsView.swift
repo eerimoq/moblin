@@ -8,6 +8,33 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "40.1.0", date: "2026-11-24", changes: [
+        "• Minor optimizations to OBS remote control preview and Twitch poll, prediction and hype train.",
+        "• Chat optimizations.",
+        "• Improved validation when importing via deep link.",
+        "• Pimp various settings pages with trading card images.",
+        "• Stream settings via remote control.",
+        "• Double tap or scroll to end to find quick buttons. 💡 xcopy94",
+        "• Make whole quick buttons tappable.",
+        "• Add a Reload emotes button in chat settings that fetches BTTV, FFZ and 7TV emotes lists. 🐛 G",
+        "• Always send chat messages to all logged in platforms. 💡 Anonymous",
+        "• Allow the settings URL to select the SRT implementation. 🧑‍🏭 naynieb",
+        "• Make it easier to tap settings and flame buttons, especially in portrait.",
+        "• Add a button to local only browser widgets that minimizes and restores it.",
+        "• Add a search field to the settings page that finds common settings by name and keywords.",
+        "• Outgoing RTMP stream refactoring.",
+        "• \"Helpful\" messages in RTMP error toasts, to ease debugging.",
+        "• Spacing between draggable prefix and text in scenes and streams.",
+        "• Rework Settings -> Display. 💡 Crozbo, xcopy94 and sander934",
+        "  • Zoom and scene controls layout picker instead of vertical buttons toggle.",
+        "• Show taps debug setting. 💡 sander934",
+        "  • For screen recordings.",
+        "• Show received Twitch shoutouts in chat and activity feed.",
+        "• Poop, pope and pizza chef recations. 💡 G's chat",
+        "• Trigger reactions via Moblin Cloud.",
+        "• Revert \"Make ABR work on iOS 27 by not settings data rate limit.\", as Apple seems to have fixed their bug.",
+        "• Show number of viewers when not live as well.",
+    ]),
     Version(version: "40.0.0", date: "2026-11-08", changes: [
         "• Only show widget outlines in scene editor, and less features in Scene widgets quick button.",
         "• Show video source picker when creating VTuber and PNGTuber widgets.",

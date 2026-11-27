@@ -918,6 +918,10 @@ extension Model {
         fixedHorizonEffect = FixedHorizonEffect()
         glassesEffect = createGlassesEffect()
         sparkleEffect = createSparkleEffect()
+        popeHatEffect = createPopeHatEffect()
+        chefHatEffect = createChefHatEffect()
+        moustacheEffect = createMoustacheEffect()
+        poopEffect = createPoopEffect()
         beautyEffect = BeautyEffect(fps: Float(stream.fps))
         beautyEffect.setSmoothnessSettings(radius: database.beauty.smoothnessRadius,
                                            strength: database.beauty.smoothnessStrength)
@@ -937,6 +941,56 @@ extension Model {
         settings.quickButton.facePosition.height = 0.49
         settings.quickButton.imageId = database.alertsMediaGallery.getGlassesImageId()
         settings.quickButton.imageLoopCount = 3
+        return AlertsEffect(settings: settings,
+                            delegate: self,
+                            mediaStorage: alertMediaStorage,
+                            bundledImages: database.alertsMediaGallery.bundledImages,
+                            bundledSounds: database.alertsMediaGallery.bundledSounds)
+    }
+
+    private func createPopeHatEffect() -> AlertsEffect {
+        createFaceReactionEffect(imageId: database.alertsMediaGallery.getPopeHatImageId(),
+                                 landmark: alertsEffectBackgroundFaceRectangle,
+                                 centerY: -1.05,
+                                 height: 1.8)
+    }
+
+    private func createChefHatEffect() -> AlertsEffect {
+        createFaceReactionEffect(imageId: database.alertsMediaGallery.getChefHatImageId(),
+                                 landmark: alertsEffectBackgroundFaceRectangle,
+                                 centerY: -0.85,
+                                 height: 1.45)
+    }
+
+    private func createMoustacheEffect() -> AlertsEffect {
+        createFaceReactionEffect(imageId: database.alertsMediaGallery.getMoustacheImageId(),
+                                 landmark: alertsEffectBackgroundMouthRectangle,
+                                 centerY: 0.05,
+                                 height: 0.3)
+    }
+
+    private func createPoopEffect() -> AlertsEffect {
+        createFaceReactionEffect(imageId: database.alertsMediaGallery.getPoopImageId(),
+                                 landmark: alertsEffectBackgroundFaceRectangle,
+                                 centerY: -0.95,
+                                 height: 1.21)
+    }
+
+    private func createFaceReactionEffect(imageId: UUID,
+                                          landmark: AlertsEffectBackgroundLandmarkRectangle,
+                                          centerY: Double,
+                                          height: Double) -> AlertsEffect
+    {
+        let settings = SettingsWidgetAlerts()
+        settings.disableAll()
+        settings.quickButton.enabled = true
+        settings.quickButton.positionType = .face
+        let size = height * alertsEffectBackgroundFaceRectangle.height()
+        settings.quickButton.facePosition.x = (landmark.topLeftX + landmark.bottomRightX) / 2 - size / 2
+        settings.quickButton.facePosition.y = landmark.topLeftY + centerY * landmark.height() - size / 2
+        settings.quickButton.facePosition.width = size
+        settings.quickButton.facePosition.height = size
+        settings.quickButton.imageId = imageId
         return AlertsEffect(settings: settings,
                             delegate: self,
                             mediaStorage: alertMediaStorage,
@@ -969,6 +1023,18 @@ extension Model {
         }
         if let glassesEffect {
             effects.append(glassesEffect)
+        }
+        if let popeHatEffect {
+            effects.append(popeHatEffect)
+        }
+        if let chefHatEffect {
+            effects.append(chefHatEffect)
+        }
+        if let moustacheEffect {
+            effects.append(moustacheEffect)
+        }
+        if let poopEffect {
+            effects.append(poopEffect)
         }
         let fixedHorizonStatus: String
         if isFixedHorizonEnabled(scene: scene) {
@@ -1126,11 +1192,11 @@ extension Model {
         }
         browserEffects.removeAll()
         for widget in widgets where widget.type == .browser {
-            guard let url = URL(string: widget.browser.url) else {
+            guard let request = widget.browser.getRequest() else {
                 continue
             }
             let effect = BrowserEffect(
-                url: url,
+                request: request,
                 styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
                 moblinAccess: widget.browser.moblinAccess,
@@ -1139,6 +1205,7 @@ extension Model {
             effect.effects = widget.getEffects(model: self)
             browserEffects[widget.id] = effect
         }
+        moblinCloudMediaShareEffectsReset()
     }
 
     private func resetMapVideoEffects(widgets: [SettingsWidget]) {

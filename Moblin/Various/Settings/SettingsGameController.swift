@@ -70,6 +70,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case widget = "Widget"
     case macro = "Macro"
     case streamDeckLayout = "Stream deck layout"
+    case playSound = "Play sound"
     case instantReplay = "Instant replay"
     case stopReplay = "Stop replay"
     case snapshot = "Snapshot"
@@ -131,6 +132,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             String(localized: "Macro")
         case .streamDeckLayout:
             String(localized: "Stream Deck layout")
+        case .playSound:
+            String(localized: "Play sound")
         case .instantReplay:
             String(localized: "Instant replay")
         case .stopReplay:
@@ -240,6 +243,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             .general
         case .streamDeckLayout:
             .general
+        case .playSound:
+            .general
         case .instantReplay:
             .general
         case .stopReplay:
@@ -287,6 +292,7 @@ struct SettingsControllerFunctionData {
     var gimbalMotion: SettingsGimbalMotion = .kapow
     var macroId: UUID?
     var streamDeckLayoutId: UUID?
+    var soundId: UUID?
 }
 
 class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
@@ -308,6 +314,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         case gimbalMotion
         case macroId
         case streamDeckLayoutId
+        case soundId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -328,6 +335,8 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
             try container.encode(.macroId, functionData.macroId)
         case .streamDeckLayout:
             try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
+        case .playSound:
+            try container.encode(.soundId, functionData.soundId)
         default:
             break
         }
@@ -344,6 +353,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         functionData.gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
         functionData.macroId = container.decode(.macroId, UUID?.self, nil)
         functionData.streamDeckLayoutId = container.decode(.streamDeckLayoutId, UUID?.self, nil)
+        functionData.soundId = container.decode(.soundId, UUID?.self, nil)
     }
 }
 

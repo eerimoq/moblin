@@ -675,10 +675,6 @@ enum SettingsAlignment: String, Codable, CaseIterable {
         self == .leftCenter || self == .rightCenter || self == .center
     }
 
-    func isHorizontalOrVerticalCenter() -> Bool {
-        isHorizontalCenter() || isVerticalCenter()
-    }
-
     func isTop() -> Bool {
         self == .topLeft || self == .topRight || self == .topCenter
     }
@@ -1080,6 +1076,13 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         speechToText = container.decode(.speechToText, Bool.self, false)
         localOnly = container.decode(.localOnly, Bool.self, false)
     }
+
+    func getRequest() -> URLRequest? {
+        guard let url = URL(string: url) else {
+            return nil
+        }
+        return URLRequest(url: url)
+    }
 }
 
 class SettingsWidgetMap: Codable {
@@ -1198,7 +1201,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable 
     @Published var mediaType: SettingsWidgetAlertsAlertMediaType = .gifAndSound
     @Published var imageId: UUID = .init()
     @Published var imageLoopCount: Int = 1
-    @Published var soundId: UUID = .init()
+    @Published var soundId: UUID? = .init()
     @Published var videoName: String = ""
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var accentColor: RgbColor = .init(red: 0xFD, green: 0xFB, blue: 0x67)
@@ -1261,7 +1264,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable 
         mediaType = container.decode(.mediaType, SettingsWidgetAlertsAlertMediaType.self, .gifAndSound)
         imageId = container.decode(.imageId, UUID.self, .init())
         imageLoopCount = container.decode(.imageLoopCount, Int.self, 1)
-        soundId = container.decode(.soundId, UUID.self, .init())
+        soundId = container.decode(.soundId, UUID?.self, .init())
         videoName = container.decode(.videoName, String.self, "")
         textColor = container.decode(.textColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
         accentColor = container.decode(.accentColor, RgbColor.self, .init(red: 0xFD, green: 0xFB, blue: 0x67))
@@ -2147,6 +2150,7 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
         case gimbalMotion
         case macroId
         case streamDeckLayoutId
+        case soundId
     }
 
     init() {}
@@ -2163,6 +2167,7 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
         try container.encode(.gimbalMotion, functionData.gimbalMotion)
         try container.encode(.macroId, functionData.macroId)
         try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
+        try container.encode(.soundId, functionData.soundId)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -2177,6 +2182,7 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
         functionData.gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
         functionData.macroId = container.decode(.macroId, UUID?.self, nil)
         functionData.streamDeckLayoutId = container.decode(.streamDeckLayoutId, UUID?.self, nil)
+        functionData.soundId = container.decode(.soundId, UUID?.self, nil)
     }
 }
 
@@ -2829,25 +2835,9 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
 
 struct SettingsWidgetLayout: Equatable {
     var x: Double = 0.0
-    var xString: String = "0.0"
     var y: Double = 0.0
-    var yString: String = "0.0"
     var size: Double = 100.0
-    var sizeString: String = "100.0"
     var alignment: SettingsAlignment = .topLeft
-    var positioningLock: Bool = false
-
-    mutating func updateXString() {
-        xString = String(x)
-    }
-
-    mutating func updateYString() {
-        yString = String(y)
-    }
-
-    mutating func updateSizeString() {
-        sizeString = String(size)
-    }
 
     func extent() -> CGRect {
         .init(x: x, y: y, width: size, height: size)
@@ -2916,9 +2906,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         default:
             break
         }
-        layout.updateXString()
-        layout.updateYString()
-        layout.updateSizeString()
     }
 
     enum CodingKeys: CodingKey {
@@ -2928,7 +2915,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         case y
         case size
         case alignment
-        case positioningLock
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -2939,7 +2925,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         try container.encode(.y, layout.y)
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
-        try container.encode(.positioningLock, layout.positioningLock)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -2947,13 +2932,9 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         widgetId = container.decode(.widgetId, UUID.self, .init())
         id = container.decode(.id, UUID.self, .init())
         layout.x = container.decode(.x, Double.self, 0.0)
-        layout.updateXString()
         layout.y = container.decode(.y, Double.self, 0.0)
-        layout.updateYString()
         layout.size = container.decode(.size, Double.self, 100.0)
-        layout.updateSizeString()
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
-        layout.positioningLock = container.decode(.positioningLock, Bool.self, false)
     }
 
     func clone() -> SettingsSceneWidget {

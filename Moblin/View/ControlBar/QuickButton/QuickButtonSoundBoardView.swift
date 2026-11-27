@@ -23,13 +23,23 @@ struct QuickButtonSoundBoardView: View {
     @ObservedObject var gallery: SettingsAlertsMediaGallery
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3)) {
-                ForEach(gallery.allSounds().filter { $0.name != "Silence" }) { sound in
-                    SoundView(model: model, sound: sound)
+        Form {
+            Section {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3)) {
+                    ForEach(gallery.allSounds()) { sound in
+                        SoundView(model: model, sound: sound)
+                    }
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+            }
+            ShortcutSectionView {
+                NavigationLink {
+                    SoundGalleryView(gallery: gallery) {}
+                } label: {
+                    Label("My sounds", systemImage: "speaker.wave.2")
                 }
             }
-            .padding()
         }
         .navigationTitle("Sound board")
     }

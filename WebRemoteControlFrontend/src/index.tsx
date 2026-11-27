@@ -399,9 +399,6 @@ function App() {
     if (topRight.replay !== undefined) {
       rows.push(["Replay", topRight.replay.message]);
     }
-    if (topRight.browserWidgets !== undefined) {
-      rows.push(["Browser widgets", topRight.browserWidgets.message]);
-    }
     if (topRight.moblink !== undefined) {
       rows.push(["Moblink", topRight.moblink.message]);
     }

@@ -85,7 +85,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
     private let name: String
     let streamId: UUID
     private let latency: Double
-    private let syncTimestamps: Bool
     private let softwareDecoding: Bool
     private let colorRange: SettingsStreamColorRange
     private(set) var peerConnectionId: Int32 = -1
@@ -120,7 +119,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
         self.name = name
         self.streamId = streamId
         self.latency = latency
-        self.syncTimestamps = syncTimestamps
         self.softwareDecoding = softwareDecoding
         self.colorRange = colorRange
         self.iceServers = iceServers

@@ -267,7 +267,7 @@ extension Model {
     }
 
     func updateTwitchStream(monotonicNow: ContinuousClock.Instant) {
-        guard isLive, isTwitchViewersConfigured() else {
+        guard isTwitchViewersConfigured() else {
             twitchPlatformStatus = .unknown
             return
         }
@@ -588,12 +588,6 @@ extension Model {
         if raid.progress.progress < raid.progress.goal {
             raid.progress.progress += 1
         }
-    }
-
-    func removeRaid() {
-        raid.state = .idle
-        raid.channelImage = ""
-        raid.channelLogin = ""
     }
 
     private func appendTwitchRaidSent(channelId: String, channelName: String) {
@@ -1284,6 +1278,20 @@ extension Model: TwitchEventSubDelegate {
                 text: String(localized: "gave a shoutout to \(event.to_broadcaster_user_name)!")
             ),
             title: String(localized: "Shoutout sent"),
+            color: .orange,
+            image: "megaphone",
+            kind: .other,
+            sharedChat: nil
+        )
+    }
+
+    func twitchEventSubChannelShoutoutReceive(event: TwitchEventSubChannelShoutoutReceiveEvent) {
+        appendTwitchChatAlertMessage(
+            user: event.from_broadcaster_user_name,
+            segments: makeTwitchAlertSegments(
+                text: String(localized: "gave you a shoutout to \(event.viewer_count) viewers!")
+            ),
+            title: String(localized: "Shoutout received"),
             color: .orange,
             image: "megaphone",
             kind: .other,

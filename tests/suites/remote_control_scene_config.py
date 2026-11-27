@@ -400,7 +400,7 @@ class RemoteControlSceneConfigWhileRecording(TestCase):
             FfmpegColorStream(self.moblin.ingest_rtmp_url("3"), "green"),
             FfmpegColorStream(self.moblin.ingest_rtmp_url("4"), "yellow"),
         ):
-            self.wait_for_ingest_stream_started(number_of_ingests=4)
+            self.wait_for_ingest_stream_started(number_of_ingests=4, bytes_per_ingest=750_000)
             self.scene = scenes_by_id(self.moblin)[INGEST_SCENE_ID]
             self.widgets = widgets_by_id(self.moblin)
             steps = self.configuration_steps()

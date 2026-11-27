@@ -1,5 +1,15 @@
 import SwiftUI
 
+private struct MediaShareModeWarningView: View {
+    @ObservedObject var browser: SettingsWidgetBrowser
+
+    var body: some View {
+        if browser.mode != .audioAndVideoOnly || browser.localOnly {
+            Text("⚠️ Configure the browser widget as audio and video only, with local only off.")
+        }
+    }
+}
+
 struct MoblinCloudSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -100,6 +110,29 @@ struct MoblinCloudSettingsView: View {
                 Text("""
                 Wheel of luck widget that viewers spin. Viewers can only spin while one is picked. \
                 Create one in Settings → Scenes and add it to the scenes you stream with.
+                """)
+            }
+            Section {
+                Picker("Media share", selection: $moblinCloud.mediaWidgetId) {
+                    Text("-- None --")
+                        .tag(nil as UUID?)
+                    ForEach(database.widgets.filter { $0.type == .browser }) {
+                        Text($0.name)
+                            .tag($0.id as UUID?)
+                    }
+                }
+                .onChange(of: moblinCloud.mediaWidgetId) { _ in
+                    model.moblinCloudMediaShareWidgetUpdated()
+                }
+                if let id = moblinCloud.mediaWidgetId, let widget = database.findWidget(id: id) {
+                    MediaShareModeWarningView(browser: widget.browser)
+                }
+            } footer: {
+                Text("""
+                Browser widget that plays the YouTube videos and Twitch clips viewers \
+                request, instead of its own page. Viewers can only request them while one is picked. \
+                Sign in to YouTube in Moblin's browser to play videos with your account. Create one \
+                in Settings → Scenes and add it to the scenes you stream with.
                 """)
             }
             Section {

@@ -682,6 +682,13 @@ extension Model {
                 triggerGlasses()
             case .sparkle:
                 triggerSparkle()
+            case .pope:
+                popeHatEffect?.play(alert: .quickButton)
+            case .pizzaChef:
+                chefHatEffect?.play(alert: .quickButton)
+                moustacheEffect?.play(alert: .quickButton)
+            case .poop:
+                poopEffect?.play(alert: .quickButton)
             default:
                 break
             }

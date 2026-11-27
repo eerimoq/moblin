@@ -52,6 +52,12 @@ extension Model {
         updateWidgetOutlines()
     }
 
+    func sceneEditorToggleSceneEnabled(scene: SettingsScene) {
+        scene.enabled.toggle()
+        sceneEnabledChanged(scene: scene)
+        sceneEditorSelectScene(id: scene.id)
+    }
+
     func sceneEditorMoveWidget(sceneWidget: SettingsSceneWidget, rect: CGRect) {
         sceneWidget.layout = sceneEditorLayout(sceneWidget.layout, rect, sceneEditor.canvasSize)
         sceneUpdatedThrottled()
@@ -68,9 +74,10 @@ extension Model {
         sceneUpdated()
     }
 
-    func sceneEditorResizeWidget(sceneWidget: SettingsSceneWidget, size: Double) {
-        sceneWidget.layout.size = size.clamped(to: 1 ... 100)
-        sceneWidget.layout.updateSizeString()
+    func sceneEditorResizeWidget(sceneWidget: SettingsSceneWidget, size: Double, rect: CGRect) {
+        var layout = sceneEditorLayout(sceneWidget.layout, rect, sceneEditor.canvasSize)
+        layout.size = size.clamped(to: 1 ... 100)
+        sceneWidget.layout = layout
         sceneUpdatedThrottled()
     }
 
@@ -190,6 +197,19 @@ extension Model {
         if !widgetOutlinesEqual(outlines, sceneEditor.outlines) {
             sceneEditor.outlines = outlines
         }
+    }
+
+    func sceneEditorWidgetWidth(widget: SettingsWidget,
+                                layout: SettingsWidgetLayout,
+                                size: Double,
+                                canvasSize: CGSize) -> Double
+    {
+        var layout = layout
+        layout.size = size
+        guard let outlineSize = widgetOutlineSize(widget, layout, canvasSize) else {
+            return toPixels(size, canvasSize.width)
+        }
+        return outlineSize.width
     }
 
     private func widgetOutlineSize(_ widget: SettingsWidget,

@@ -16,6 +16,11 @@ struct HelpAndSupportSettingsView: View {
                 Github if you need help or want to give feedback.
                 """)
             }
+            Section {
+                FeatureVideosGridView(videos: FeatureVideo.all)
+            } header: {
+                Text("Videos")
+            }
         }
         .navigationTitle("Help and support")
     }

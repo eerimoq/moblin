@@ -1,3 +1,4 @@
+import Collections
 import CryptoKit
 import DeviceCheck
 import Foundation
@@ -43,6 +44,73 @@ private enum MoblinCloudError: Error {
     case notSupported
     case keyRejected(String)
     case badResponse(String)
+}
+
+private func makeMoblinCloudMediaShareRequest(host: String,
+                                              path: String,
+                                              queryItems: [URLQueryItem]) -> URLRequest
+{
+    var components = URLComponents()
+    components.scheme = "https"
+    components.host = host
+    components.path = path
+    components.queryItems = queryItems
+    var request = URLRequest(url: components.url!)
+    request.setValue("https://cloud.moblin.app/", forHTTPHeaderField: "Referer")
+    return request
+}
+
+class MoblinCloudTipEffects {
+    var queue: Deque<(String, String, URL)> = []
+    var player: AudioPlayer?
+    let timer = MainTimer()
+}
+
+class MoblinCloudMediaShare {
+    var widgetId: UUID?
+    var media: MoblinCloudMediaShareMedia?
+    var lastEnded: RemoteControlMediaShareEnded?
+    var started = false
+    let timer = MainTimer()
+    let endedTimer = MainTimer()
+}
+
+struct MoblinCloudMediaShareMedia {
+    let requestId: String
+    let source: RemoteControlMediaShareSource
+    let duration: Int
+
+    func request() -> URLRequest {
+        switch source {
+        case let .youTube(videoId: videoId, start: start):
+            let start = max(start, 0)
+            return makeMoblinCloudMediaShareRequest(
+                host: "www.youtube.com",
+                path: "/embed/\(videoId)",
+                queryItems: [
+                    URLQueryItem(name: "start", value: String(start)),
+                    URLQueryItem(name: "end", value: String(start + duration)),
+                    URLQueryItem(name: "autoplay", value: "1"),
+                    URLQueryItem(name: "playsinline", value: "1"),
+                    URLQueryItem(name: "controls", value: "0"),
+                    URLQueryItem(name: "rel", value: "0"),
+                    URLQueryItem(name: "iv_load_policy", value: "3"),
+                    URLQueryItem(name: "fs", value: "0"),
+                ]
+            )
+        case let .twitchClip(slug: slug):
+            return makeMoblinCloudMediaShareRequest(
+                host: "clips.twitch.tv",
+                path: "/embed",
+                queryItems: [
+                    URLQueryItem(name: "clip", value: slug),
+                    URLQueryItem(name: "parent", value: "cloud.moblin.app"),
+                    URLQueryItem(name: "autoplay", value: "true"),
+                    URLQueryItem(name: "muted", value: "false"),
+                ]
+            )
+        }
+    }
 }
 
 private func describe(_ response: URLResponse, _ data: Data) -> String {
@@ -322,6 +390,102 @@ extension Model {
         moblinCloud?.sendIcon(id: database.iconImage)
     }
 
+    private func getMoblinCloudMediaShareEffect() -> BrowserEffect? {
+        guard let id = database.moblinCloud.mediaWidgetId else {
+            return nil
+        }
+        return browserEffects[id]
+    }
+
+    func remoteControlSetMoblinCloudMediaShareWidget(id: UUID?) {
+        guard id == nil || database.widgets.contains(where: { $0.id == id && $0.type == .browser }) else {
+            return
+        }
+        database.moblinCloud.mediaWidgetId = id
+        moblinCloudMediaShareWidgetUpdated()
+    }
+
+    func moblinCloudMediaShareEffectsReset() {
+        moblinCloudMediaShare.widgetId = nil
+        moblinCloudMediaShareWidgetUpdated()
+    }
+
+    func moblinCloudMediaShareWidgetUpdated() {
+        let widgetId = database.moblinCloud.mediaWidgetId
+        if widgetId != moblinCloudMediaShare.widgetId {
+            if let oldWidgetId = moblinCloudMediaShare.widgetId, let oldEffect = browserEffects[oldWidgetId] {
+                oldEffect.onVideoPlaying = nil
+                oldEffect.setRequest(request: database.findWidget(id: oldWidgetId)?.browser.getRequest())
+            }
+            moblinCloudMediaShare.widgetId = widgetId
+            if let widgetId, let effect = browserEffects[widgetId] {
+                effect.onVideoPlaying = { [weak self] playing in
+                    self?.moblinCloudMediaShareVideoPlaying(playing: playing)
+                }
+                if let media = moblinCloudMediaShare.media {
+                    moblinCloudStartMediaShare(effect: effect, media: media)
+                } else {
+                    effect.setRequest(request: nil)
+                }
+            }
+        }
+        moblinCloudSendMediaShare()
+    }
+
+    func moblinCloudSendMediaShare() {
+        if getMoblinCloudMediaShareEffect() == nil {
+            moblinCloud?.sendMediaShare(state: .unavailable)
+        } else if let media = moblinCloudMediaShare.media {
+            moblinCloud?.sendMediaShare(state: .playing(requestId: media.requestId))
+        } else {
+            moblinCloud?.sendMediaShare(state: .idle(lastEnded: moblinCloudMediaShare.lastEnded))
+        }
+    }
+
+    private func moblinCloudStartMediaShare(effect: BrowserEffect, media: MoblinCloudMediaShareMedia) {
+        moblinCloudMediaShare.media = media
+        moblinCloudMediaShare.started = false
+        moblinCloudMediaShare.endedTimer.stop()
+        moblinCloudMediaShare.timer.startSingleShot(timeout: 20) {
+            self.moblinCloudMediaShareEnded(reason: .failedToStart)
+        }
+        effect.setRequest(request: media.request())
+    }
+
+    private func moblinCloudMediaShareVideoPlaying(playing: Bool) {
+        guard let media = moblinCloudMediaShare.media else {
+            return
+        }
+        if playing {
+            moblinCloudMediaShare.endedTimer.stop()
+            if !moblinCloudMediaShare.started {
+                moblinCloudMediaShare.started = true
+                moblinCloudMediaShare.timer.startSingleShot(timeout: Double(media.duration) + 15) {
+                    self.moblinCloudMediaShareEnded(reason: .timedOut)
+                }
+            }
+        } else if moblinCloudMediaShare.started {
+            moblinCloudMediaShare.endedTimer.startSingleShot(timeout: 3) {
+                self.moblinCloudMediaShareEnded(reason: .finished)
+            }
+        }
+    }
+
+    func moblinCloudMediaShareEnded(reason: RemoteControlMediaShareEndedReason) {
+        guard let media = moblinCloudMediaShare.media else {
+            return
+        }
+        moblinCloudMediaShare.lastEnded = RemoteControlMediaShareEnded(
+            requestId: media.requestId,
+            reason: reason
+        )
+        moblinCloudMediaShare.media = nil
+        moblinCloudMediaShare.timer.stop()
+        moblinCloudMediaShare.endedTimer.stop()
+        getMoblinCloudMediaShareEffect()?.setRequest(request: nil)
+        moblinCloudSendMediaShare()
+    }
+
     func moblinCloudPlayTipAlert(name: String, message: String, amount: String, currency: String) {
         guard let id = database.moblinCloud.alertsWidgetId,
               let effect = getAlertsEffect(id: id),
@@ -343,7 +507,33 @@ extension Model {
             moblinCloudTipEffect(name: name, message: message, sound: sound)
         case let .wheelOfLuck(count: count):
             moblinCloudTipWheelOfLuck(name: name, message: message, count: count)
+        case let .mediaShare(source: source, duration: duration):
+            moblinCloudPlayMediaShare(name, message, requestId, source, duration)
         }
+    }
+
+    private func moblinCloudPlayMediaShare(
+        _ name: String,
+        _ message: String,
+        _ requestId: String,
+        _ source: RemoteControlMediaShareSource,
+        _ duration: Int
+    ) {
+        let media = MoblinCloudMediaShareMedia(
+            requestId: requestId,
+            source: source,
+            duration: duration.clamped(to: 1 ... 600)
+        )
+        guard let effect = getMoblinCloudMediaShareEffect() else {
+            return
+        }
+        var text = String(localized: "Requested a video")
+        if !message.isEmpty {
+            text += ": \(message)"
+        }
+        moblinCloudAppendChatMessage(name: name, text: text)
+        moblinCloudStartMediaShare(effect: effect, media: media)
+        moblinCloudSendMediaShare()
     }
 
     private func moblinCloudShowTipMessage(name: String, message: String, amount: String, currency: String) {
@@ -365,22 +555,22 @@ extension Model {
         if !message.isEmpty {
             text += ": \(message)"
         }
-        moblinCloudTipEffects.append((name, text, url))
+        moblinCloudTipEffects.queue.append((name, text, url))
         moblinCloudTryNextEffect()
     }
 
     private func moblinCloudTryNextEffect() {
-        guard moblinCloudTipEffectPlayer == nil,
-              let (name, text, url) = moblinCloudTipEffects.popFirst()
+        guard moblinCloudTipEffects.player == nil,
+              let (name, text, url) = moblinCloudTipEffects.queue.popFirst()
         else {
             return
         }
         moblinCloudAppendChatMessage(name: name, text: text)
-        moblinCloudTipEffectPlayer = try? AudioPlayer(contentsOf: url)
-        moblinCloudTipEffectPlayer?.play()
-        let timeUntilNextEffect = (moblinCloudTipEffectPlayer?.duration() ?? 0) + 3
-        moblinCloudTipEffectTimer.startSingleShot(timeout: timeUntilNextEffect) {
-            self.moblinCloudTipEffectPlayer = nil
+        moblinCloudTipEffects.player = try? AudioPlayer(contentsOf: url)
+        moblinCloudTipEffects.player?.play()
+        let timeUntilNextEffect = (moblinCloudTipEffects.player?.duration() ?? 0) + 3
+        moblinCloudTipEffects.timer.startSingleShot(timeout: timeUntilNextEffect) {
+            self.moblinCloudTipEffects.player = nil
             self.moblinCloudTryNextEffect()
         }
     }
@@ -487,6 +677,10 @@ class MoblinCloud {
         streamer?.sendIcon(id: id)
     }
 
+    func sendMediaShare(state: RemoteControlMediaShareState) {
+        streamer?.sendMediaShare(state: state)
+    }
+
     func stateChanged(state: RemoteControlState) {
         guard requestingStatus else {
             return
@@ -540,6 +734,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.updateMoblinCloudStatus()
         model?.moblinCloudSendWheelOfLuck()
         model?.moblinCloudSendIcon()
+        model?.moblinCloudSendMediaShare()
     }
 
     func remoteControlStreamerDisconnected() {
@@ -652,6 +847,14 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlSetMoblinCloudWheelOfLuckWidget(id: id)
     }
 
+    func remoteControlStreamerSetMoblinCloudMediaShareWidget(id: UUID?) {
+        model?.remoteControlSetMoblinCloudMediaShareWidget(id: id)
+    }
+
+    func remoteControlStreamerSkipMoblinCloudMediaShare() {
+        model?.moblinCloudMediaShareEnded(reason: .skipped)
+    }
+
     func remoteControlStreamerTwitchEventSubNotification(message _: String) {}
 
     func remoteControlStreamerChatMessages(history _: Bool, messages _: [RemoteControlChatMessage]) {}
@@ -715,7 +918,9 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlSetFilter(filter: filter, on: on)
     }
 
-    func remoteControlStreamerTriggerReaction(reaction _: RemoteControlReaction) {}
+    func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction) {
+        model?.handleRemoteControlTriggerReaction(reaction: reaction)
+    }
 
     func remoteControlStreamerMoveToGimbalPreset(id _: UUID) {}
 

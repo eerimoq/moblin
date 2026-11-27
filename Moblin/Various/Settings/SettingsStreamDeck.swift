@@ -22,6 +22,7 @@ class SettingsStreamDeckKey: Codable, ObservableObject, Identifiable {
         case gimbalMotion
         case macroId
         case streamDeckLayoutId
+        case soundId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -36,6 +37,7 @@ class SettingsStreamDeckKey: Codable, ObservableObject, Identifiable {
         try container.encode(.gimbalMotion, functionData.gimbalMotion)
         try container.encode(.macroId, functionData.macroId)
         try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
+        try container.encode(.soundId, functionData.soundId)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -51,6 +53,7 @@ class SettingsStreamDeckKey: Codable, ObservableObject, Identifiable {
         functionData.gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
         functionData.macroId = container.decode(.macroId, UUID?.self, nil)
         functionData.streamDeckLayoutId = container.decode(.streamDeckLayoutId, UUID?.self, nil)
+        functionData.soundId = container.decode(.soundId, UUID?.self, nil)
     }
 }
 

@@ -273,6 +273,7 @@ struct StreamTwitchSettingsView: View {
             } header: {
                 Text("Alerts")
             }
+            FeatureVideosSectionView(videos: [.twitchRaid])
         }
         .navigationTitle("Twitch")
         .onAppear {

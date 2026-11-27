@@ -86,6 +86,10 @@ extension Model {
                 database.streamDecks.selectedId = functionData.streamDeckLayoutId
                 setSelectedStreamDeck()
             }
+        case .playSound:
+            if let soundId = functionData.soundId, !pressed {
+                playSoundBoardSound(soundId: soundId)
+            }
         case .instantReplay:
             if !pressed {
                 instantReplay()

@@ -650,6 +650,8 @@ class RemoteControlAssistant: NSObject {
             break
         case .icon:
             break
+        case .mediaShare:
+            break
         case let .stats(data: data):
             delegate?.remoteControlAssistantStats(data: data)
         }
@@ -847,6 +849,8 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
     func twitchEventSubChannelModerate(event _: TwitchEventSubChannelModerateEvent) {}
 
     func twitchEventSubChannelShoutoutCreate(event _: TwitchEventSubChannelShoutoutCreateEvent) {}
+
+    func twitchEventSubChannelShoutoutReceive(event _: TwitchEventSubChannelShoutoutReceiveEvent) {}
 
     func twitchEventSubChannelPollBegin(event _: TwitchEventSubChannelPollEvent) {}
 

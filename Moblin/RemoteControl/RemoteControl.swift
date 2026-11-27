@@ -95,6 +95,10 @@ enum RemoteControlRequest: Codable {
     case getVideoSourceSnapshot(id: UUID)
     case setMoblinCloudAlertsWidget(id: UUID?)
     case setMoblinCloudWheelOfLuckWidget(id: UUID?)
+    case setTipsAlertsWidget(id: UUID?)
+    case setTipsWheelOfLuckWidget(id: UUID?)
+    case setTipsMediaShareWidget(id: UUID?)
+    case skipMediaShare
     case showTally(message: String, background: RgbColor, foreground: RgbColor)
     case hideTally
 }
@@ -103,6 +107,12 @@ enum RemoteControlTipKind: Codable {
     case message(amount: String, currency: String)
     case effect(sound: String)
     case wheelOfLuck(count: Int)
+    case mediaShare(source: RemoteControlMediaShareSource, duration: Int)
+}
+
+enum RemoteControlMediaShareSource: Codable {
+    case youTube(videoId: String, start: Int)
+    case twitchClip(slug: String)
 }
 
 enum RemoteControlResponse: Codable {
@@ -137,6 +147,25 @@ enum RemoteControlEvent: Codable {
     case stats(data: RemoteControlStats)
     case wheelOfLuck(wheel: RemoteControlWheelOfLuck?)
     case icon(id: String)
+    case mediaShare(state: RemoteControlMediaShareState)
+}
+
+enum RemoteControlMediaShareState: Codable {
+    case unavailable
+    case idle(lastEnded: RemoteControlMediaShareEnded?)
+    case playing(requestId: String)
+}
+
+struct RemoteControlMediaShareEnded: Codable {
+    let requestId: String
+    let reason: RemoteControlMediaShareEndedReason
+}
+
+enum RemoteControlMediaShareEndedReason: Codable {
+    case finished
+    case skipped
+    case failedToStart
+    case timedOut
 }
 
 struct RemoteControlWheelOfLuckOption: Codable, Equatable {
@@ -252,6 +281,9 @@ enum RemoteControlReaction: Codable, CaseIterable {
     case rain
     case glasses
     case sparkle
+    case pope
+    case pizzaChef
+    case poop
 
     func toSettings() -> SettingsReaction {
         switch self {
@@ -271,6 +303,12 @@ enum RemoteControlReaction: Codable, CaseIterable {
             .glasses
         case .sparkle:
             .sparkle
+        case .pope:
+            .pope
+        case .pizzaChef:
+            .pizzaChef
+        case .poop:
+            .poop
         }
     }
 }
@@ -963,7 +1001,6 @@ struct RemoteControlStatusTopRight: Codable {
     var srtlaRtts: RemoteControlStatusItem?
     var recording: RemoteControlStatusItem?
     var replay: RemoteControlStatusItem?
-    var browserWidgets: RemoteControlStatusItem?
     var moblink: RemoteControlStatusItem?
     var djiDevices: RemoteControlStatusItem?
     var systemMonitor: RemoteControlStatusItem?
@@ -1066,9 +1103,10 @@ struct RemoteControlEditorOptions: Codable {
     let canvasSize: RemoteControlSize
 }
 
-struct RemoteControlSettingsMoblinCloud: Codable {
+struct RemoteControlSettingsTips: Codable {
     let alertsWidgetId: UUID?
     let wheelOfLuckWidgetId: UUID?
+    let mediaShareWidgetId: UUID?
 }
 
 struct RemoteControlSettings: Codable {
@@ -1079,7 +1117,8 @@ struct RemoteControlSettings: Codable {
     var bitratePresets: [RemoteControlSettingsBitratePreset]
     var mics: [RemoteControlSettingsMic]
     var srt: RemoteControlSettingsSrt
-    var moblinCloud: RemoteControlSettingsMoblinCloud?
+    var moblinCloud: RemoteControlSettingsTips?
+    var tips: RemoteControlSettingsTips?
     var zoomPresets: RemoteControlSettingsZoomPresets?
 }
 

@@ -72,6 +72,24 @@ struct SettingsMacrosSuite {
     }
 
     @Test
+    func playSoundActionSurvivesEncodeAndDecode() throws {
+        let soundId = UUID()
+        let action = SettingsMacrosAction()
+        action.function = .playSound
+        action.soundId = soundId
+        let decoded = try JSONDecoder().decode(SettingsMacrosAction.self,
+                                               from: JSONEncoder().encode(action))
+        #expect(decoded.function == .playSound)
+        #expect(decoded.soundId == soundId)
+    }
+
+    @Test
+    func playSoundActionDefaultsWhenMissingFromSettings() throws {
+        let action = try JSONDecoder().decode(SettingsMacrosAction.self, from: Data("{}".utf8))
+        #expect(action.soundId == nil)
+    }
+
+    @Test
     func waitForEventMatchesOnlyItsEvent() {
         let action = makeWaitForEventAction(event: .twitchFollow)
         #expect(action.matches(event: MacroEvent(event: .twitchFollow)))

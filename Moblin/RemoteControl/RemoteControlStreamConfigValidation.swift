@@ -273,8 +273,8 @@ private func isValidPreviewStreamUpdate(_ previewStream: SettingsStreamPreviewSt
 
 private func isValidReplayUpdate(_ replay: SettingsStreamReplay, _ newReplay: SettingsStreamReplay) -> Bool {
     isValidChange(replay.postTriggerDelay, newReplay.postTriggerDelay) { (2 ... 5).contains($0) }
-        && isValidChange(replay.layout.x, newReplay.layout.x) { (0 ... 100).contains($0) }
-        && isValidChange(replay.layout.y, newReplay.layout.y) { (0 ... 100).contains($0) }
+        && isValidChange(replay.layout.x, newReplay.layout.x) { (-100 ... 100).contains($0) }
+        && isValidChange(replay.layout.y, newReplay.layout.y) { (-100 ... 100).contains($0) }
         && isValidChange(replay.layout.size, newReplay.layout.size) { (1 ... 100).contains($0) }
         && isValidChange(replay.inStinger.transitionPoint, newReplay.inStinger.transitionPoint) {
             (0 ... 1).contains($0)

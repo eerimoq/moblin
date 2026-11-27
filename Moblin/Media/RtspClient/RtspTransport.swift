@@ -5,7 +5,6 @@ private let rtspEndOfHeaders = Data([0xD, 0xA, 0xD, 0xA])
 
 protocol RtspTransportDelegate: AnyObject {
     func rtspTransportConnected()
-    func rtspTransportDisconnected()
     func rtspTransportReceivedRtspMessage(header: Data, content: Data?)
     func rtspTransportReceivedRtpPacket(_ packet: Data)
     func rtspTransportReceivedRtcpPacket(_ packet: Data)

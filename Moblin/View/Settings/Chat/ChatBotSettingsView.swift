@@ -177,7 +177,10 @@ private struct ReactionPermissionsSettingsView: View {
             VStack(alignment: .leading) {
                 Text("Perform reaction.")
                 Text("")
-                Text("<reaction> is hearts, fireworks, balloons, confetti, lasers, glasses or sparkle.")
+                Text("""
+                <reaction> is hearts, fireworks, balloons, confetti, lasers, glasses, sparkle, pope, \
+                pizzachef or poop.
+                """)
             }
         }
     }

@@ -297,13 +297,11 @@ class SystemMonitor: ObservableObject {
 
 @MainActor
 class StatusTopRight: ObservableObject {
-    @Published var browserWidgetsStatusChanged = false
     @Published var remoteControlOk = false
     @Published var remoteControlStatus = noValue
     @Published var moblinCloudOk = false
     @Published var moblinCloudStatus = noValue
     @Published var djiDevicesStatus = noValue
-    @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
     @Published var workoutDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
@@ -554,6 +552,7 @@ final class Model: NSObject, ObservableObject {
     let externalDisplay = ExternalDisplay()
     let tesla = Tesla()
     let debugOverlay = DebugOverlayProvider()
+    let showTaps = ShowTaps()
     let stealthMode = StealthMode()
     let controlBar = ControlBar()
     var faceBackgroundImage: CIImage?
@@ -735,9 +734,8 @@ final class Model: NSObject, ObservableObject {
     var remoteControlRelay: RemoteControlRelay?
     var remoteControlWeb: RemoteControlWeb?
     var moblinCloud: MoblinCloud?
-    var moblinCloudTipEffects: Deque<(String, String, URL)> = []
-    var moblinCloudTipEffectPlayer: AudioPlayer?
-    let moblinCloudTipEffectTimer = MainTimer()
+    let moblinCloudTipEffects = MoblinCloudTipEffects()
+    let moblinCloudMediaShare = MoblinCloudMediaShare()
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
     var isRemoteControlAssistantRequestingStats = false
@@ -844,6 +842,10 @@ final class Model: NSObject, ObservableObject {
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?
     var sparkleEffect: AlertsEffect?
+    var popeHatEffect: AlertsEffect?
+    var chefHatEffect: AlertsEffect?
+    var moustacheEffect: AlertsEffect?
+    var poopEffect: AlertsEffect?
     var beautyEffect = BeautyEffect(fps: 30)
     var replayEffect: ReplayEffect?
     var locationManager = Location()
@@ -1370,6 +1372,9 @@ final class Model: NSObject, ObservableObject {
 
     @objc func handleApplicationDidChangeActive(notification: NSNotification) {
         isAppActive = notification.name == UIApplication.didBecomeActiveNotification
+        if isAppActive {
+            updateShowTaps()
+        }
         guard !isMac() else {
             return
         }
@@ -1919,7 +1924,6 @@ final class Model: NSObject, ObservableObject {
         updateLocation()
         updateObsSourceScreenshot()
         updateObsAudioVolume()
-        updateBrowserWidgetStatus()
         logStatus()
         updateDebugOverlay()
         updateDistance()
@@ -2126,7 +2130,9 @@ final class Model: NSObject, ObservableObject {
         if database.alertsMediaGallery.allImages().first(where: { $0.id == alert.imageId }) == nil {
             alert.imageId = database.alertsMediaGallery.bundledImages[0].id
         }
-        if database.alertsMediaGallery.allSounds().first(where: { $0.id == alert.soundId }) == nil {
+        if let soundId = alert.soundId,
+           !database.alertsMediaGallery.allSounds().contains(where: { $0.id == soundId })
+        {
             alert.soundId = database.alertsMediaGallery.bundledSounds[0].id
         }
     }
@@ -2525,32 +2531,6 @@ final class Model: NSObject, ObservableObject {
 
     func seventvEmotesEnabledUpdated() {
         reloadChats()
-    }
-
-    func updateBrowserWidgetStatus() {
-        if statusTopRight.browserWidgetsStatusChanged {
-            statusTopRight.browserWidgetsStatusChanged = false
-        }
-        var messages: [String] = []
-        for browser in browsers {
-            let progress = browser.browserEffect.progress
-            if browser.browserEffect.isLoaded {
-                messages.append("\(browser.browserEffect.host): \(progress)%")
-                if progress != 100 || browser.browserEffect.startLoadingTime + .seconds(5) > .now,
-                   !statusTopRight.browserWidgetsStatusChanged
-                {
-                    statusTopRight.browserWidgetsStatusChanged = true
-                }
-            }
-        }
-        let message: String = if messages.isEmpty {
-            noValue
-        } else {
-            messages.joined(separator: ", ")
-        }
-        if statusTopRight.browserWidgetsStatus != message {
-            statusTopRight.browserWidgetsStatus = message
-        }
     }
 
     func reloadViewers() {
@@ -3252,7 +3232,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isShowingStatusViewers() -> Bool {
-        isLive && database.show.viewers && !statusTopLeft.streamingPlatformStatuses.isEmpty
+        database.show.viewers && !statusTopLeft.streamingPlatformStatuses.isEmpty
     }
 
     private func statusStreamText() -> String {
@@ -3368,10 +3348,6 @@ final class Model: NSObject, ObservableObject {
         stream.replay.enabled && !isChatPhone()
     }
 
-    func isShowingStatusBrowserWidgets() -> Bool {
-        database.show.browserWidgets && isStatusBrowserWidgetsActive() && !isChatPhone()
-    }
-
     func isShowingStatusCatPrinter() -> Bool {
         database.show.catPrinter && isAnyCatPrinterConfigured()
     }
@@ -3388,10 +3364,6 @@ final class Model: NSObject, ObservableObject {
         } else {
             false
         }
-    }
-
-    func isStatusBrowserWidgetsActive() -> Bool {
-        !statusTopRight.browserWidgetsStatus.isEmpty && statusTopRight.browserWidgetsStatusChanged
     }
 
     func isShowingStatusCpu() -> Bool {

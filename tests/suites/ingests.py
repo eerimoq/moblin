@@ -414,7 +414,7 @@ class IngestWhepClient(IngestTestCase):
         with MediaMtx() as mediamtx:
             with FfmpegRtspTestStream(url=rtsp_reader_url("1"), files_dir=FILES_DIR):
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
-                recording = self.record_ingest(startup_delay=4)
+                recording = self.record_ingest(startup_delay=5)
         self.assert_recording(recording, FILES_DIR, channels=2)
 
 
@@ -703,7 +703,7 @@ class IngestParallelWhepClient(ParallelIngestTestCase):
             with stream_1, stream_2:
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
                 mediamtx.wait_for_rtsp_publisher("2", 2_000_000)
-                recording = self.record_parallel_ingests(startup_delay=3)
+                recording = self.record_parallel_ingests(startup_delay=5)
         self.assert_parallel_recording(recording, channels=2)
 
 

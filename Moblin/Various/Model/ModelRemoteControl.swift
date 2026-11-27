@@ -476,7 +476,7 @@ extension Model {
         if isChatConfigured() {
             topLeft.chat = RemoteControlStatusItem(message: statusTopLeft.statusChatText)
         }
-        if isViewersConfigured(), isLive {
+        if isViewersConfigured() {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
         }
         return topLeft
@@ -531,9 +531,6 @@ extension Model {
         }
         if stream.replay.enabled {
             topRight.replay = RemoteControlStatusItem(message: String(localized: "Enabled"))
-        }
-        if isStatusBrowserWidgetsActive() {
-            topRight.browserWidgets = RemoteControlStatusItem(message: statusTopRight.browserWidgetsStatus)
         }
         if isAnyMoblinkConfigured() {
             topRight.moblink = RemoteControlStatusItem(message: moblink.status)
@@ -710,7 +707,7 @@ extension Model {
         }
     }
 
-    private func handleRemoteControlTriggerReaction(reaction: RemoteControlReaction) {
+    func handleRemoteControlTriggerReaction(reaction: RemoteControlReaction) {
         guard #available(iOS 17, *) else {
             return
         }
@@ -743,9 +740,10 @@ extension Model {
                 )
             }
         let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
-        let moblinCloud = RemoteControlSettingsMoblinCloud(
+        let tips = RemoteControlSettingsTips(
             alertsWidgetId: database.moblinCloud.alertsWidgetId,
-            wheelOfLuckWidgetId: database.moblinCloud.wheelOfLuckWidgetId
+            wheelOfLuckWidgetId: database.moblinCloud.wheelOfLuckWidgetId,
+            mediaShareWidgetId: database.moblinCloud.mediaWidgetId
         )
         return RemoteControlSettings(
             streams: streams,
@@ -758,7 +756,8 @@ extension Model {
                 connectionPrioritiesEnabled: connectionPrioritiesEnabled,
                 connectionPriorities: connectionPriorities
             ),
-            moblinCloud: moblinCloud,
+            moblinCloud: tips,
+            tips: tips,
             zoomPresets: RemoteControlSettingsZoomPresets(
                 front: makeRemoteControlZoomPresets(presets: database.zoom.front),
                 back: makeRemoteControlZoomPresets(presets: database.zoom.back)
@@ -1034,6 +1033,14 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: UUID?) {
         remoteControlSetMoblinCloudWheelOfLuckWidget(id: id)
+    }
+
+    func remoteControlStreamerSetMoblinCloudMediaShareWidget(id: UUID?) {
+        remoteControlSetMoblinCloudMediaShareWidget(id: id)
+    }
+
+    func remoteControlStreamerSkipMoblinCloudMediaShare() {
+        moblinCloudMediaShareEnded(reason: .skipped)
     }
 
     func remoteControlStreamerSetSrtConnectionPriority(

@@ -104,118 +104,53 @@ private struct StingerView: View {
 
 private struct LayoutView: View {
     let model: Model
-    @ObservedObject var database: Database
     @ObservedObject var replay: SettingsStreamReplay
 
     private func dimensions() -> CMVideoDimensions {
         model.stream.resolution.dimensions(portrait: model.stream.portrait)
     }
 
-    private func horizontalIncrement() -> Double {
-        100 / Double(dimensions().width)
-    }
-
-    private func verticalIncrement() -> Double {
-        100 / Double(dimensions().height)
-    }
-
-    private func setXBasedOnYIfLocked() {
-        guard replay.layout.positioningLock else {
-            return
-        }
-        replay.layout.x = replay.layout.y * horizontalIncrement() / verticalIncrement()
-        replay.layout.xString = String(replay.layout.x)
-    }
-
-    private func setYBasedOnXIfLocked() {
-        guard replay.layout.positioningLock else {
-            return
-        }
-        replay.layout.y = replay.layout.x * verticalIncrement() / horizontalIncrement()
-        replay.layout.yString = String(replay.layout.y)
-    }
-
     private func generalAndAlignmentPicker() -> some View {
         HStack {
             HStack {
-                SaveLoadLayoutView(layout: $replay.layout)
+                CopyPasteLayoutView(layout: $replay.layout)
                 Spacer()
             }
             Divider()
-            AlignmentPickerView(layout: $replay.layout)
+            AlignmentPickerView(alignment: replay.layout.alignment) { alignment in
+                replay.layout.alignment = alignment
+            }
         }
     }
 
     var body: some View {
         Section {
             generalAndAlignmentPicker()
-            if !replay.layout.alignment.isHorizontalCenter(),
-               !replay.layout.alignment.isVerticalCenter()
-            {
-                HStack(alignment: .center) {
-                    VStack {
-                        PositionEditView(
-                            number: $replay.layout.x,
-                            value: $replay.layout.xString,
-                            onSubmit: { setYBasedOnXIfLocked() },
-                            numericInput: $database.sceneNumericInput,
-                            incrementImageName: "arrow.forward.circle",
-                            decrementImageName: "arrow.backward.circle",
-                            mirror: replay.layout.alignment.mirrorPositionHorizontally(),
-                            increment: horizontalIncrement()
-                        )
-                        .padding(.bottom, 10)
-                        PositionEditView(
-                            number: $replay.layout.y,
-                            value: $replay.layout.yString,
-                            onSubmit: { setXBasedOnYIfLocked() },
-                            numericInput: $database.sceneNumericInput,
-                            incrementImageName: "arrow.down.circle",
-                            decrementImageName: "arrow.up.circle",
-                            mirror: replay.layout.alignment.mirrorPositionVertically(),
-                            increment: verticalIncrement()
-                        )
-                    }
-                    Button {
-                        replay.layout.positioningLock.toggle()
-                        setYBasedOnXIfLocked()
-                    } label: {
-                        Image(systemName: replay.layout.positioningLock ? "lock" : "lock.open")
-                            .font(.title)
-                            .frame(width: 35)
-                    }
-                    .buttonStyle(.borderless)
-                }
-            } else if !replay.layout.alignment.isHorizontalCenter() {
+            if !replay.layout.alignment.isHorizontalCenter() {
                 PositionEditView(
                     number: $replay.layout.x,
-                    value: $replay.layout.xString,
                     onSubmit: {},
-                    numericInput: $database.sceneNumericInput,
                     incrementImageName: "arrow.forward.circle",
                     decrementImageName: "arrow.backward.circle",
                     mirror: replay.layout.alignment.mirrorPositionHorizontally(),
-                    increment: horizontalIncrement()
+                    total: Double(dimensions().width)
                 )
-            } else if !replay.layout.alignment.isVerticalCenter() {
+            }
+            if !replay.layout.alignment.isVerticalCenter() {
                 PositionEditView(
                     number: $replay.layout.y,
-                    value: $replay.layout.yString,
                     onSubmit: {},
-                    numericInput: $database.sceneNumericInput,
                     incrementImageName: "arrow.down.circle",
                     decrementImageName: "arrow.up.circle",
                     mirror: replay.layout.alignment.mirrorPositionVertically(),
-                    increment: verticalIncrement()
+                    total: Double(dimensions().height)
                 )
             }
             SizeEditView(
                 number: $replay.layout.size,
-                value: $replay.layout.sizeString,
-                onSubmit: {},
-                numericInput: $database.sceneNumericInput
+                total: Double(dimensions().width),
+                onSubmit: {}
             )
-            Toggle("Numeric input", isOn: $database.sceneNumericInput)
         } header: {
             Text("Layout")
         }
@@ -242,7 +177,7 @@ struct StreamReplaySettingsView: View {
                     }
             }
             if database.showAllSettings {
-                LayoutView(model: model, database: database, replay: replay)
+                LayoutView(model: model, replay: replay)
                 Section {
                     Picker("Transition", selection: $replay.transitionType) {
                         ForEach(SettingsStreamReplayTransitionType.allCases, id: \.self) { transitionType in

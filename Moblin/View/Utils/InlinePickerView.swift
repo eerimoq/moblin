@@ -3,10 +3,6 @@ import SwiftUI
 struct InlinePickerItem: Identifiable {
     let id: String
     let text: String
-
-    static func fromStrings(values: [String]) -> [InlinePickerItem] {
-        values.map { InlinePickerItem(id: $0, text: $0) }
-    }
 }
 
 struct InlinePickerView: View {
