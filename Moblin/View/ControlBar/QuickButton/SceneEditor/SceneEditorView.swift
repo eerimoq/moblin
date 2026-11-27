@@ -551,24 +551,29 @@ private struct SceneEditorAlignmentButtonView: View {
             presentingAlignment = true
         }
         .popover(isPresented: $presentingAlignment) {
-            Grid(horizontalSpacing: 0, verticalSpacing: 0) {
-                GridRow {
-                    option(.topLeft)
-                    option(.topCenter)
-                    option(.topRight)
+            VStack(spacing: 0) {
+                SceneEditorPopoverTitleView(text: String(localized: "Alignment"))
+                Grid(horizontalSpacing: 0, verticalSpacing: 0) {
+                    GridRow {
+                        option(.topLeft)
+                        option(.topCenter)
+                        option(.topRight)
+                    }
+                    GridRow {
+                        option(.leftCenter)
+                        option(.center)
+                        option(.rightCenter)
+                    }
+                    GridRow {
+                        option(.bottomLeft)
+                        option(.bottomCenter)
+                        option(.bottomRight)
+                    }
                 }
-                GridRow {
-                    option(.leftCenter)
-                    option(.center)
-                    option(.rightCenter)
-                }
-                GridRow {
-                    option(.bottomLeft)
-                    option(.bottomCenter)
-                    option(.bottomRight)
-                }
+                .padding([.horizontal, .bottom], 5)
             }
-            .padding(10)
+            .fixedSize()
+            .padding(5)
             .presentationCompactAdaptation(.none)
         }
     }
@@ -593,6 +598,19 @@ private struct SceneEditorPopoverRowView: View {
             }
         }
         .padding(11)
+    }
+}
+
+private struct SceneEditorPopoverTitleView: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding([.horizontal, .top], 11)
+            .padding(.bottom, 5)
     }
 }
 
@@ -634,6 +652,7 @@ private struct SceneEditorScenesButtonView: View {
                     presentingCreateWizard = true
                 }
                 Divider()
+                SceneEditorPopoverTitleView(text: String(localized: "Scenes"))
                 ForEach(database.scenes) { scene in
                     SceneEditorPopoverRowView(image: scene.enabled ? "photo.on.rectangle" : "eye.slash",
                                               text: scene.name,
@@ -708,6 +727,7 @@ private struct SceneEditorSelectWidgetButtonView: View {
         }
         .popover(isPresented: $presentingWidgets) {
             SceneEditorPopoverListView {
+                SceneEditorPopoverTitleView(text: String(localized: "Widgets"))
                 ForEach(outlines) { outline in
                     SceneEditorPopoverRowView(image: outline.widget.image(), text: outline.widget.name) {
                         selection.sceneWidgetId = outline.id
@@ -743,7 +763,15 @@ private struct SceneEditorAddWidgetButtonView: View {
                     presentingCreateWizard = true
                 }
                 Divider()
-                ForEach(model.addableWidgets(scene: scene)) { widget in
+                let widgets = model.addableWidgets(scene: scene)
+                SceneEditorPopoverTitleView(text: String(localized: "Widgets"))
+                if widgets.isEmpty {
+                    Text("All are already in this scene. Create a new one.")
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(11)
+                }
+                ForEach(widgets) { widget in
                     SceneEditorPopoverRowView(image: widget.image(), text: widget.name) {
                         model.appendWidgetToScene(scene: scene, widget: widget)
                         model.sceneSettingsPanelSceneId += 1
