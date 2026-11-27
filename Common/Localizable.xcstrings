@@ -12815,6 +12815,9 @@
         }
       }
     },
+    "⚠️ Configure the browser widget as audio and video only, with local only off." : {
+
+    },
     "⚠️ Disable Settings → Scenes → Scene switching → Force transition to enable groups." : {
       "localizations" : {
         "de" : {

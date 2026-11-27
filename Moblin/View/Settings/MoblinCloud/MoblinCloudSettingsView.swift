@@ -1,5 +1,15 @@
 import SwiftUI
 
+private struct MediaShareModeWarningView: View {
+    @ObservedObject var browser: SettingsWidgetBrowser
+
+    var body: some View {
+        if browser.mode != .audioAndVideoOnly || browser.localOnly {
+            Text("⚠️ Configure the browser widget as audio and video only, with local only off.")
+        }
+    }
+}
+
 struct MoblinCloudSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -113,6 +123,9 @@ struct MoblinCloudSettingsView: View {
                 }
                 .onChange(of: moblinCloud.mediaWidgetId) { _ in
                     model.moblinCloudMediaShareWidgetUpdated()
+                }
+                if let id = moblinCloud.mediaWidgetId, let widget = database.findWidget(id: id) {
+                    MediaShareModeWarningView(browser: widget.browser)
                 }
             } footer: {
                 Text("""
