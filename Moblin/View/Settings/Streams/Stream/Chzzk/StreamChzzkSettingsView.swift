@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ChzzkChannelIdFooterView: View {
     var body: some View {
-        Text("Copy the ID from the end of your CHZZK channel URL, or leave it blank to fill it in at login.")
+        Text("Leave this blank to use the channel you log in with.")
     }
 }
 
@@ -21,7 +21,9 @@ struct ChzzkSetupGuideLink: View {
                         "CHZZK developer center",
                         destination: URL(string: "https://developers.chzzk.naver.com")!
                     )
-                    Text("Create an application and enter the URL below exactly as its login redirect URL.")
+                    Text("Sign in to the developer center and open My Services → Register application.")
+                    Text("Choose an application ID and name. Check availability for each one.")
+                    Text("Copy the URL below and paste it into the Login redirect URL field.")
                     Text(verbatim: chzzkRedirectUri)
                         .textSelection(.enabled)
                     Button("Copy login redirect URL") {
@@ -30,19 +32,18 @@ struct ChzzkSetupGuideLink: View {
                 }
                 Section("API permissions") {
                     Text(
-                        "Register an app with permission to read user information, chat messages and donations."
+                        "Under API Scopes, select read access for user info, chat messages, and donations."
                     )
-                    Text("To send or hide messages, enable chat write permission.")
+                    Text("To send chat, post bot replies, or hide messages, also choose chat write.")
                     Text("To apply or remove restrictions, enable restriction write permission.")
+                    Text("Tap Save in the permissions window, then Register on the application form.")
                 }
                 Section("Connect your CHZZK account") {
+                    Text(
+                        "Open your app in the list. Copy the Client ID, then tap Show to copy the Client Secret."
+                    )
                     Text("In the active stream’s settings, open CHZZK under Streaming platforms.")
-                    Text(
-                        "Enter the channel ID to show viewer counts, or leave it blank to fill it in at login."
-                    )
-                    Text(
-                        "Paste the Client ID and Client Secret from your registered application and tap Save."
-                    )
+                    Text("Paste both values into the matching fields in Moblin and tap Save.")
                     Text("Tap Login, sign in with the account that owns the channel, and approve access.")
                     Text(
                         "If you change the app permissions later, log out of CHZZK in Moblin and log in again."
