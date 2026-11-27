@@ -104,7 +104,6 @@ private struct StingerView: View {
 
 private struct LayoutView: View {
     let model: Model
-    @ObservedObject var database: Database
     @ObservedObject var replay: SettingsStreamReplay
 
     private func dimensions() -> CMVideoDimensions {
@@ -158,7 +157,6 @@ private struct LayoutView: View {
                             number: $replay.layout.x,
                             value: $replay.layout.xString,
                             onSubmit: { setYBasedOnXIfLocked() },
-                            numericInput: $database.sceneNumericInput,
                             incrementImageName: "arrow.forward.circle",
                             decrementImageName: "arrow.backward.circle",
                             mirror: replay.layout.alignment.mirrorPositionHorizontally(),
@@ -169,7 +167,6 @@ private struct LayoutView: View {
                             number: $replay.layout.y,
                             value: $replay.layout.yString,
                             onSubmit: { setXBasedOnYIfLocked() },
-                            numericInput: $database.sceneNumericInput,
                             incrementImageName: "arrow.down.circle",
                             decrementImageName: "arrow.up.circle",
                             mirror: replay.layout.alignment.mirrorPositionVertically(),
@@ -191,7 +188,6 @@ private struct LayoutView: View {
                     number: $replay.layout.x,
                     value: $replay.layout.xString,
                     onSubmit: {},
-                    numericInput: $database.sceneNumericInput,
                     incrementImageName: "arrow.forward.circle",
                     decrementImageName: "arrow.backward.circle",
                     mirror: replay.layout.alignment.mirrorPositionHorizontally(),
@@ -202,7 +198,6 @@ private struct LayoutView: View {
                     number: $replay.layout.y,
                     value: $replay.layout.yString,
                     onSubmit: {},
-                    numericInput: $database.sceneNumericInput,
                     incrementImageName: "arrow.down.circle",
                     decrementImageName: "arrow.up.circle",
                     mirror: replay.layout.alignment.mirrorPositionVertically(),
@@ -212,10 +207,8 @@ private struct LayoutView: View {
             SizeEditView(
                 number: $replay.layout.size,
                 value: $replay.layout.sizeString,
-                onSubmit: {},
-                numericInput: $database.sceneNumericInput
+                onSubmit: {}
             )
-            Toggle("Numeric input", isOn: $database.sceneNumericInput)
         } header: {
             Text("Layout")
         }
@@ -242,7 +235,7 @@ struct StreamReplaySettingsView: View {
                     }
             }
             if database.showAllSettings {
-                LayoutView(model: model, database: database, replay: replay)
+                LayoutView(model: model, replay: replay)
                 Section {
                     Picker("Transition", selection: $replay.transitionType) {
                         ForEach(SettingsStreamReplayTransitionType.allCases, id: \.self) { transitionType in

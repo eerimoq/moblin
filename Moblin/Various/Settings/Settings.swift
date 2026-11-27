@@ -1371,7 +1371,6 @@ class Database: Codable, ObservableObject {
     var workoutDevices: SettingsWorkoutDevices = .init()
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
-    @Published var sceneNumericInput: Bool = false
     @Published var savedWifiNetworks: [SettingsWiFi] = []
     var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
@@ -1500,7 +1499,6 @@ class Database: Codable, ObservableObject {
         case heartRateDevices
         case phoneCoolerDevices
         case remoteSceneId
-        case sceneNumericInput
         case goPro
         case replay
         case portraitVideoOffsetFromTop
@@ -1597,7 +1595,6 @@ class Database: Codable, ObservableObject {
         try container.encode(.heartRateDevices, workoutDevices)
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
-        try container.encode(.sceneNumericInput, sceneNumericInput)
         try container.encode(.goPro, goPro)
         try container.encode(.replay, replay)
         try container.encode(.portraitVideoOffsetFromTop, portraitVideoOffsetFromTop)
@@ -1739,7 +1736,6 @@ class Database: Codable, ObservableObject {
             .init()
         )
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
-        sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())
         replay = container.decode(.replay, SettingsReplay.self, .init())
         portraitVideoOffsetFromTop = container.decode(.portraitVideoOffsetFromTop, Double.self, 0.0)

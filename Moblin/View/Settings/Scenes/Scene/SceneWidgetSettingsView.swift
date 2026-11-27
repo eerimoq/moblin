@@ -8,11 +8,7 @@ struct SceneWidgetSettingsView: View {
 
     var body: some View {
         Form {
-            WidgetLayoutView(model: model,
-                             database: database,
-                             layout: $sceneWidget.layout,
-                             widget: widget,
-                             numericInput: $database.sceneNumericInput)
+            WidgetLayoutView(model: model, layout: $sceneWidget.layout, widget: widget)
             WidgetSettingsSectionsView(model: model, database: database, widget: widget)
         }
         .navigationTitle(widget.name)

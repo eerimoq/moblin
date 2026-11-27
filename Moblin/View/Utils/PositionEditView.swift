@@ -4,7 +4,6 @@ struct PositionEditView: View {
     @Binding var number: Double
     @Binding var value: String
     let onSubmit: () -> Void
-    @Binding var numericInput: Bool
     let incrementImageName: String
     let decrementImageName: String
     let mirror: Bool
@@ -26,7 +25,6 @@ struct PositionEditView: View {
             minimum: 0,
             maximum: 100,
             onSubmit: submit,
-            numericInput: $numericInput,
             incrementImageName: incrementImageName,
             decrementImageName: decrementImageName,
             mirror: mirror,

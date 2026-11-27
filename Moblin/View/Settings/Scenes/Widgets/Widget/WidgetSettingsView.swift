@@ -101,10 +101,8 @@ struct SaveLoadLayoutView: View {
 
 struct WidgetLayoutView: View {
     let model: Model
-    @ObservedObject var database: Database
     @Binding var layout: SettingsWidgetLayout
     @ObservedObject var widget: SettingsWidget
-    @Binding var numericInput: Bool
 
     private func dimensions() -> CMVideoDimensions {
         model.stream.resolution.dimensions(portrait: model.stream.portrait)
@@ -144,7 +142,6 @@ struct WidgetLayoutView: View {
                         setYBasedOnXIfLocked()
                         model.sceneUpdatedThrottled()
                     },
-                    numericInput: $numericInput,
                     incrementImageName: "arrow.forward.circle",
                     decrementImageName: "arrow.backward.circle",
                     mirror: layout.alignment.mirrorPositionHorizontally(),
@@ -158,7 +155,6 @@ struct WidgetLayoutView: View {
                         setXBasedOnYIfLocked()
                         model.sceneUpdatedThrottled()
                     },
-                    numericInput: $numericInput,
                     incrementImageName: "arrow.down.circle",
                     decrementImageName: "arrow.up.circle",
                     mirror: layout.alignment.mirrorPositionVertically(),
@@ -184,7 +180,6 @@ struct WidgetLayoutView: View {
             onSubmit: {
                 model.sceneUpdatedThrottled()
             },
-            numericInput: $numericInput,
             incrementImageName: "arrow.forward.circle",
             decrementImageName: "arrow.backward.circle",
             mirror: layout.alignment.mirrorPositionHorizontally(),
@@ -199,7 +194,6 @@ struct WidgetLayoutView: View {
             onSubmit: {
                 model.sceneUpdatedThrottled()
             },
-            numericInput: $numericInput,
             incrementImageName: "arrow.down.circle",
             decrementImageName: "arrow.up.circle",
             mirror: layout.alignment.mirrorPositionVertically(),
@@ -229,11 +223,9 @@ struct WidgetLayoutView: View {
                         value: $layout.sizeString,
                         onSubmit: {
                             model.sceneUpdatedThrottled()
-                        },
-                        numericInput: $numericInput
+                        }
                     )
                 }
-                Toggle("Numeric input", isOn: $database.sceneNumericInput)
             } header: {
                 Text("Layout")
             } footer: {
