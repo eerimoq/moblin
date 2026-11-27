@@ -181,12 +181,8 @@ struct WidgetLayoutView: View {
                     }
                 }
                 if widget.hasPosition() {
-                    if !layout.alignment.isHorizontalCenter() {
-                        horizontalPositioning()
-                    }
-                    if !layout.alignment.isVerticalCenter() {
-                        verticalPositioning()
-                    }
+                    horizontalPositioning()
+                    verticalPositioning()
                 }
                 if widget.hasSize() {
                     SizeEditView(

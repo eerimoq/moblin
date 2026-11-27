@@ -2842,6 +2842,15 @@ struct SettingsWidgetLayout: Equatable {
     func extent() -> CGRect {
         .init(x: x, y: y, width: size, height: size)
     }
+
+    mutating func resetCenterOffsets() {
+        if alignment.isHorizontalCenter() {
+            x = 0
+        }
+        if alignment.isVerticalCenter() {
+            y = 0
+        }
+    }
 }
 
 class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @unchecked Sendable {
@@ -2852,6 +2861,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
     var id: UUID = .init()
     @Published var widgetId: UUID
     @Published var layout: SettingsWidgetLayout = .init()
+    var centerOffsetMigrated: Bool = true
 
     init(widgetId: UUID) {
         self.widgetId = widgetId
@@ -2915,6 +2925,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         case y
         case size
         case alignment
+        case centerOffsetMigrated
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -2925,6 +2936,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         try container.encode(.y, layout.y)
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
+        try container.encode(.centerOffsetMigrated, centerOffsetMigrated)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -2935,6 +2947,11 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         layout.y = container.decode(.y, Double.self, 0.0)
         layout.size = container.decode(.size, Double.self, 100.0)
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
+        centerOffsetMigrated = container.decode(.centerOffsetMigrated, Bool.self, false)
+        if !centerOffsetMigrated {
+            layout.resetCenterOffsets()
+            centerOffsetMigrated = true
+        }
     }
 
     func clone() -> SettingsSceneWidget {

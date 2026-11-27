@@ -220,26 +220,17 @@ private struct SceneEditorCanvasView: View {
         let delta = canvasDelta(value.translation)
         let rect = edit.outline.rect
         let position = CGPoint(x: rect.minX + delta.width, y: rect.minY + delta.height)
-        let layout = edit.outline.sceneWidget.layout
         let others = sceneEditor.outlines.filter { $0.id != edit.outline.id }
-        let x = if layout.alignment.isHorizontalCenter() {
-            SceneEditorSnap(position: rect.minX)
-        } else {
-            sceneEditorSnapAxis(position.x,
-                                rect.width,
-                                canvasSize.width,
-                                snapThreshold,
-                                others.flatMap(snapTargetsX))
-        }
-        let y = if layout.alignment.isVerticalCenter() {
-            SceneEditorSnap(position: rect.minY)
-        } else {
-            sceneEditorSnapAxis(position.y,
-                                rect.height,
-                                canvasSize.height,
-                                snapThreshold,
-                                others.flatMap(snapTargetsY))
-        }
+        let x = sceneEditorSnapAxis(position.x,
+                                    rect.width,
+                                    canvasSize.width,
+                                    snapThreshold,
+                                    others.flatMap(snapTargetsX))
+        let y = sceneEditorSnapAxis(position.y,
+                                    rect.height,
+                                    canvasSize.height,
+                                    snapThreshold,
+                                    others.flatMap(snapTargetsY))
         edit.rect.origin = CGPoint(x: x.position, y: y.position)
         edit.guideX = x.guide
         edit.guideY = y.guide

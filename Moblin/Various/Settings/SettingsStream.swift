@@ -863,6 +863,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
     @Published var outStinger: SettingsStreamReplayStinger = .init()
     @Published var postTriggerDelay: Int = 3
     @Published var layout: SettingsWidgetLayout = .init()
+    var centerOffsetMigrated: Bool = true
     var enterForegroundCountAtLatestUsage: Int?
 
     init() {}
@@ -878,6 +879,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         case y
         case size
         case alignment
+        case centerOffsetMigrated
         case enterForegroundCountAtLatestUsage
     }
 
@@ -892,6 +894,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         try container.encode(.y, layout.y)
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
+        try container.encode(.centerOffsetMigrated, centerOffsetMigrated)
         try container.encode(.enterForegroundCountAtLatestUsage, enterForegroundCountAtLatestUsage)
     }
 
@@ -914,6 +917,11 @@ class SettingsStreamReplay: Codable, ObservableObject {
         layout.y = container.decode(.y, Double.self, 0.0)
         layout.size = container.decode(.size, Double.self, 100.0)
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
+        centerOffsetMigrated = container.decode(.centerOffsetMigrated, Bool.self, false)
+        if !centerOffsetMigrated {
+            layout.resetCenterOffsets()
+            centerOffsetMigrated = true
+        }
         enterForegroundCountAtLatestUsage = container.decode(.enterForegroundCountAtLatestUsage,
                                                              Int?.self,
                                                              nil)

@@ -85,9 +85,12 @@ func sceneEditorResizedRect(_ rect: CGRect, _ fixed: CGPoint, _ factor: Double) 
 private func layoutOffsetFromPosition(_ position: Double,
                                       _ size: Double,
                                       _ streamSize: Double,
+                                      _ isCenter: Bool,
                                       _ isNear: Bool) -> Double
 {
-    if isNear {
+    if isCenter {
+        (position + size / 2 - streamSize / 2) * 100 / streamSize
+    } else if isNear {
         position * 100 / streamSize
     } else {
         (streamSize - position - size) * 100 / streamSize
@@ -100,12 +103,16 @@ func sceneEditorLayout(_ layout: SettingsWidgetLayout,
 {
     var layout = layout
     let alignment = layout.alignment
-    if !alignment.isHorizontalCenter() {
-        layout.x = layoutOffsetFromPosition(rect.minX, rect.width, canvasSize.width, alignment.isLeft())
-    }
-    if !alignment.isVerticalCenter() {
-        layout.y = layoutOffsetFromPosition(rect.minY, rect.height, canvasSize.height, alignment.isTop())
-    }
+    layout.x = layoutOffsetFromPosition(rect.minX,
+                                        rect.width,
+                                        canvasSize.width,
+                                        alignment.isHorizontalCenter(),
+                                        alignment.isLeft())
+    layout.y = layoutOffsetFromPosition(rect.minY,
+                                        rect.height,
+                                        canvasSize.height,
+                                        alignment.isVerticalCenter(),
+                                        alignment.isTop())
     return layout
 }
 

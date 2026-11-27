@@ -28,11 +28,31 @@ struct EffectUtilsSuite {
 
     @Test
     func layoutCenterCenters() {
-        #expect(position(.topCenter) == CGPoint(x: 960, y: 266))
-        #expect(position(.bottomCenter) == CGPoint(x: 960, y: 814))
-        #expect(position(.leftCenter) == CGPoint(x: 292, y: 540))
-        #expect(position(.rightCenter) == CGPoint(x: 1628, y: 540))
-        #expect(position(.center) == CGPoint(x: 960, y: 540))
+        #expect(position(.topCenter) == CGPoint(x: 1152, y: 266))
+        #expect(position(.bottomCenter) == CGPoint(x: 1152, y: 814))
+        #expect(position(.leftCenter) == CGPoint(x: 292, y: 756))
+        #expect(position(.rightCenter) == CGPoint(x: 1628, y: 756))
+        #expect(position(.center) == CGPoint(x: 1152, y: 756))
+    }
+
+    @Test
+    func layoutCenterZeroCenterOffset() {
+        var layout = SettingsWidgetLayout()
+        layout.alignment = .center
+        #expect(layoutCenter(layout, size, streamSize) == CGPoint(x: 960, y: 540))
+    }
+
+    @Test(arguments: [
+        (SettingsAlignment.topCenter, 0.0, 20.0),
+        (.leftCenter, 10.0, 0.0),
+        (.center, 0.0, 0.0),
+        (.bottomRight, 10.0, 20.0),
+    ])
+    func resetCenterOffsets(alignment: SettingsAlignment, x: Double, y: Double) {
+        var layout = layout(alignment)
+        layout.resetCenterOffsets()
+        #expect(layout.x == x)
+        #expect(layout.y == y)
     }
 
     /// Same position as Core Image's move(), just in the upper left corner origin coordinate system.

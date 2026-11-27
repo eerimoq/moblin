@@ -112,7 +112,7 @@ private func layoutOffset(_ offset: Double,
                           _ isNear: Bool) -> Double
 {
     if isCenter {
-        (streamSize - size) / 2
+        (streamSize - size) / 2 + toPixels(offset, streamSize)
     } else if isNear {
         toPixels(offset, streamSize)
     } else {
@@ -226,7 +226,7 @@ extension CIImage {
                              streamSize.width,
                              alignment.isHorizontalCenter(),
                              alignment.isLeft()) - extent.minX
-        var y = layoutOffset(layout.y,
+        var y = layoutOffset(alignment.isVerticalCenter() ? -layout.y : layout.y,
                              extent.height,
                              streamSize.height,
                              alignment.isVerticalCenter(),

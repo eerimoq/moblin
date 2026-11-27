@@ -40,15 +40,27 @@ struct SceneEditorGeometrySuite {
         #expect(isEqual(layoutPosition(layout, rect.size, canvasSize), rect.origin))
     }
 
+    @Test(arguments: SettingsAlignment.allCases)
+    func moveMatchesRect(alignment: SettingsAlignment) {
+        let rect = CGRect(x: 100, y: 200, width: 400, height: 300)
+        let layout = sceneEditorLayout(makeLayout(alignment), rect, canvasSize)
+        #expect(layout.alignment == alignment)
+        #expect(isEqual(layoutPosition(layout, rect.size, canvasSize), rect.origin))
+    }
+
     @Test
-    func moveKeepsCenteredAxis() {
-        var layout = makeLayout(.topCenter)
-        layout.x = 7
-        layout = sceneEditorLayout(layout, CGRect(x: 100, y: 200, width: 400, height: 300), canvasSize)
-        #expect(layout.alignment == .topCenter)
-        #expect(layout.x == 7)
-        #expect(isEqual(layoutPosition(layout, CGSize(width: 400, height: 300), canvasSize),
-                        CGPoint(x: 760, y: 200)))
+    func moveToCenterGivesZeroCenterOffset() {
+        let rect = CGRect(x: 760, y: 390, width: 400, height: 300)
+        let layout = sceneEditorLayout(makeLayout(.center), rect, canvasSize)
+        #expect(layout.x == 0)
+        #expect(layout.y == 0)
+    }
+
+    @Test
+    func moveRightAndDownGivesPositiveCenterOffset() {
+        let rect = CGRect(x: 952, y: 498, width: 400, height: 300)
+        let layout = sceneEditorLayout(makeLayout(.center), rect, canvasSize)
+        #expect(isEqual(CGPoint(x: layout.x, y: layout.y), CGPoint(x: 10, y: 10)))
     }
 
     @Test(arguments: SettingsAlignment.allCases)
@@ -58,6 +70,23 @@ struct SceneEditorGeometrySuite {
         let aligned = sceneEditorAlignedLayout(layout, alignment, rect.size, canvasSize)
         #expect(aligned.alignment == alignment)
         #expect(aligned.size == layout.size)
+        #expect(isEqual(layoutPosition(aligned, rect.size, canvasSize), rect.origin))
+    }
+
+    @Test(arguments: SettingsAlignment.allCases)
+    func alignOffCenterWidgetKeepsPosition(alignment: SettingsAlignment) {
+        let rect = CGRect(x: 100, y: 150, width: 400, height: 300)
+        let layout = sceneEditorLayout(makeLayout(.bottomRight), rect, canvasSize)
+        let aligned = sceneEditorAlignedLayout(layout, alignment, rect.size, canvasSize)
+        #expect(aligned.alignment == alignment)
+        #expect(isEqual(layoutPosition(aligned, rect.size, canvasSize), rect.origin))
+    }
+
+    @Test(arguments: SettingsAlignment.allCases)
+    func alignFromCenterKeepsPosition(alignment: SettingsAlignment) {
+        let rect = CGRect(x: 100, y: 150, width: 400, height: 300)
+        let layout = sceneEditorLayout(makeLayout(.center), rect, canvasSize)
+        let aligned = sceneEditorAlignedLayout(layout, alignment, rect.size, canvasSize)
         #expect(isEqual(layoutPosition(aligned, rect.size, canvasSize), rect.origin))
     }
 

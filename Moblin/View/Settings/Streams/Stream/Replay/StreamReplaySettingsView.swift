@@ -118,7 +118,11 @@ private struct LayoutView: View {
             }
             Divider()
             AlignmentPickerView(alignment: replay.layout.alignment) { alignment in
-                replay.layout.alignment = alignment
+                let dimensions = dimensions()
+                let canvasSize = CGSize(width: Double(dimensions.width), height: Double(dimensions.height))
+                let size = CGSize(width: canvasSize.width * replay.layout.size / 100,
+                                  height: canvasSize.height * replay.layout.size / 100)
+                replay.layout = sceneEditorAlignedLayout(replay.layout, alignment, size, canvasSize)
             }
         }
     }
@@ -126,26 +130,22 @@ private struct LayoutView: View {
     var body: some View {
         Section {
             generalAndAlignmentPicker()
-            if !replay.layout.alignment.isHorizontalCenter() {
-                PositionEditView(
-                    number: $replay.layout.x,
-                    onSubmit: {},
-                    incrementImageName: "arrow.forward.circle",
-                    decrementImageName: "arrow.backward.circle",
-                    mirror: replay.layout.alignment.mirrorPositionHorizontally(),
-                    total: Double(dimensions().width)
-                )
-            }
-            if !replay.layout.alignment.isVerticalCenter() {
-                PositionEditView(
-                    number: $replay.layout.y,
-                    onSubmit: {},
-                    incrementImageName: "arrow.down.circle",
-                    decrementImageName: "arrow.up.circle",
-                    mirror: replay.layout.alignment.mirrorPositionVertically(),
-                    total: Double(dimensions().height)
-                )
-            }
+            PositionEditView(
+                number: $replay.layout.x,
+                onSubmit: {},
+                incrementImageName: "arrow.forward.circle",
+                decrementImageName: "arrow.backward.circle",
+                mirror: replay.layout.alignment.mirrorPositionHorizontally(),
+                total: Double(dimensions().width)
+            )
+            PositionEditView(
+                number: $replay.layout.y,
+                onSubmit: {},
+                incrementImageName: "arrow.down.circle",
+                decrementImageName: "arrow.up.circle",
+                mirror: replay.layout.alignment.mirrorPositionVertically(),
+                total: Double(dimensions().height)
+            )
             SizeEditView(
                 number: $replay.layout.size,
                 total: Double(dimensions().width),
