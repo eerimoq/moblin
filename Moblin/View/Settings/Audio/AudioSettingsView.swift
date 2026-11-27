@@ -13,7 +13,7 @@ private struct MicView: View {
                 HStack {
                     Text("Mic")
                     Spacer()
-                    GrayTextView(text: mic.current.name)
+                    GrayTextView(text: mic.statusText())
                 }
             } icon: {
                 Image(systemName: "music.mic")
@@ -80,6 +80,18 @@ struct AudioSettingsView: View {
                         MicsGainSettingsView(model: model, mics: database.mics)
                     } label: {
                         Text("Gains")
+                    }
+                    if debug.audioMixer {
+                        NavigationLink {
+                            MicsProcessingSettingsView(model: model, mics: database.mics)
+                        } label: {
+                            Text("Processing")
+                        }
+                        NavigationLink {
+                            MicsOutputsSettingsView(model: model, mics: database.mics)
+                        } label: {
+                            Text("Outputs")
+                        }
                     }
                 }
             }
