@@ -82,6 +82,7 @@ extension Model {
         reloadKickPusher()
         reloadYouTubeLiveChat()
         reloadSoopChat()
+        reloadChzzkChat()
         reloadOpenStreamingPlatformChat()
     }
 
@@ -117,6 +118,9 @@ extension Model {
         if isSoopChatConfigured() {
             numberOfChats += 1
         }
+        if isChzzkChatConfigured() {
+            numberOfChats += 1
+        }
         if isOpenStreamingPlatformChatConfigured() {
             numberOfChats += 1
         }
@@ -125,14 +129,16 @@ extension Model {
 
     func isChatConfigured() -> Bool {
         isTwitchChatConfigured() || isKickPusherConfigured() ||
-            isYouTubeLiveChatConfigured() || isSoopChatConfigured() ||
+            isYouTubeLiveChatConfigured() || isSoopChatConfigured() || isChzzkChatConfigured() ||
             isOpenStreamingPlatformChatConfigured()
     }
 
     func isRemoteControlChatAndEvents(platform: Platform?) -> Bool {
         switch platform {
-        case .twitch, nil:
+        case .twitch:
             break
+        case nil:
+            return useRemoteControlForChatAndEvents && !isChzzkEventsConfigured()
         default:
             return false
         }
@@ -152,6 +158,9 @@ extension Model {
         if isSoopChatConfigured(), !isSoopChatConnected() {
             return false
         }
+        if isChzzkChatConfigured(), chzzkChat?.isChatConnected() != true {
+            return false
+        }
         if isOpenStreamingPlatformChatConfigured(), !isOpenStreamingPlatformChatConnected() {
             return false
         }
@@ -163,6 +172,7 @@ extension Model {
             || hasKickPusherEmotes()
             || hasYouTubeLiveChatEmotes()
             || hasSoopChatEmotes()
+            || isChzzkChatConfigured()
             || hasOpenStreamingPlatformChatEmotes()
     }
 
@@ -170,22 +180,27 @@ extension Model {
         chatTextToSpeech.reset(running: true)
     }
 
-    func sendChatMessage(message: String) {
+    func sendChatMessage(message: String, showError: Bool = false) {
         if stream.twitchLoggedIn {
             sendTwitchChatMessage(message: message) { _ in }
         }
         if stream.kickLoggedIn {
             sendKickChatMessage(message: message)
         }
+        if chzzkLoggedIn {
+            sendChzzkChatMessage(message: message, showError: showError)
+        }
     }
 
     func sendChatMessageShowToast(message: String) {
-        if !stream.twitchLoggedIn, !stream.kickLoggedIn {
+        if !stream.twitchLoggedIn, !stream.kickLoggedIn, !chzzkLoggedIn {
             makeErrorToast(title: String(localized: "Message not sent"),
-                           subTitle: String(localized: "Login to Twitch or Kick to send chat messages"))
+                           subTitle: String(
+                               localized: "Log in to Twitch, Kick, or CHZZK to send chat messages."
+                           ))
             return
         }
-        sendChatMessage(message: message)
+        sendChatMessage(message: message, showError: true)
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
@@ -210,7 +225,8 @@ extension Model {
         bits: String?,
         highlight: ChatHighlight?,
         live: Bool,
-        sourceChannelIcon: URL? = nil
+        sourceChannelIcon: URL? = nil,
+        chzzkTarget: ChzzkModerationTarget? = nil
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
         if let platform, database.chat.botEnabled, live, filter?.chatBot != false,
@@ -223,7 +239,8 @@ extension Model {
                 isModerator: isModerator,
                 isSubscriber: isSubscriber,
                 userId: userId,
-                segments: segments
+                segments: segments,
+                channelId: platform == .chzzk ? stream.chzzkChannelId : nil
             ))
         }
         if pollEnabled, live, filter?.poll != false {
@@ -248,7 +265,8 @@ extension Model {
             filter: filter,
             platform: platform,
             sourceChannelIcon: sourceChannelIcon,
-            state: ChatPostState()
+            state: ChatPostState(),
+            chzzkTarget: chzzkTarget
         )
         chatPostId += 1
         if isTextToSpeechEnabledForMessage(post: post) {
@@ -352,6 +370,10 @@ extension Model {
             if isSoopChatConfigured() {
                 statuses.append(ChatPlatformStatus(platform: .soop, connected: isSoopChatConnected()))
             }
+            if isChzzkChatConfigured() {
+                statuses.append(ChatPlatformStatus(platform: .chzzk,
+                                                   connected: chzzkChat?.isChatConnected() == true))
+            }
             if isOpenStreamingPlatformChatConfigured() {
                 statuses.append(ChatPlatformStatus(platform: .openStreamingPlatform,
                                                    connected: isOpenStreamingPlatformChatConnected()))
@@ -434,6 +456,8 @@ extension Model {
             return
         }
         switch post.platform {
+        case .chzzk:
+            moderateChzzkChat(post: post, action: .restrict)
         case .twitch:
             guard let userId = post.userId else {
                 return
@@ -474,6 +498,10 @@ extension Model {
     }
 
     func deleteMessage(post: ChatPost) {
+        if post.platform == .chzzk {
+            moderateChzzkChat(post: post, action: .hideMessage)
+            return
+        }
         guard let messageId = post.messageId else {
             return
         }

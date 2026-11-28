@@ -6,7 +6,10 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
     @State var ingestError = ""
 
     private func nextDisabled() -> Bool {
-        createStreamWizard.directIngest.isEmpty || createStreamWizard.directStreamKey
+        if createStreamWizard.platform == .chzzk {
+            return createStreamWizard.chzzkStreamKey.trim().isEmpty
+        }
+        return createStreamWizard.directIngest.isEmpty || createStreamWizard.directStreamKey
             .isEmpty || !ingestError
             .isEmpty
     }
@@ -158,6 +161,16 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                     Text("Stream key")
                 } footer: {
                     Text("Copy from ??? (requires login).")
+                }
+            case .chzzk:
+                Section {
+                    SecureField("Stream key", text: $createStreamWizard.chzzkStreamKey)
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                } header: {
+                    Text("Stream key")
+                } footer: {
+                    Text("Copy the stream key from [CHZZK Studio](https://studio.chzzk.naver.com).")
                 }
             case .custom:
                 EmptyView()

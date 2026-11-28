@@ -267,6 +267,7 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
     let platform: Platform?
     let sourceChannelIcon: URL?
     let state: ChatPostState
+    var chzzkTarget: ChzzkModerationTarget?
 
     func isRedemption() -> Bool {
         switch highlight?.kind {

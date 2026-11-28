@@ -12,7 +12,10 @@ extension Model {
     }
 
     func isTwitchEventsConnected() -> Bool {
-        twitchEventSub?.isConnected() ?? false
+        if isRemoteControlChatAndEvents(platform: .twitch) {
+            return isRemoteControlStreamerConnected()
+        }
+        return twitchEventSub?.isConnected() ?? false
     }
 
     func isTwitchViewersConfigured() -> Bool {
@@ -24,7 +27,10 @@ extension Model {
     }
 
     func isTwitchChatConnected() -> Bool {
-        twitchChat?.isConnected() ?? false
+        if isRemoteControlChatAndEvents(platform: .twitch) {
+            return isRemoteControlStreamerConnected()
+        }
+        return twitchChat?.isConnected() ?? false
     }
 
     func hasTwitchChatEmotes() -> Bool {
