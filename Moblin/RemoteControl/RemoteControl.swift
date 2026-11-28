@@ -196,6 +196,10 @@ struct RemoteControlStats: Codable {
     var feelsLikeTemperature: Double?
     var windSpeed: Double?
     var windGust: Double?
+    var windDirection: Double?
+    var humidity: Double?
+    var condition: String?
+    var isDaylight: Bool?
     var country: String?
     var countryFlag: String?
     var state: String?
