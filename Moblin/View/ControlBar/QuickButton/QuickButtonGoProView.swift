@@ -226,7 +226,6 @@ struct QuickButtonGoProView: View {
                         }
                         .scrollTargetBehavior(.viewAligned)
                         .scrollPosition(id: $activeIndex)
-                        .scrollIndicators(.never)
                         HStack {
                             ForEach(0 ..< 3) { index in
                                 Image(systemName: activeIndex == index ? "circle.fill" : "circle")

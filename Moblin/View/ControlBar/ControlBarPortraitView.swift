@@ -114,7 +114,6 @@ struct ControlBarPortraitPageView: View {
             } action: { width in
                 scrollViewWidth = width
             }
-            .scrollIndicators(.hidden)
             .scrollDisabled(!quickButtonsSettings.enableScroll)
             .filterQuickButtonsOnOverscroll(model: model, axis: .horizontal)
             .scrollToQuickButton(model: model, quickButtons: quickButtons, pairs: pairs, proxy: scrollProxy)
@@ -233,7 +232,6 @@ private struct PagesView: View {
                 .scrollTargetLayout()
             }
             .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
-            .scrollIndicators(.never)
             .scrollPosition(id: $pages.activePage)
             .ignoresSafeArea(.all, edges: [.bottom])
         } else {
@@ -245,7 +243,6 @@ private struct PagesView: View {
                              height: height)
                     .controlBarDoubleTapArea(model: model)
             }
-            .scrollIndicators(.never)
             .ignoresSafeArea(.all, edges: [.bottom])
         }
     }

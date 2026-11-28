@@ -80,7 +80,6 @@ struct StreamOverlayRightVideoPreviewView: View {
             }
             .frame(height: height())
         }
-        .scrollIndicators(.hidden)
         .padding(4)
         .background(backgroundColor)
         .cornerRadius(5)

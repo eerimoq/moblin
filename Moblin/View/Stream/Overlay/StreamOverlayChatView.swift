@@ -187,7 +187,6 @@ private struct MessagesView: View {
                      selectedPost: $selectedPost,
                      linkUrl: $linkUrl)
         }
-        .scrollIndicators(.hidden)
         .frame(width: width)
         .allowsHitTesting(chat.interactiveChat)
         .onAppear {

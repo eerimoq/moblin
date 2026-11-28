@@ -345,7 +345,7 @@ struct BannersView: View {
                                       poll: model.twitchPoll,
                                       prediction: model.twitchPrediction)
                     } else {
-                        ScrollView(showsIndicators: false) {
+                        ScrollView {
                             VStack(spacing: 0) {
                                 HypeTrainView(model: model, hypeTrain: model.hypeTrain)
                                 RaidView(model: model, raid: model.raid)

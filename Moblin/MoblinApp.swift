@@ -26,6 +26,7 @@ struct MoblinApp: App {
                 quickButtons: model.database.quickButtonsGeneral
             )
             .background(.black)
+            .scrollIndicators(.never)
             .environmentObject(model)
         }
     }
@@ -41,6 +42,7 @@ struct ExternalScreenContentView: View {
     var body: some View {
         ExternalDisplayView(externalDisplay: model.externalDisplay)
             .ignoresSafeArea()
+            .scrollIndicators(.never)
             .environmentObject(model)
     }
 }

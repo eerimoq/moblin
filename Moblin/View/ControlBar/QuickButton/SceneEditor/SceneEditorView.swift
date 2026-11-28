@@ -812,7 +812,7 @@ private struct SceneEditorToolbarView: View {
     }
 
     var body: some View {
-        ScrollView(vertical ? .vertical : .horizontal, showsIndicators: false) {
+        ScrollView(vertical ? .vertical : .horizontal) {
             if #available(iOS 26, *) {
                 let layout = stackLayout(vertical: vertical, spacing: 8)
                 GlassEffectContainer(spacing: 8) {
