@@ -38,15 +38,15 @@ struct ChzzkViewerHistory {
 }
 
 @MainActor
-func performChzzkWrite(accessToken: (Bool) async throws -> String,
-                       write: (String) async throws -> Void) async throws
+func performChzzkWrite<T>(accessToken: @MainActor (Bool) async throws -> String,
+                          write: @MainActor (String) async throws -> T) async throws -> T
 {
     let token = try await accessToken(false)
     do {
-        try await write(token)
+        return try await write(token)
     } catch ChzzkApiError.status(401) {
         let refreshed = try await accessToken(true)
-        try await write(refreshed)
+        return try await write(refreshed)
     }
 }
 
@@ -76,6 +76,29 @@ func chzzkWriteErrorDetail(_ error: Error, action: ChzzkModerationAction?) -> St
 }
 
 extension Model {
+    func withChzzkLiveSettings<T>(streamId: UUID, channelId: String,
+                                  operation: @MainActor (ChzzkApi, String) async throws -> T) async throws
+        -> T
+    {
+        guard let api = chzzkApi else { throw URLError(.userAuthenticationRequired) }
+        return try await performChzzkWrite { refresh in
+            guard self.stream.id == streamId, self.stream.chzzkChannelId == channelId,
+                  self.chzzkLoggedIn
+            else {
+                throw CancellationError()
+            }
+            return try await self.chzzkAccessToken(forceRefresh: refresh)
+        } write: { token in
+            try Task.checkCancellation()
+            guard self.stream.id == streamId, self.stream.chzzkChannelId == channelId,
+                  self.chzzkLoggedIn
+            else {
+                throw CancellationError()
+            }
+            return try await operation(api, token)
+        }
+    }
+
     func chzzkChannelUpdated() {
         reloadChzzkChat()
         reloadViewers()
@@ -141,8 +164,15 @@ extension Model {
         performChzzkChatAction(action: action, showError: true) { api, token in
             try await api.moderate(action, target: target, accessToken: token)
         } onSuccess: {
-            if action == .hideMessage, let messageId = target.messageId {
-                self.deleteChatMessage(messageId: messageId)
+            switch action {
+            case .restrict, .temporaryRestrict:
+                self.deleteChatUser(userId: target.senderChannelId)
+            case .hideMessage:
+                if let messageId = target.messageId {
+                    self.deleteChatMessage(messageId: messageId)
+                }
+            case .unrestrict, .temporaryUnrestrict:
+                break
             }
             self.makeToast(title: String(localized: "CHZZK moderation updated."))
         }
@@ -203,12 +233,14 @@ extension Model {
                 self?.appendChzzkChat(event)
             }, onDonation: { [weak self] event in
                 self?.appendChzzkDonation(event)
+            }, onSubscription: { [weak self] event in
+                self?.appendChzzkSubscription(event)
             }, onPermissionsDenied: { [weak self] in
                 self?.chzzkReadPermissionsDenied = true
                 self?
                     .makeErrorToast(
                         title: String(
-                            localized: "Check the CHZZK chat and donation read permissions and log in again."
+                            localized: "Check the CHZZK chat, donation, and subscription read permissions and log in again."
                         )
                     )
             })
@@ -251,17 +283,47 @@ extension Model {
         }
         let nickname = event.donatorNickname.flatMap { $0.isEmpty ? nil : $0 }
             ?? String(localized: "Anonymous")
-        let title = String(localized: "Donated ₩\(event.payAmount)")
-        makeToast(title: "\(nickname) · \(title)", subTitle: event.donationText)
+        let video = event.donationType == "VIDEO"
+        let title = switch event.donationType {
+        case "VIDEO": String(localized: "Video donation ₩\(event.payAmount)")
+        case "CHAT": String(localized: "Chat donation ₩\(event.payAmount)")
+        default: String(localized: "Donated ₩\(event.payAmount)")
+        }
+        appendChzzkAlert(nickname: nickname, userId: event.donatorChannelId, title: title,
+                         text: event.donationText, icon: video ? "video.fill" : "gift.fill",
+                         chat: video ? stream.chzzkChatVideoDonations : stream.chzzkChatDonations,
+                         toast: video ? stream.chzzkToastVideoDonations : stream.chzzkToastDonations,
+                         target: event.moderationTarget)
+    }
+
+    private func appendChzzkSubscription(_ event: ChzzkSubscription) {
+        guard event.channelId == stream.chzzkChannelId else { return }
+        let tier = event.tierName?.isEmpty == false ? event.tierName :
+            event.tierNo.map { String(localized: "Tier \($0)") }
+        let months = event.month.map { String(localized: "\($0) months") }
+        appendChzzkAlert(nickname: event.subscriberNickname, userId: event.subscriberChannelId,
+                         title: String(localized: "Subscription"),
+                         text: [tier, months].compactMap { $0 }.joined(separator: " · "),
+                         icon: "star.fill", chat: stream.chzzkChatSubscriptions,
+                         toast: stream.chzzkToastSubscriptions, target: nil)
+    }
+
+    private func appendChzzkAlert(nickname: String, userId: String?, title: String, text: String?,
+                                  icon: String, chat: Bool, toast: Bool, target: ChzzkModerationTarget?)
+    {
+        if toast {
+            makeToast(title: "\(nickname) · \(title)", subTitle: text)
+        }
+        guard chat else { return }
         appendChatMessage(
             platform: .chzzk,
             messageId: nil,
             displayName: nickname,
             user: nickname,
-            userId: event.donatorChannelId,
+            userId: userId,
             userColor: nil,
             userBadges: [],
-            segments: makeChatPostTextSegments(text: event.donationText ?? ""),
+            segments: makeChatPostTextSegments(text: text ?? ""),
             timestamp: statusOther.digitalClock,
             timestampTime: .now,
             isAction: false,
@@ -271,10 +333,10 @@ extension Model {
             bits: nil,
             highlight: ChatHighlight(kind: .other,
                                      barColor: .mint,
-                                     image: "gift.fill",
+                                     image: icon,
                                      titleSegments: makeChatPostTextSegments(text: title)),
             live: true,
-            chzzkTarget: event.moderationTarget
+            chzzkTarget: target
         )
     }
 }

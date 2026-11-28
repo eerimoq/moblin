@@ -34,6 +34,7 @@ struct ChzzkDonation: Decodable {
     let channelId: String
     let donatorChannelId: String?
     let donatorNickname: String?
+    let donationType: String?
     let donationText: String?
     let payAmount: String
 
@@ -46,7 +47,7 @@ struct ChzzkDonation: Decodable {
     }
 
     private enum CodingKeys: CodingKey {
-        case channelId, donatorChannelId, donatorNickname, donationText, payAmount
+        case channelId, donatorChannelId, donatorNickname, donationType, donationText, payAmount
     }
 
     init(from decoder: any Decoder) throws {
@@ -54,6 +55,7 @@ struct ChzzkDonation: Decodable {
         channelId = try values.decode(String.self, forKey: .channelId)
         donatorChannelId = try values.decodeIfPresent(String.self, forKey: .donatorChannelId)
         donatorNickname = try values.decodeIfPresent(String.self, forKey: .donatorNickname)
+        donationType = try values.decodeIfPresent(String.self, forKey: .donationType)
         donationText = try values.decodeIfPresent(String.self, forKey: .donationText)
         if let amount = try? values.decode(Int.self, forKey: .payAmount) {
             payAmount = String(amount)
@@ -61,6 +63,15 @@ struct ChzzkDonation: Decodable {
             payAmount = try values.decode(String.self, forKey: .payAmount)
         }
     }
+}
+
+struct ChzzkSubscription: Decodable {
+    let channelId: String
+    let subscriberChannelId: String?
+    let subscriberNickname: String
+    let tierName: String?
+    let tierNo: Int?
+    let month: Int?
 }
 
 struct ChzzkSystemEvent: Decodable {
@@ -77,6 +88,7 @@ enum ChzzkEvent: Decodable {
     case system(ChzzkSystemEvent)
     case chat(ChzzkChatMessage)
     case donation(ChzzkDonation)
+    case subscription(ChzzkSubscription)
     case unknown
 
     init(from decoder: any Decoder) throws {
@@ -93,9 +105,12 @@ enum ChzzkEvent: Decodable {
             self = try .system(body())
         case "CHAT":
             self = try .chat(body())
+        case "SUBSCRIPTION":
+            self = try .subscription(body())
         case "DONATION":
             self = try .donation(body())
         default:
+            logger.debug("chzzk: Unhandled session event \(name)")
             self = .unknown
         }
     }
@@ -113,7 +128,7 @@ enum ChzzkSubscriptionError: Error {
 @MainActor
 func subscribeToChzzkEvents(_ subscribe: (String) async throws -> Void) async throws {
     var allowed = false
-    for event in ["chat", "donation"] {
+    for event in ["chat", "donation", "subscription"] {
         try Task.checkCancellation()
         do {
             try await subscribe(event)
@@ -133,6 +148,7 @@ final class ChzzkChat {
     private let accessToken: @MainActor (Bool) async throws -> String
     private let onChat: (ChzzkChatMessage) -> Void
     private let onDonation: (ChzzkDonation) -> Void
+    private let onSubscription: (ChzzkSubscription) -> Void
     private let onPermissionsDenied: () -> Void
     private var task: Task<Void, Never>?
     private var socket: URLSessionWebSocketTask?
@@ -140,15 +156,18 @@ final class ChzzkChat {
     private let setupTimeout = MainTimer()
     private var handshake: ChzzkHandshake?
     private var chatSubscribed = false
+    private var subscriptionSubscribed = false
     private var donationSubscribed = false
 
     init(api: ChzzkApi, accessToken: @escaping @MainActor (Bool) async throws -> String,
          onChat: @escaping (ChzzkChatMessage) -> Void, onDonation: @escaping (ChzzkDonation) -> Void,
+         onSubscription: @escaping (ChzzkSubscription) -> Void,
          onPermissionsDenied: @escaping () -> Void)
     {
         self.api = api
         self.accessToken = accessToken
         self.onChat = onChat
+        self.onSubscription = onSubscription
         self.onDonation = onDonation
         self.onPermissionsDenied = onPermissionsDenied
     }
@@ -181,7 +200,7 @@ final class ChzzkChat {
                     }
                     logger.debug("chzzk: Session disconnected")
                 }
-                if chatSubscribed || donationSubscribed {
+                if chatSubscribed || isEventConnected() {
                     delay = 2
                 }
                 closeSocket()
@@ -202,6 +221,7 @@ final class ChzzkChat {
         heartbeat.stop()
         handshake = nil
         chatSubscribed = false
+        subscriptionSubscribed = false
         donationSubscribed = false
         socket?.cancel(with: .goingAway, reason: nil)
         socket = nil
@@ -211,8 +231,8 @@ final class ChzzkChat {
         chatSubscribed
     }
 
-    func isDonationConnected() -> Bool {
-        donationSubscribed
+    func isEventConnected() -> Bool {
+        donationSubscribed || subscriptionSubscribed
     }
 
     private func connect(token: String) async throws {
@@ -286,8 +306,10 @@ final class ChzzkChat {
                     chatSubscribed = subscribed
                 } else if system.data.eventType == "DONATION" {
                     donationSubscribed = subscribed
+                } else if system.data.eventType == "SUBSCRIPTION" {
+                    subscriptionSubscribed = subscribed
                 }
-                if chatSubscribed || donationSubscribed {
+                if chatSubscribed || isEventConnected() {
                     setupTimeout.stop()
                 }
             default:
@@ -295,7 +317,10 @@ final class ChzzkChat {
             }
         case let .chat(message):
             onChat(message)
+        case let .subscription(subscription):
+            onSubscription(subscription)
         case let .donation(donation):
+            logger.debug("chzzk: Donation type \(donation.donationType ?? "unspecified")")
             onDonation(donation)
         case .unknown:
             break

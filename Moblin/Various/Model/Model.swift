@@ -2472,7 +2472,7 @@ final class Model: NSObject, ObservableObject {
 
     func isEventsConnected() -> Bool {
         if isChzzkEventsConfigured() {
-            return chzzkChat?.isDonationConnected() == true
+            return chzzkChat?.isEventConnected() == true
                 && (!isTwitchEventSubConfigured() || isTwitchEventsConnected())
         }
         return isTwitchEventsConnected()

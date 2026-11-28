@@ -10,6 +10,36 @@ struct ChzzkTokens: Codable {
     let expiresAt: Date
 }
 
+struct ChzzkLiveCategory: Decodable {
+    let categoryId: String
+    let categoryType: String
+    let categoryValue: String
+}
+
+struct ChzzkLiveSettings: Decodable {
+    let defaultLiveTitle: String
+    let category: ChzzkLiveCategory?
+}
+
+private struct ChzzkCategoryResults: Decodable {
+    let data: [ChzzkLiveCategory]
+}
+
+enum ChzzkLiveUpdate {
+    case title(String)
+    case category(ChzzkLiveCategory)
+
+    var fields: [String: String] {
+        switch self {
+        case let .title(title): ["defaultLiveTitle": title]
+        case let .category(category): [
+                "categoryType": category.categoryType,
+                "categoryId": category.categoryId,
+            ]
+        }
+    }
+}
+
 struct ChzzkUser: Decodable {
     let channelId: String
     let channelName: String
@@ -157,7 +187,13 @@ final class ChzzkApi {
     private let clientId: String
     private let clientSecret: String
 
-    init(clientId: String, clientSecret: String) {
+    private let send: @MainActor (URLRequest) async throws -> (Data, HTTPURLResponse)
+
+    init(clientId: String, clientSecret: String,
+         send: @escaping @MainActor (URLRequest) async throws
+             -> (Data, HTTPURLResponse) = httpGet(request:))
+    {
+        self.send = send
         self.clientId = clientId
         self.clientSecret = clientSecret
     }
@@ -276,6 +312,27 @@ final class ChzzkApi {
                               bodyData: JSONSerialization.data(withJSONObject: body)) as ChzzkEmpty?
     }
 
+    func liveSettings(token: String) async throws -> ChzzkLiveSettings {
+        try await content(path: "/open/v1/lives/setting", accessToken: token)
+    }
+
+    func updateLiveSettings(_ update: ChzzkLiveUpdate, token: String) async throws {
+        _ = try await request(path: "/open/v1/lives/setting", method: "PATCH", body: update.fields,
+                              accessToken: token) as ChzzkEmpty?
+    }
+
+    func categories(query: String) async throws -> [ChzzkLiveCategory] {
+        let result: ChzzkCategoryResults? = try await request(
+            path: "/open/v1/categories/search", method: "GET", query: [URLQueryItem(
+                name: "query",
+                value: query
+            )],
+            authenticateClient: true
+        )
+        guard let result else { throw ChzzkApiError.invalidResponse }
+        return result.data
+    }
+
     func session(accessToken: String) async throws -> URL {
         let session: ChzzkSession = try await content(path: "/open/v1/sessions/auth",
                                                       accessToken: accessToken)
@@ -324,7 +381,8 @@ final class ChzzkApi {
 
     private func request<T: Decodable>(path: String, method: String, body: [String: String]? = nil,
                                        query: [URLQueryItem] = [], accessToken: String? = nil,
-                                       bodyData: Data? = nil) async throws -> T?
+                                       bodyData: Data? = nil,
+                                       authenticateClient: Bool = false) async throws -> T?
     {
         var url = URLComponents(string: "https://openapi.chzzk.naver.com")!
         url.path = path
@@ -336,6 +394,10 @@ final class ChzzkApi {
         request.httpMethod = method
         request.cachePolicy = .reloadIgnoringLocalCacheData
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if authenticateClient {
+            request.setValue(clientId, forHTTPHeaderField: "Client-Id")
+            request.setValue(clientSecret, forHTTPHeaderField: "Client-Secret")
+        }
         if let accessToken {
             request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         }
@@ -345,7 +407,7 @@ final class ChzzkApi {
         if let bodyData {
             request.httpBody = bodyData
         }
-        let (data, response) = try await httpGet(request: request)
+        let (data, response) = try await send(request)
         guard response.isSuccessful else {
             throw ChzzkApiError.status(response.statusCode)
         }

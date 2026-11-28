@@ -62,6 +62,65 @@ struct ChzzkEventSuite {
         #expect(donation.moderationTarget == nil)
     }
 
+    @Test(arguments: ["CHAT", "VIDEO", "UNKNOWN"])
+    func donationType(kind: String) throws {
+        let data = Data(#"["DONATION",{"channelId":"host","donationType":"\#(kind)","payAmount":1000}]"#.utf8)
+        let event = try JSONDecoder().decode(ChzzkEvent.self, from: data)
+        guard case let .donation(donation) = event else {
+            Issue.record("Expected donation")
+            return
+        }
+        #expect(donation.donationType == kind)
+    }
+
+    @Test
+    func subscriptionWithoutOptionalFields() throws {
+        let data = Data(#"["SUBSCRIPTION",{"channelId":"host","subscriberNickname":"viewer"}]"#.utf8)
+        let event = try JSONDecoder().decode(ChzzkEvent.self, from: data)
+        guard case let .subscription(subscription) = event else {
+            Issue.record("Expected subscription")
+            return
+        }
+        #expect(subscription.month == nil)
+        #expect(subscription.tierNo == nil)
+        #expect(subscription.subscriberNickname == "viewer")
+    }
+
+    @MainActor
+    @Test(arguments: [200, 403, 500])
+    func searchCategories(status: Int) async throws {
+        let api = ChzzkApi(clientId: "client", clientSecret: "secret") { request in
+            let url = try #require(request.url)
+            #expect(url.path == "/open/v1/categories/search")
+            let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+            #expect(query?.first?.value == "A+B")
+            #expect(request.value(forHTTPHeaderField: "Client-Secret") == "secret")
+            #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
+            let body = #"{"code":200,"content":{"data":[{"categoryId":"test","categoryType":"ETC","categoryValue":"Test"}]}}"#
+            let response = try #require(HTTPURLResponse(
+                url: url,
+                statusCode: status,
+                httpVersion: nil,
+                headerFields: nil
+            ))
+            return (Data(body.utf8), response)
+        }
+        do {
+            let categories = try await api.categories(query: "A+B")
+            #expect(status == 200)
+            #expect(categories.first?.categoryId == "test")
+        } catch let ChzzkApiError.status(code) {
+            #expect(status != 200 && code == status)
+        }
+    }
+
+    @Test
+    func partialLiveUpdates() {
+        let category = ChzzkLiveCategory(categoryId: "talk", categoryType: "ETC", categoryValue: "Talk")
+        #expect(ChzzkLiveUpdate.title("Testing").fields == ["defaultLiveTitle": "Testing"])
+        #expect(ChzzkLiveUpdate.category(category).fields == ["categoryType": "ETC", "categoryId": "talk"])
+    }
+
     @Test
     func identifiedDonorSupportsUserRestrictions() throws {
         let sender = String(repeating: "a", count: 32)
@@ -251,14 +310,14 @@ struct ChzzkEventSuite {
     }
 
     @MainActor
-    @Test(arguments: ["chat", "donation", "both", "neither"])
+    @Test(arguments: ["chat", "donation", "subscription", "all", "neither"])
     func subscriptionPermissions(denied: String) async {
         var requests: [String] = []
         var stopped = false
         do {
             try await subscribeToChzzkEvents { event in
                 requests.append(event)
-                if denied == event || denied == "both" {
+                if denied == event || denied == "all" {
                     throw ChzzkApiError.status(403)
                 }
             }
@@ -267,7 +326,7 @@ struct ChzzkEventSuite {
         } catch {
             Issue.record("Unexpected error")
         }
-        #expect(requests == ["chat", "donation"])
-        #expect(stopped == (denied == "both"))
+        #expect(requests == ["chat", "donation", "subscription"])
+        #expect(stopped == (denied == "all"))
     }
 }

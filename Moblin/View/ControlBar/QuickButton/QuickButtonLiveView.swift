@@ -163,7 +163,16 @@ struct QuickButtonLiveView: View {
                     SoopView(stream: stream)
                 }
                 if !stream.chzzkChannelId.isEmpty {
-                    Section {} header: {
+                    Section {
+                        if model.chzzkLoggedIn {
+                            ChzzkStreamLiveSettingsView(
+                                model: model,
+                                streamId: stream.id,
+                                channelId: stream.chzzkChannelId
+                            )
+                            .id(stream.chzzkChannelId)
+                        }
+                    } header: {
                         ChzzkLogoAndNameView(channel: stream.chzzkChannelId)
                     }
                 }

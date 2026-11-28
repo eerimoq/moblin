@@ -7,8 +7,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
 
     private func nextDisabled() -> Bool {
         if createStreamWizard.platform == .chzzk {
-            return createStreamWizard.chzzkIngest.trim().isEmpty || createStreamWizard.chzzkStreamKey
-                .trim().isEmpty || !ingestError.isEmpty
+            return createStreamWizard.chzzkStreamKey.trim().isEmpty
         }
         return createStreamWizard.directIngest.isEmpty || createStreamWizard.directStreamKey
             .isEmpty || !ingestError
@@ -20,22 +19,6 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
     }
 
     private func updateIngestError() {
-        if createStreamWizard.platform == .chzzk {
-            let url = cleanUrl(url: createStreamWizard.chzzkIngest.trim())
-            guard !url.isEmpty else {
-                ingestError = ""
-                return
-            }
-            guard let components = URLComponents(string: url),
-                  ["rtmp", "rtmps"].contains(components.scheme ?? ""),
-                  components.query == nil, components.fragment == nil
-            else {
-                ingestError = String(localized: "Malformed RTMP URL")
-                return
-            }
-            ingestError = isValidUrl(url: url, rtmpStreamKeyRequired: false) ?? ""
-            return
-        }
         let url = cleanUrl(url: createStreamWizard.directIngest)
         if url.isEmpty {
             ingestError = ""
@@ -181,26 +164,13 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 }
             case .chzzk:
                 Section {
-                    TextField("Stream URL", text: $createStreamWizard.chzzkIngest)
-                        .keyboardType(.URL)
-                        .textInputAutocapitalization(.never)
-                        .disableAutocorrection(true)
-                        .onChange(of: createStreamWizard.chzzkIngest) { _ in
-                            updateIngestError()
-                        }
-                } header: {
-                    Text("Stream URL")
-                } footer: {
-                    FormFieldError(error: ingestError)
-                }
-                Section {
                     SecureField("Stream key", text: $createStreamWizard.chzzkStreamKey)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                 } header: {
                     Text("Stream key")
                 } footer: {
-                    Text("Copy the stream URL and stream key from Settings in CHZZK Studio on your computer.")
+                    Text("Copy the stream key from [CHZZK Studio](https://studio.chzzk.naver.com).")
                 }
             case .custom:
                 EmptyView()

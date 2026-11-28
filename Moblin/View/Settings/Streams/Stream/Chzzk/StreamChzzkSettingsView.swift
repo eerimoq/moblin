@@ -10,48 +10,177 @@ struct ChzzkSetupGuideLink: View {
     var body: some View {
         NavigationLink("CHZZK setup guide") {
             Form {
-                Section("Stream URL and key") {
-                    Text("Copy the stream URL and stream key from Settings in CHZZK Studio on your computer.")
-                    Text(
-                        "In the stream wizard, choose CHZZK, then Moblin → CHZZK, and paste the URL and key."
-                    )
-                }
-                Section("Register an application") {
-                    Link(
-                        "CHZZK developer center",
-                        destination: URL(string: "https://developers.chzzk.naver.com")!
-                    )
-                    Text("Sign in to the developer center and open My Services → Register application.")
-                    Text("Choose an application ID and name. Check availability for each one.")
-                    Text("Copy the URL below and paste it into the Login redirect URL field.")
-                    Text(verbatim: chzzkRedirectUri)
-                        .textSelection(.enabled)
-                    Button("Copy login redirect URL") {
-                        UIPasteboard.general.string = chzzkRedirectUri
+                Section {
+                    Link(destination: URL(string: "https://developers.chzzk.naver.com")!) {
+                        HStack {
+                            Text("CHZZK developer center")
+                            Image(systemName: "arrow.up.right")
+                                .accessibilityHidden(true)
+                        }
                     }
+                    Text("1. In My Services → Register application, enter an ID in English and an app name.")
+                    Text("2. Paste the address below into the Login redirect URL field.")
+                    ViewThatFits(in: .horizontal) {
+                        HStack { redirectAddress }
+                        VStack(alignment: .leading) { redirectAddress }
+                    }
+                    Text(
+                        "3. Under API Scopes, select **user read, chat read, chat write, restriction write, donation read, subscription read, and broadcast settings read and write**, then tap Save → Register."
+                    )
                 }
-                Section("API permissions") {
+                Section {
                     Text(
-                        "Under API Scopes, select read access for user info, chat messages, and donations."
+                        "1. Open your registered app in the application list. Copy its Client ID and Client Secret into the matching fields in Moblin."
                     )
-                    Text("To send chat, post bot replies, or hide messages, also choose chat write.")
-                    Text("To apply or remove restrictions, enable restriction write permission.")
-                    Text("Tap Save in the permissions window, then Register on the application form.")
-                }
-                Section("Connect your CHZZK account") {
-                    Text(
-                        "Open your app in the list. Copy the Client ID, then tap Show to copy the Client Secret."
-                    )
-                    Text("In the active stream’s settings, open CHZZK under Streaming platforms.")
-                    Text("Paste both values into the matching fields in Moblin and tap Save.")
-                    Text("Tap Login, sign in with the account that owns the channel, and approve access.")
-                    Text(
-                        "If you change the app permissions later, log out of CHZZK in Moblin and log in again."
-                    )
+                    Text("2. Tap Save → Login and approve access.")
+                } header: {
+                    Text("Connect account")
+                } footer: {
+                    Text("If you change permissions, log out and log in again.")
+                        .italic()
                 }
             }
             .navigationTitle("CHZZK setup guide")
         }
+    }
+
+    @ViewBuilder private var redirectAddress: some View {
+        Text(verbatim: chzzkRedirectUri)
+            .textSelection(.enabled)
+        Button {
+            UIPasteboard.general.string = chzzkRedirectUri
+        } label: {
+            Text("Copy address").bold()
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
+private struct ChzzkCategoryPicker: View {
+    let api: ChzzkApi
+    let select: (ChzzkLiveCategory) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var query = ""
+    @State private var results: [ChzzkLiveCategory] = []
+    @State private var error: String?
+
+    var body: some View {
+        Form {
+            TextField("Search", text: $query)
+                .autocorrectionDisabled(true)
+            if let error {
+                Text(error)
+            }
+            ForEach(results, id: \.categoryId) { category in
+                Button(category.categoryValue) {
+                    select(category)
+                    dismiss()
+                }
+            }
+        }
+        .navigationTitle("Category")
+        .task(id: query) {
+            results = []
+            error = nil
+            guard !query.trim().isEmpty else { return }
+            do {
+                try await Task.sleep(for: .milliseconds(300))
+                let matches = try await api.categories(query: query.trim())
+                try Task.checkCancellation()
+                results = matches
+                if matches.isEmpty {
+                    error = String(localized: "No categories found.")
+                }
+            } catch {
+                if !Task.isCancelled {
+                    self.error = String(localized: "Could not search CHZZK categories.")
+                }
+            }
+        }
+    }
+}
+
+struct ChzzkStreamLiveSettingsView: View {
+    let model: Model
+    let streamId: UUID
+    let channelId: String
+    @State private var settings: ChzzkLiveSettings?
+    @State private var error: String?
+    @State private var saving = false
+
+    private func showError(_ failure: Error, writing: Bool) {
+        if case ChzzkApiError.status(403) = failure {
+            error = writing ?
+                String(localized: "Enable the CHZZK broadcast settings write permission and log in again.") :
+                String(localized: "Enable the CHZZK broadcast settings read permission and log in again.")
+        } else if !(failure is CancellationError), !Task.isCancelled {
+            error = String(localized: "Could not load or save CHZZK broadcast settings.")
+        }
+    }
+
+    private func load() async {
+        do {
+            let current = try await model
+                .withChzzkLiveSettings(streamId: streamId, channelId: channelId) { api, token in
+                    try await api.liveSettings(token: token)
+                }
+            try Task.checkCancellation()
+            settings = current
+            error = nil
+        } catch { showError(error, writing: false) }
+    }
+
+    private func save(_ update: ChzzkLiveUpdate) {
+        guard !saving else { return }
+        saving = true
+        Task {
+            defer { saving = false }
+            do {
+                try await model
+                    .withChzzkLiveSettings(streamId: streamId, channelId: channelId) { api, token in
+                        try await api.updateLiveSettings(update, token: token)
+                    }
+                await load()
+            } catch { showError(error, writing: true) }
+        }
+    }
+
+    var body: some View {
+        Group {
+            if let settings {
+                NavigationLink {
+                    TextEditView(title: String(localized: "Title"), value: settings.defaultLiveTitle,
+                                 onChange: {
+                                     $0.trim().isEmpty ? String(localized: "Enter a broadcast title.") : nil
+                                 },
+                                 onSubmit: {
+                                     if !$0.isEmpty {
+                                         save(.title($0))
+                                     }
+                                 })
+                } label: {
+                    TextItemView(name: String(localized: "Title"), value: settings.defaultLiveTitle)
+                }
+                if let api = model.chzzkApi {
+                    NavigationLink {
+                        ChzzkCategoryPicker(api: api) { save(.category($0)) }
+                    } label: {
+                        TextItemView(
+                            name: String(localized: "Category"),
+                            value: settings.category?.categoryValue ?? ""
+                        )
+                    }
+                }
+            } else if error == nil {
+                ProgressView()
+            }
+            if let error {
+                Text(error)
+                Button("Retry") { Task { await load() } }
+            }
+        }
+        .disabled(saving)
+        .task { await load() }
     }
 }
 
@@ -66,10 +195,12 @@ struct StreamChzzkSettingsView: View {
     }
 
     private func submitChannelId(value: String) {
-        guard stream.chzzkChannelId != value else {
+        guard stream.setChzzkChannelId(
+            value,
+            signedInChannelId: stream.enabled ? model.chzzkAuthorizedChannelId : nil
+        ) else {
             return
         }
-        stream.chzzkChannelId = value
         if stream.enabled {
             model.chzzkChannelUpdated()
         }
@@ -80,7 +211,7 @@ struct StreamChzzkSettingsView: View {
             TextField("Client ID", text: $clientId)
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
-            SecureField("Client secret", text: $clientSecret)
+            SecureField("Client Secret", text: $clientSecret)
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
             TextButtonView("Save") {
@@ -101,13 +232,28 @@ struct StreamChzzkSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Channel id"),
                     value: stream.chzzkChannelId,
-                    onSubmit: submitChannelId
+                    onChange: { value in
+                        value.isEmpty || isValidChzzkChannelId(value) ? nil :
+                            String(localized: "Enter a 32-character hexadecimal channel ID.")
+                    },
+                    onSubmit: submitChannelId,
+                    valueFormat: { _ in stream.chzzkChannelId }
                 )
             } footer: {
                 ChzzkChannelIdFooterView()
             }
             if stream.enabled {
                 credentials
+                if model.chzzkLoggedIn {
+                    Section {
+                        ChzzkStreamLiveSettingsView(
+                            model: model,
+                            streamId: stream.id,
+                            channelId: stream.chzzkChannelId
+                        )
+                        .id(stream.chzzkChannelId)
+                    }
+                }
                 Section {
                     if model.chzzkLoggedIn {
                         TextButtonView("Logout") {
@@ -120,13 +266,31 @@ struct StreamChzzkSettingsView: View {
                         .disabled(credentialsChanged || model.chzzkClientId.isEmpty
                             || model.chzzkClientSecret.isEmpty)
                     }
-                } footer: {
-                    Text("Log in with your streaming account to receive chat messages and donations.")
                 }
             } else {
                 Section {
                     Text("Select this stream to configure CHZZK login.")
                 }
+            }
+            Section {
+                NavigationLink("Chat") {
+                    Form {
+                        Toggle("Chat donations", isOn: $stream.chzzkChatDonations)
+                        Toggle("Video donations", isOn: $stream.chzzkChatVideoDonations)
+                        Toggle("Subscriptions", isOn: $stream.chzzkChatSubscriptions)
+                    }
+                    .navigationTitle("Chat")
+                }
+                NavigationLink("Toasts") {
+                    Form {
+                        Toggle("Chat donations", isOn: $stream.chzzkToastDonations)
+                        Toggle("Video donations", isOn: $stream.chzzkToastVideoDonations)
+                        Toggle("Subscriptions", isOn: $stream.chzzkToastSubscriptions)
+                    }
+                    .navigationTitle("Toasts")
+                }
+            } header: {
+                Text("Alerts")
             }
         }
         .navigationTitle("CHZZK")

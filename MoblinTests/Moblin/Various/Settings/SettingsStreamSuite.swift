@@ -16,7 +16,8 @@ struct SettingsStreamSuite {
     @Test(arguments: [
         (#"{}"#, "original"),
         (#"{"chzzkChannelId":""}"#, ""),
-        (#"{"chzzkChannelId":" new "}"#, "new"),
+        (#"{"chzzkChannelId":"invalid"}"#, "original"),
+        (#"{"chzzkChannelId":" 0123456789abcdef0123456789abcdef "}"#, "0123456789abcdef0123456789abcdef"),
     ])
     func remoteChannelUpdatePreservesOmittedId(json: String, expected: String) throws {
         let incoming = try decodeStream(json)
@@ -25,6 +26,38 @@ struct SettingsStreamSuite {
         let changed = current.updateChzzkChannelId(from: incoming)
         #expect(current.chzzkChannelId == expected)
         #expect(changed == (expected != "original"))
+    }
+
+    @Test
+    func legacyDonationPreferenceBecomesIndependentVideoPreference() throws {
+        let stream = try decodeStream(#"{"chzzkChatDonations":false}"#)
+        #expect(!stream.chzzkChatVideoDonations)
+        stream.chzzkChatDonations = true
+        #expect(!stream.chzzkChatVideoDonations)
+        #expect(stream.chzzkChatSubscriptions)
+    }
+
+    @Test
+    func blankChannelUsesSignedInChannel() {
+        let stream = SettingsStream(name: "Main")
+        let channelId = "0123456789abcdef0123456789abcdef"
+        #expect(stream.setChzzkChannelId("", signedInChannelId: channelId))
+        #expect(stream.chzzkChannelId == channelId)
+    }
+
+    @Test(arguments: [
+        (#"{}"#, false, true),
+        (#"{"chzzkChatDonations":true}"#, true, true),
+        (#"{"chzzkToastDonations":false}"#, false, false),
+    ])
+    func remoteDonationAlerts(json: String, chat: Bool, toast: Bool) throws {
+        let incoming = try decodeStream(json)
+        let current = SettingsStream(name: "Main")
+        current.chzzkChatDonations = false
+        current.chzzkToastDonations = true
+        current.updateChzzkDonationAlerts(from: incoming)
+        #expect(current.chzzkChatDonations == chat)
+        #expect(current.chzzkToastDonations == toast)
     }
 
     @Test

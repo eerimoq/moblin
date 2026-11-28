@@ -116,17 +116,13 @@ extension Model {
             case .belaboxCloudObs:
                 url = createStreamWizard.belaboxUrl
             case .direct:
-                let ingest: String
-                let key: String
                 if createStreamWizard.platform == .chzzk {
-                    ingest = createStreamWizard.chzzkIngest.trim()
-                    key = createStreamWizard.chzzkStreamKey.trim()
+                    url = "rtmp://global-rtmp.lip2.navercorp.com:8080/relay/\(createStreamWizard.chzzkStreamKey.trim())"
                 } else {
-                    ingest = createStreamWizard.directIngest
-                    key = createStreamWizard.directStreamKey
+                    let ingest = createStreamWizard.directIngest
+                        .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                    url = "\(ingest)/\(createStreamWizard.directStreamKey)"
                 }
-                let ingestUrl = ingest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-                url = "\(ingestUrl)/\(key)"
             case .myServers:
                 if let customUrl = createStreamFromWizardCustomUrl() {
                     url = customUrl
@@ -186,7 +182,6 @@ extension Model {
                 stream.soopStreamId = createStreamWizard.soopStreamId.trim()
             }
         case .chzzk:
-            stream.chzzkChannelId = createStreamWizard.chzzkChannelId.trim()
             if createStreamWizard.networkSetup == .direct {
                 stream.maxKeyFrameInterval = 1
             }
@@ -257,8 +252,6 @@ extension Model {
         createStreamWizard.youTubeStream.youTubeAuthState = nil
         createStreamWizard.soopChannelName = ""
         createStreamWizard.soopStreamId = ""
-        createStreamWizard.chzzkChannelId = ""
-        createStreamWizard.chzzkIngest = ""
         createStreamWizard.chzzkStreamKey = ""
         createStreamWizard.obsAddress = ""
         createStreamWizard.obsPort = ""

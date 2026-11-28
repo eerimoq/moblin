@@ -1259,6 +1259,52 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var youTubeScheduleStreamVisibility: YouTubeApiLiveBroadcaseVisibility = .public
     @Published var youTubeScheduleStreamAutoStop: Bool = true
     @Published var soopChannelName: String = ""
+    @Published private var storedChzzkChatSubscriptions: Bool?
+    var chzzkChatSubscriptions: Bool {
+        get { storedChzzkChatSubscriptions ?? true }
+        set { storedChzzkChatSubscriptions = newValue }
+    }
+
+    @Published private var storedChzzkChatVideoDonations: Bool?
+    var chzzkChatVideoDonations: Bool {
+        get { storedChzzkChatVideoDonations ?? chzzkChatDonations }
+        set { storedChzzkChatVideoDonations = newValue }
+    }
+
+    @Published private var storedChzzkChatDonations: Bool? = true
+    var chzzkChatDonations: Bool {
+        get { storedChzzkChatDonations ?? true }
+        set {
+            if storedChzzkChatVideoDonations == nil {
+                storedChzzkChatVideoDonations = chzzkChatDonations
+            }
+            storedChzzkChatDonations = newValue
+        }
+    }
+
+    @Published private var storedChzzkToastSubscriptions: Bool?
+    var chzzkToastSubscriptions: Bool {
+        get { storedChzzkToastSubscriptions ?? true }
+        set { storedChzzkToastSubscriptions = newValue }
+    }
+
+    @Published private var storedChzzkToastVideoDonations: Bool?
+    var chzzkToastVideoDonations: Bool {
+        get { storedChzzkToastVideoDonations ?? chzzkToastDonations }
+        set { storedChzzkToastVideoDonations = newValue }
+    }
+
+    @Published private var storedChzzkToastDonations: Bool? = true
+    var chzzkToastDonations: Bool {
+        get { storedChzzkToastDonations ?? true }
+        set {
+            if storedChzzkToastVideoDonations == nil {
+                storedChzzkToastVideoDonations = chzzkToastDonations
+            }
+            storedChzzkToastDonations = newValue
+        }
+    }
+
     @Published private var storedChzzkChannelId: String? = ""
     var chzzkChannelId: String {
         get { storedChzzkChannelId ?? "" }
@@ -1364,6 +1410,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case youTubeScheduleStreamVisibility
         case youTubeScheduleStreamAutoStop
         case afreecaTvChannelName
+        case chzzkChatSubscriptions
+        case chzzkChatVideoDonations
+        case chzzkChatDonations
+        case chzzkToastSubscriptions
+        case chzzkToastVideoDonations
+        case chzzkToastDonations
         case chzzkChannelId
         case afreecaTvStreamId
         case openStreamingPlatformUrl
@@ -1460,6 +1512,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.youTubeScheduleStreamVisibility, youTubeScheduleStreamVisibility)
         try container.encode(.youTubeScheduleStreamAutoStop, youTubeScheduleStreamAutoStop)
         try container.encode(.afreecaTvChannelName, soopChannelName)
+        try container.encode(.chzzkChatSubscriptions, chzzkChatSubscriptions)
+        try container.encode(.chzzkChatVideoDonations, chzzkChatVideoDonations)
+        try container.encode(.chzzkChatDonations, chzzkChatDonations)
+        try container.encode(.chzzkToastSubscriptions, chzzkToastSubscriptions)
+        try container.encode(.chzzkToastVideoDonations, chzzkToastVideoDonations)
+        try container.encode(.chzzkToastDonations, chzzkToastDonations)
         try container.encode(.chzzkChannelId, chzzkChannelId)
         try container.encode(.afreecaTvStreamId, soopStreamId)
         try container.encode(.openStreamingPlatformUrl, openStreamingPlatformUrl)
@@ -1563,6 +1621,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
                                                            .public)
         youTubeScheduleStreamAutoStop = container.decode(.youTubeScheduleStreamAutoStop, Bool.self, true)
         soopChannelName = container.decode(.afreecaTvChannelName, String.self, "")
+        storedChzzkChatSubscriptions = container.decode(.chzzkChatSubscriptions, Bool?.self, nil)
+        storedChzzkChatVideoDonations = container.decode(.chzzkChatVideoDonations, Bool?.self, nil)
+        storedChzzkChatDonations = container.decode(.chzzkChatDonations, Bool?.self, nil)
+        storedChzzkToastSubscriptions = container.decode(.chzzkToastSubscriptions, Bool?.self, nil)
+        storedChzzkToastVideoDonations = container.decode(.chzzkToastVideoDonations, Bool?.self, nil)
+        storedChzzkToastDonations = container.decode(.chzzkToastDonations, Bool?.self, nil)
         storedChzzkChannelId = container.decode(.chzzkChannelId, String?.self, nil)
         soopStreamId = container.decode(.afreecaTvStreamId, String.self, "")
         openStreamingPlatformUrl = container.decode(.openStreamingPlatformUrl, String.self, "")
@@ -1645,8 +1709,38 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         youTubeVideoIds.split(separator: ",").map { String($0) }
     }
 
-    func updateChzzkChannelId(from new: SettingsStream) -> Bool {
-        guard let channelId = new.storedChzzkChannelId?.trim(), channelId != chzzkChannelId else {
+    func updateChzzkDonationAlerts(from new: SettingsStream) {
+        if let enabled = new.storedChzzkChatSubscriptions {
+            chzzkChatSubscriptions = enabled
+        }
+        if let enabled = new.storedChzzkChatVideoDonations {
+            chzzkChatVideoDonations = enabled
+        }
+        if let enabled = new.storedChzzkChatDonations {
+            chzzkChatDonations = enabled
+        }
+        if let enabled = new.storedChzzkToastSubscriptions {
+            chzzkToastSubscriptions = enabled
+        }
+        if let enabled = new.storedChzzkToastVideoDonations {
+            chzzkToastVideoDonations = enabled
+        }
+        if let enabled = new.storedChzzkToastDonations {
+            chzzkToastDonations = enabled
+        }
+    }
+
+    func updateChzzkChannelId(from new: SettingsStream, signedInChannelId: String? = nil) -> Bool {
+        guard let value = new.storedChzzkChannelId else {
+            return false
+        }
+        return setChzzkChannelId(value, signedInChannelId: signedInChannelId)
+    }
+
+    func setChzzkChannelId(_ value: String, signedInChannelId: String?) -> Bool {
+        let value = value.trim()
+        let channelId = value.isEmpty ? signedInChannelId ?? "" : value
+        guard channelId != chzzkChannelId, channelId.isEmpty || isValidChzzkChannelId(channelId) else {
             return false
         }
         chzzkChannelId = channelId
@@ -1693,6 +1787,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.youTubeScheduleStreamVisibility = youTubeScheduleStreamVisibility
         new.youTubeScheduleStreamAutoStop = youTubeScheduleStreamAutoStop
         new.soopChannelName = soopChannelName
+        new.chzzkChatSubscriptions = chzzkChatSubscriptions
+        new.chzzkChatVideoDonations = chzzkChatVideoDonations
+        new.chzzkChatDonations = chzzkChatDonations
+        new.chzzkToastSubscriptions = chzzkToastSubscriptions
+        new.chzzkToastVideoDonations = chzzkToastVideoDonations
+        new.chzzkToastDonations = chzzkToastDonations
         new.chzzkChannelId = chzzkChannelId
         new.soopStreamId = soopStreamId
         new.openStreamingPlatformUrl = openStreamingPlatformUrl

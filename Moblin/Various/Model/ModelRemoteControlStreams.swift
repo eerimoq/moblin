@@ -323,7 +323,12 @@ extension Model {
         stream.youTubeScheduleStreamVisibility = new.youTubeScheduleStreamVisibility
         stream.youTubeScheduleStreamAutoStop = new.youTubeScheduleStreamAutoStop
         effects.soopChannelName = stream.soopChannelName != new.soopChannelName
-        effects.chzzkChannelId = stream.updateChzzkChannelId(from: new)
+        stream.updateChzzkDonationAlerts(from: new)
+        effects.chzzkChannelId = stream.updateChzzkChannelId(
+            from: new,
+            signedInChannelId: stream.enabled && !stream.chzzkChannelId
+                .isEmpty ? chzzkAuthorizedChannelId : nil
+        )
         stream.soopChannelName = new.soopChannelName
         effects.soopStreamId = stream.soopStreamId != new.soopStreamId
         stream.soopStreamId = new.soopStreamId
