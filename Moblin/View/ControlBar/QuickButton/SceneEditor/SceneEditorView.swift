@@ -524,26 +524,53 @@ private struct SceneEditorPopoverTitleView: View {
 
     var body: some View {
         Text(text)
-            .font(.footnote)
+            .font(.caption)
+            .textCase(.uppercase)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding([.horizontal, .top], 11)
-            .padding(.bottom, 5)
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+            .padding(.bottom, 4)
     }
 }
 
-private struct SceneEditorPopoverListView<Content: View>: View {
-    @ViewBuilder let content: () -> Content
+private struct SceneEditorPopoverCreateRowView: View {
+    let text: String
+    let action: () -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                content()
+        SceneEditorPopoverRowView(image: "plus", text: text, action: action)
+            .padding(.horizontal, 5)
+    }
+}
+
+private struct SceneEditorPopoverListView<Content: View, Footer: View>: View {
+    let title: String
+    @ViewBuilder let content: () -> Content
+    @ViewBuilder let footer: () -> Footer
+
+    var body: some View {
+        VStack(spacing: 0) {
+            SceneEditorPopoverTitleView(text: title)
+            ScrollView {
+                VStack(spacing: 0) {
+                    content()
+                }
+                .padding(.horizontal, 5)
             }
+            footer()
         }
+        .padding(.bottom, 5)
         .frame(minWidth: 220)
-        .padding(5)
         .presentationCompactAdaptation(.none)
+    }
+}
+
+extension SceneEditorPopoverListView where Footer == EmptyView {
+    init(title: String, @ViewBuilder content: @escaping () -> Content) {
+        self.title = title
+        self.content = content
+        footer = { EmptyView() }
     }
 }
 
@@ -560,17 +587,7 @@ private struct SceneEditorScenesButtonView: View {
             presentingScenes = true
         }
         .popover(isPresented: $presentingScenes) {
-            SceneEditorPopoverListView {
-                SceneEditorPopoverRowView(
-                    image: "plus.square.dashed",
-                    text: String(localized: "Create scene")
-                ) {
-                    presentingScenes = false
-                    model.createSceneWizard.reset()
-                    presentingCreateWizard = true
-                }
-                Divider()
-                SceneEditorPopoverTitleView(text: String(localized: "Scenes"))
+            SceneEditorPopoverListView(title: String(localized: "Switch to scene")) {
                 ForEach(database.scenes) { scene in
                     SceneEditorPopoverRowView(image: scene.enabled ? "photo.on.rectangle" : "eye.slash",
                                               text: scene.name,
@@ -583,6 +600,12 @@ private struct SceneEditorScenesButtonView: View {
                         presentingScenes = false
                     }
                     .foregroundStyle(.primary)
+                }
+            } footer: {
+                SceneEditorPopoverCreateRowView(text: String(localized: "Create scene")) {
+                    presentingScenes = false
+                    model.createSceneWizard.reset()
+                    presentingCreateWizard = true
                 }
             }
         }
@@ -644,8 +667,7 @@ private struct SceneEditorSelectWidgetButtonView: View {
             presentingWidgets = true
         }
         .popover(isPresented: $presentingWidgets) {
-            SceneEditorPopoverListView {
-                SceneEditorPopoverTitleView(text: String(localized: "Widgets"))
+            SceneEditorPopoverListView(title: String(localized: "Select widget")) {
                 ForEach(outlines) { outline in
                     SceneEditorPopoverRowView(image: outline.widget.image(), text: outline.widget.name) {
                         selection.sceneWidgetId = outline.id
@@ -671,20 +693,10 @@ private struct SceneEditorAddWidgetButtonView: View {
             presentingAddWidget = true
         }
         .popover(isPresented: $presentingAddWidget) {
-            SceneEditorPopoverListView {
-                SceneEditorPopoverRowView(
-                    image: "plus.square.dashed",
-                    text: String(localized: "Create widget")
-                ) {
-                    presentingAddWidget = false
-                    model.createWidgetWizard.reset(scene: scene)
-                    presentingCreateWizard = true
-                }
-                Divider()
+            SceneEditorPopoverListView(title: String(localized: "Add widget to scene")) {
                 let widgets = model.addableWidgets(scene: scene)
-                SceneEditorPopoverTitleView(text: String(localized: "Widgets"))
                 if widgets.isEmpty {
-                    Text("All are already in this scene. Create a new one.")
+                    Text("All widgets are already in this scene.")
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(11)
@@ -697,6 +709,12 @@ private struct SceneEditorAddWidgetButtonView: View {
                         presentingAddWidget = false
                     }
                     .foregroundStyle(.primary)
+                }
+            } footer: {
+                SceneEditorPopoverCreateRowView(text: String(localized: "Create widget")) {
+                    presentingAddWidget = false
+                    model.createWidgetWizard.reset(scene: scene)
+                    presentingCreateWizard = true
                 }
             }
         }
@@ -886,7 +904,7 @@ struct SceneEditorView: View {
                     } else if let scene {
                         SceneSettingsView(database: database, scene: scene)
                     } else {
-                        Text("No widget selected")
+                        Text("No scene selected")
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
