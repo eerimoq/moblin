@@ -96,7 +96,9 @@ struct ChzzkEventSuite {
             #expect(query?.first?.value == "A+B")
             #expect(request.value(forHTTPHeaderField: "Client-Secret") == "secret")
             #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
-            let body = #"{"code":200,"content":{"data":[{"categoryId":"test","categoryType":"ETC","categoryValue":"Test"}]}}"#
+            let body = """
+            {"code":200,"content":{"data":[{"categoryId":"test","categoryType":"ETC","categoryValue":"Test"}]}}
+            """
             let response = try #require(HTTPURLResponse(
                 url: url,
                 statusCode: status,

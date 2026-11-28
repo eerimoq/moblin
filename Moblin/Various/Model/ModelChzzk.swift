@@ -237,12 +237,9 @@ extension Model {
                 self?.appendChzzkSubscription(event)
             }, onPermissionsDenied: { [weak self] in
                 self?.chzzkReadPermissionsDenied = true
-                self?
-                    .makeErrorToast(
-                        title: String(
-                            localized: "Check the CHZZK chat, donation, and subscription read permissions and log in again."
-                        )
-                    )
+                self?.makeErrorToast(title: String(localized: """
+                Check the CHZZK chat, donation, and subscription read permissions and log in again.
+                """))
             })
             chzzkChat = chat
             chat.start()

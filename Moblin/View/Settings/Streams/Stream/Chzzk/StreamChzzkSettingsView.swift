@@ -24,14 +24,16 @@ struct ChzzkSetupGuideLink: View {
                         HStack { redirectAddress }
                         VStack(alignment: .leading) { redirectAddress }
                     }
-                    Text(
-                        "3. Under API Scopes, select **user read, chat read, chat write, restriction write, donation read, subscription read, and broadcast settings read and write**, then tap Save → Register."
-                    )
+                    Text("""
+                    3. Under API Scopes, select **user read, chat read, chat write, restriction write, \
+                    donation read, subscription read, and broadcast settings read and write**, then tap Save → Register.
+                    """)
                 }
                 Section {
-                    Text(
-                        "1. Open your registered app in the application list. Copy its Client ID and Client Secret into the matching fields in Moblin."
-                    )
+                    Text("""
+                    1. Open your registered app in the application list. Copy its Client ID and Client Secret \
+                    into the matching fields in Moblin.
+                    """)
                     Text("2. Tap Save → Login and approve access.")
                 } header: {
                     Text("Connect account")
