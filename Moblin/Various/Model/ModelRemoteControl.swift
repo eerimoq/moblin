@@ -1303,6 +1303,37 @@ extension Model: RemoteControlStreamerDelegate {
         handleRemoteControlTriggerReaction(reaction: reaction)
     }
 
+    func remoteControlStreamerShowToast(title: String, subTitle: String?, type: RemoteControlToastType) {
+        switch type {
+        case .info:
+            makeToast(title: title, subTitle: subTitle)
+        case .warning:
+            makeWarningToast(title: title, subTitle: subTitle, vibrate: true)
+        case .error:
+            // makeErrorToast() has no equivalent of makeWarningToast()'s own
+            // formatWarning() glyph-wrapping, so add one here to match.
+            makeErrorToast(title: "❌ \(title) ❌", subTitle: subTitle, vibrate: true)
+        }
+    }
+
+    // Colored with the exact same thresholds as the locally measured
+    // bitrate (bitrateStatusIconColor(), relative to stream.bitrate), so an
+    // externally-reported number - from a receiving server/relay, say -
+    // reads the same way without the reporter needing to know or guess
+    // this stream's target bitrate itself.
+    func remoteControlStreamerSetServerBitrate(bitsPerSecond: Int64?) {
+        guard let bitsPerSecond else {
+            serverBitrate.speedAndTotal = noValue
+            serverBitrate.statusIconColor = nil
+            return
+        }
+        serverBitrate.speedAndTotal = formatBytesPerSecond(speed: bitsPerSecond)
+        serverBitrate.statusIconColor = bitrateStatusIconColor(
+            speed: bitsPerSecond,
+            target: Int64(stream.bitrate)
+        )
+    }
+
     func remoteControlStreamerMoveToGimbalPreset(id: UUID) {
         moveToGimbalPreset(id: id)
     }
