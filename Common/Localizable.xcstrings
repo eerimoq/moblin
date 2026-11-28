@@ -31846,6 +31846,12 @@
         }
       }
     },
+    "Add %@ as a destination on doink.tv, or go back and log in to add it here." : {
+
+    },
+    "Add destination" : {
+
+    },
     "Add {heartRate:%@} to a text widget to show heart rate on stream." : {
       "localizations" : {
         "de" : {
@@ -92349,6 +92355,9 @@
         }
       }
     },
+    "doink.tv sends your stream to these destinations. Add %@ to stream there." : {
+
+    },
     "Donate" : {
       "localizations" : {
         "de" : {
@@ -98525,6 +98534,9 @@
         }
       }
     },
+    "End stream" : {
+
+    },
     "End workout" : {
       "localizations" : {
         "de" : {
@@ -99982,6 +99994,9 @@
           }
         }
       }
+    },
+    "Ends doink fallback." : {
+
     },
     "Enter assistant's address and port. For example ws://132.23.43.43:2345." : {
       "localizations" : {
@@ -109532,6 +109547,9 @@
           }
         }
       }
+    },
+    "Failed to update doink" : {
+
     },
     "Failed to upload snapshot to Discord" : {
       "localizations" : {
@@ -135169,6 +135187,9 @@
         }
       }
     },
+    "Ingest" : {
+
+    },
     "Ingest URL" : {
       "localizations" : {
         "de" : {
@@ -141182,6 +141203,9 @@
           }
         }
       }
+    },
+    "Keeps your stream online for this long when you disconnect." : {
+
     },
     "Kelvin" : {
       "localizations" : {
@@ -188868,6 +188892,9 @@
         }
       }
     },
+    "Optional" : {
+
+    },
     "Optional, but simplifies the setup." : {
       "localizations" : {
         "de" : {
@@ -212831,6 +212858,9 @@
         }
       }
     },
+    "Region" : {
+
+    },
     "Regular" : {
       "localizations" : {
         "de" : {
@@ -222860,6 +222890,9 @@
           }
         }
       }
+    },
+    "Rotate stream key" : {
+
     },
     "Rotate the user interface to portrait when the device is held in portrait." : {
       "comment" : "A description of the setting to rotate the user interface to portrait when the device is held in portrait.",
@@ -309374,6 +309407,9 @@
         }
       }
     },
+    "Uses bonding. Third-party service." : {
+
+    },
     "Using default" : {
       "localizations" : {
         "de" : {
@@ -325707,6 +325743,9 @@
           }
         }
       }
+    },
+    "Your doink.tv stream key, not your %@ stream key." : {
+
     },
     "Your location will not be shared with any service when within any privacy region." : {
       "localizations" : {

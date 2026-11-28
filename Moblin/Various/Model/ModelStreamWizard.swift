@@ -5,6 +5,7 @@ enum WizardPlatform {
     case kick
     case youTube
     case soop
+    case doink
     case custom
     case obs
     case mobcam
@@ -13,6 +14,7 @@ enum WizardPlatform {
 enum WizardNetworkSetup {
     case obs
     case belaboxCloudObs
+    case doink
     case direct
     case myServers
 }
@@ -108,12 +110,16 @@ extension Model {
             }
         case .mobcam:
             url = "mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"
+        case .doink:
+            url = createStreamWizard.doinkStream.url
         default:
             switch createStreamWizard.networkSetup {
             case .obs:
                 url = "srt://\(createStreamWizard.obsAddress):\(createStreamWizard.obsPort)"
             case .belaboxCloudObs:
                 url = createStreamWizard.belaboxUrl
+            case .doink:
+                url = createStreamWizard.doinkStream.url
             case .direct:
                 let ingestUrl = createStreamWizard.directIngest
                     .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
@@ -133,7 +139,7 @@ extension Model {
         stream.autoGoLive = createStreamWizard.autoGoLive
         stream.goLiveNotificationMoblinWebsite = createStreamWizard.goLiveNotificationMoblinWebsite
         if createStreamWizard.platform != .custom, createStreamWizard.networkSetup != .direct,
-           createStreamWizard.obsRemoteControlEnabled
+           createStreamWizard.networkSetup != .doink, createStreamWizard.obsRemoteControlEnabled
         {
             let url = cleanUrl(url: createStreamWizard.obsRemoteControlUrl.trim())
             if isValidWebSocketUrl(url: url) == nil {
@@ -176,6 +182,8 @@ extension Model {
                 stream.soopChannelName = createStreamWizard.soopChannelName.trim()
                 stream.soopStreamId = createStreamWizard.soopStreamId.trim()
             }
+        case .doink:
+            break
         case .obs:
             break
         case .custom:
@@ -187,6 +195,13 @@ extension Model {
         stream.chat.ffzEmotes = false
         stream.chat.seventvEmotes = false
         stream.url = createStreamFromWizardUrl()
+        if doinkStreamKey(url: stream.url) != nil {
+            stream.doinkAccessToken = createStreamWizard.doinkStream.doinkAccessToken
+            if !stream.doinkAccessToken.isEmpty {
+                storeDoinkAccessTokenInKeychain(streamId: stream.id, accessToken: stream.doinkAccessToken)
+            }
+            stream.doinkChannelName = createStreamWizard.doinkStream.doinkChannelName
+        }
         if stream.url.starts(with: "rtmp") || stream.url.starts(with: "mobcam") {
             stream.rateControl = .cbr
         } else {
@@ -202,12 +217,16 @@ extension Model {
             stream.bitrate = database.getHighestBitratePreset()
             stream.audioCodec = .aac
             stream.audioBitrate = 192_000
+        case .doink:
+            stream.codec = .h264avc
         default:
             switch createStreamWizard.networkSetup {
             case .obs:
                 stream.codec = .h265hevc
             case .belaboxCloudObs:
                 stream.codec = .h265hevc
+            case .doink:
+                stream.codec = .h264avc
             case .direct:
                 stream.codec = .h264avc
             case .myServers:
@@ -243,6 +262,8 @@ extension Model {
         createStreamWizard.youTubeStream.youTubeAuthState = nil
         createStreamWizard.soopChannelName = ""
         createStreamWizard.soopStreamId = ""
+        createStreamWizard.doinkStream.doinkAccessToken = ""
+        createStreamWizard.doinkStream.doinkChannelName = ""
         createStreamWizard.obsAddress = ""
         createStreamWizard.obsPort = ""
         createStreamWizard.obsRemoteControlEnabled = false
@@ -262,6 +283,8 @@ extension Model {
                 createStreamWizard.name = stream.name
                 createStreamWizard.belaboxUrl = stream.url
             }
+        case .doink:
+            break
         case .direct:
             break
         case .myServers:

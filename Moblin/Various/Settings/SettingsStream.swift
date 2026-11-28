@@ -1253,6 +1253,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var kickChatroomChannelId: String?
     @Published var kickSlug: String?
     var kickAccessToken: String = ""
+    var doinkAccessToken: String = ""
+    @Published var doinkChannelName: String = ""
     @Published var kickLoggedIn: Bool = false
     var kickWantsToBeLoggedIn: Bool = false
     var kickNotLoggedInCount: Int = 0
@@ -1352,6 +1354,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case kickChannelId
         case kickChatroomChannelId
         case kickSlug
+        case doinkChannelName
         case kickAccessToken
         case kickLoggedIn
         case kickWantsToBeLoggedIn
@@ -1447,6 +1450,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.kickChannelId, kickChannelId)
         try container.encode(.kickChatroomChannelId, kickChatroomChannelId)
         try container.encode(.kickSlug, kickSlug)
+        try container.encode(.doinkChannelName, doinkChannelName)
         try container.encode(.kickAccessToken, kickAccessToken)
         try container.encode(.kickLoggedIn, kickLoggedIn)
         try container.encode(.kickWantsToBeLoggedIn, kickWantsToBeLoggedIn)
@@ -1547,6 +1551,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         kickChannelId = container.decode(.kickChannelId, String?.self, nil)
         kickChatroomChannelId = container.decode(.kickChatroomChannelId, String?.self, nil)
         kickSlug = container.decode(.kickSlug, String?.self, nil)
+        doinkChannelName = container.decode(.doinkChannelName, String.self, "")
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickWantsToBeLoggedIn = container.decode(.kickWantsToBeLoggedIn, Bool.self, kickLoggedIn)
@@ -1672,6 +1677,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.kickNotLoggedInCount = kickNotLoggedInCount
         if kickLoggedIn {
             storeKickAccessTokenInKeychain(streamId: new.id, accessToken: kickAccessToken)
+        }
+        new.doinkAccessToken = doinkAccessToken
+        new.doinkChannelName = doinkChannelName
+        if !doinkAccessToken.isEmpty {
+            storeDoinkAccessTokenInKeychain(streamId: new.id, accessToken: doinkAccessToken)
         }
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
@@ -1912,6 +1922,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         }
         twitchAccessToken = old.twitchAccessToken
         kickAccessToken = old.kickAccessToken
+        doinkAccessToken = old.doinkAccessToken
     }
 
     private func secretsRemoved(url: String) -> String {
@@ -1928,6 +1939,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     func loadFromKeychain() {
         twitchAccessToken = loadTwitchAccessTokenFromKeychain(streamId: id) ?? ""
         kickAccessToken = loadKickAccessTokenFromKeychain(streamId: id) ?? ""
+        doinkAccessToken = loadDoinkAccessTokenFromKeychain(streamId: id) ?? ""
         if let encoded = loadYouTubeAuthStateFromKeychain(streamId: id) {
             youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
         }

@@ -62,6 +62,12 @@ struct SoopLogoAndNameView: View {
     }
 }
 
+struct DoinkLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "DoinkLogo", name: "doink.tv")
+    }
+}
+
 struct ObsLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(logo: "ObsLogo", name: String(localized: "OBS"))
@@ -133,6 +139,15 @@ struct StreamPlatformsSettingsView: View {
                 TwitchLogoAndNameView()
                 Spacer()
                 GrayTextView(text: stream.twitchChannelName)
+            }
+        }
+        NavigationLink {
+            StreamDoinkSettingsView(stream: stream)
+        } label: {
+            HStack {
+                DoinkLogoAndNameView()
+                Spacer()
+                GrayTextView(text: stream.doinkChannelName.isEmpty ? "" : "/\(stream.doinkChannelName)")
             }
         }
         NavigationLink {

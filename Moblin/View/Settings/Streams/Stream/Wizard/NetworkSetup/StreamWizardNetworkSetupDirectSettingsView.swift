@@ -159,6 +159,8 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } footer: {
                     Text("Copy from ??? (requires login).")
                 }
+            case .doink:
+                EmptyView()
             case .custom:
                 EmptyView()
             case .obs:

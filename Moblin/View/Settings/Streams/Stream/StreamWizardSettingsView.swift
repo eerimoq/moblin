@@ -65,6 +65,13 @@ struct StreamWizardSettingsView: View {
                     SoopLogoAndNameView()
                 }
                 NavigationLink {
+                    StreamWizardDoinkSettingsView(model: model,
+                                                  createStreamWizard: createStreamWizard,
+                                                  stream: createStreamWizard.doinkStream)
+                } label: {
+                    DoinkLogoAndNameView()
+                }
+                NavigationLink {
                     StreamWizardObsSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     ObsLogoAndNameView()
