@@ -1,4 +1,4 @@
-import type { Accessor, ParentProps } from "solid-js";
+import type { ParentProps } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { For, onSettled, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
@@ -88,8 +88,8 @@ export function HoldButton(props: HoldButtonProps) {
 }
 
 interface ConfirmDialogProps {
-  open: Accessor<boolean>;
-  message: Accessor<string>;
+  open: boolean;
+  message: string;
   onOk: () => void;
   onCancel: () => void;
   okTextClass: string;
@@ -98,7 +98,7 @@ interface ConfirmDialogProps {
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
   return (
-    <Show when={props.open()}>
+    <Show when={props.open}>
       <div
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
         onClick={() => props.onCancel()}
@@ -107,9 +107,9 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
           class="relative w-full max-w-sm mx-4 rounded-2xl border border-zinc-600 bg-zinc-800 shadow-2xl shadow-black/60 ring-1 ring-white/10"
           onClick={(e) => e.stopPropagation()}
         >
-          <Show when={props.message().length > 0}>
+          <Show when={props.message.length > 0}>
             <div class="px-6 pt-6 pb-4">
-              <p class="text-base text-zinc-100 leading-relaxed">{props.message()}</p>
+              <p class="text-base text-zinc-100 leading-relaxed">{props.message}</p>
             </div>
           </Show>
           <div class="flex items-center justify-end gap-2 border-t border-zinc-700 px-6 py-4">
@@ -180,8 +180,8 @@ export function Title(props: TitleProps) {
 
 export interface PickerProps {
   name: string;
-  options: Accessor<NamedItem[]>;
-  value: Accessor<string>;
+  options: NamedItem[];
+  value: string;
   onChange: (value: string) => void;
 }
 
@@ -189,15 +189,15 @@ export function Picker(props: PickerProps) {
   return (
     <div class="flex items-center space-x-4">
       <label class="text-sm text-zinc-200 w-24 shrink-0">{props.name}</label>
-      <Show when={props.options().length > 0}>
+      <Show when={props.options.length > 0}>
         <select
           class="bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 flex-1"
-          value={props.value()}
+          value={props.value}
           onChange={(event) => props.onChange(event.target.value)}
         >
-          <For each={props.options()}>
+          <For each={props.options}>
             {(option) => (
-              <option value={option.id} selected={option.id === props.value()}>
+              <option value={option.id} selected={option.id === props.value}>
                 {option.name}
               </option>
             )}
@@ -240,12 +240,12 @@ export function Toggle(props: ToggleProps) {
 }
 
 interface ConnectingOverlayProps {
-  status: Accessor<string>;
+  status: string;
 }
 
 export function ConnectingOverlay(props: ConnectingOverlayProps) {
   return (
-    <Show when={props.status() !== connectionStatus.connected}>
+    <Show when={props.status !== connectionStatus.connected}>
       <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="relative w-full max-w-sm mx-4 rounded-2xl border border-zinc-600 bg-zinc-800 shadow-2xl shadow-black/60 ring-1 ring-white/10">
           <div class="px-6 py-8 flex flex-col items-center gap-4">

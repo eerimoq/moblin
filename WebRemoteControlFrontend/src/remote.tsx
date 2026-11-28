@@ -120,7 +120,8 @@ function App() {
     return status() == connectionStatus.connected;
   }
 
-  function sendUpdateScoreboard(): void {
+  function change(update: (state: ScoreboardMatchConfig) => void): void {
+    flush(() => setScoreboardState(update));
     connection.sendUpdateScoreboard(scoreboardState);
   }
 
@@ -137,170 +138,50 @@ function App() {
     setScoreboardState((state) => {
       reconcile(config, null)(state);
     });
-    flush();
-  }
-
-  function setTeamValue(teamKey: "team1" | "team2", key: string, value: string | boolean): void {
-    setScoreboardState((state) => {
-      state[teamKey][key] = value;
-    });
-    flush();
-  }
-
-  function setGlobalValue(key: string, value: string | boolean): void {
-    setScoreboardState((state) => {
-      state.global[key] = value;
-    });
-    flush();
   }
 
   function adjust(teamNumber: number, key: string, delta: number): void {
-    const teamKey = makeTeamKey(teamNumber);
-    const team = getTeam(scoreboardState, teamNumber);
-    if (scoreboardState.global.scoringMode === "tennis" && key === "primaryScore") {
-      adjTennis(teamNumber, delta);
-      return;
-    }
-    if (key === "currentSetScore") {
-      const setNum = parseInt(scoreboardState.global.period) || 1;
-      if (setNum >= 1 && setNum <= 5) {
-        const actualKey = makeSecondaryScoreKey(setNum);
-        const current = parseInt(team[actualKey] ?? "0") || 0;
-        const newVal = Math.max(0, current + delta).toString();
-        setTeamValue(teamKey, actualKey, newVal);
-        const otherTeamKey = makeOtherTeamKey(teamNumber);
-        const otherTeam = scoreboardState[otherTeamKey];
-        if (!otherTeam[actualKey] || otherTeam[actualKey] === "") {
-          setTeamValue(otherTeamKey, actualKey, "0");
-        }
-      }
-      connection.sendUpdateScoreboard(scoreboardState);
-      return;
-    }
-    const current = parseInt(team[key] as string) || 0;
-    const newVal = Math.max(0, current + delta).toString();
-    setTeamValue(teamKey, key, newVal);
-    if (key === "primaryScore" && delta > 0 && scoreboardState.global.changePossessionOnScore) {
-      toggleTeam(teamNumber);
-    }
-    sendUpdateScoreboard();
-  }
-
-  function adjTennis(teamNumber: number, delta: number): void {
-    const teamKey = makeTeamKey(teamNumber);
-    const otherTeamKey = makeOtherTeamKey(teamNumber);
-    let score = scoreboardState[teamKey].primaryScore;
-    let otherScore = scoreboardState[otherTeamKey].primaryScore;
-    if (delta > 0) {
-      switch (score) {
-        case "0":
-          score = "15";
-          break;
-        case "15":
-          score = "30";
-          break;
-        case "30":
-          if (otherScore === "40") {
-            score = "D";
-            setTeamValue(otherTeamKey, "primaryScore", "D");
-          } else {
-            score = "40";
-          }
-          break;
-        case "40":
-          if (otherScore === "Ad") {
-            score = "D";
-            setTeamValue(otherTeamKey, "primaryScore", "D");
-          } else if (otherScore === "40" || otherScore === "D") {
-            score = "Ad";
-          } else {
-            winGame(teamNumber);
-            return;
-          }
-          break;
-        case "D":
-          if (otherScore === "Ad") {
-            setTeamValue(otherTeamKey, "primaryScore", "D");
-          } else {
-            score = "Ad";
-          }
-          break;
-        case "Ad":
-          winGame(teamNumber);
-          return;
-      }
-    } else {
-      switch (score) {
-        case "Ad":
-          score = "D";
-          break;
-        case "D":
-          score = "40";
-          break;
-        case "40":
-          score = "30";
-          break;
-        case "30":
-          score = "15";
-          break;
-        case "15":
-          score = "0";
-          break;
-      }
-    }
-    setTeamValue(teamKey, "primaryScore", score);
-    sendUpdateScoreboard();
-  }
-
-  function winGame(teamNumber: number): void {
-    setTeamValue("team1", "primaryScore", "0");
-    setTeamValue("team2", "primaryScore", "0");
-    const nextServer = scoreboardState.team1.possession ? 2 : 1;
-    setTeamValue("team1", "possession", nextServer === 1);
-    setTeamValue("team2", "possession", nextServer === 2);
-    adjust(teamNumber, "currentSetScore", 1);
+    change((state) => adjustScore(state, teamNumber, key, delta));
   }
 
   function toggleTeam(teamNumber: number): void {
-    setTeamValue("team1", "possession", teamNumber === 1);
-    setTeamValue("team2", "possession", teamNumber === 2);
-    sendUpdateScoreboard();
+    change((state) => givePossession(state, teamNumber));
   }
 
   function setTeamName(teamNumber: number, name: string): void {
-    setTeamValue(makeTeamKey(teamNumber), "name", name);
-    sendUpdateScoreboard();
+    change((state) => {
+      state[makeTeamKey(teamNumber)].name = name;
+    });
   }
 
   function setHistoricScore(teamNumber: number, idx: number, score: string): void {
-    const teamKey = makeTeamKey(teamNumber);
-    const actualKey = makeSecondaryScoreKey(idx);
-    setTeamValue(teamKey, actualKey, score);
-    if (score !== "") {
-      const otherTeamKey = makeOtherTeamKey(teamNumber);
-      const otherTeam = scoreboardState[otherTeamKey];
-      if (!otherTeam[actualKey] || otherTeam[actualKey] === "") {
-        setTeamValue(otherTeamKey, actualKey, "0");
+    change((state) => {
+      const actualKey = makeSecondaryScoreKey(idx);
+      state[makeTeamKey(teamNumber)][actualKey] = score;
+      if (score !== "") {
+        const otherTeam = state[makeOtherTeamKey(teamNumber)];
+        if (!otherTeam[actualKey] || otherTeam[actualKey] === "") {
+          otherTeam[actualKey] = "0";
+        }
       }
-    }
-    sendUpdateScoreboard();
+    });
   }
 
   function setHistoricPeriod(period: number): void {
-    setGlobalValue("period", period.toString());
-    sendUpdateScoreboard();
+    change((state) => {
+      state.global.period = period.toString();
+    });
   }
 
   function cycle(teamNumber: number, key: string): void {
-    const teamKey = makeTeamKey(teamNumber);
     const control = scoreboardState.controls[key];
     if (!control || !control.options) return;
-    const team = scoreboardState[teamKey];
-    const current = (team[key] as string) || "";
-    const idx = control.options.indexOf(current);
-    const next = control.options[(idx + 1) % control.options.length];
-    setTeamValue(teamKey, key, next);
-    sendUpdateScoreboard();
+    const options = control.options;
+    change((state) => {
+      const team = state[makeTeamKey(teamNumber)];
+      const idx = options.indexOf((team[key] as string) || "");
+      team[key] = options[(idx + 1) % options.length];
+    });
   }
 
   function switchSport(sportId: string): void {
@@ -310,96 +191,103 @@ function App() {
 
   function switchLayout(layout: string): void {
     if (!layout) return;
-    setScoreboardState((state) => {
+    change((state) => {
       state.layout = layout;
     });
-    flush();
-    sendUpdateScoreboard();
   }
 
   function toggleGlobal(key: string): void {
-    setGlobalValue(key, !scoreboardState.global[key]);
-    sendUpdateScoreboard();
+    change((state) => {
+      state.global[key] = !state.global[key];
+    });
   }
 
   function setClockDirection(direction: string): void {
-    setGlobalValue("timerDirection", direction);
-    sendUpdateScoreboard();
+    change((state) => {
+      state.global.timerDirection = direction;
+    });
   }
 
   function setTitle(title: string): void {
-    setGlobalValue("title", title);
-    sendUpdateScoreboard();
+    change((state) => {
+      state.global.title = title;
+    });
   }
 
   function setPeriod(period: string): void {
-    setGlobalValue("period", period);
-    sendUpdateScoreboard();
+    change((state) => {
+      state.global.period = period;
+    });
   }
 
   function setInfoBoxText(text: string): void {
-    setGlobalValue("infoBoxText", text);
-    sendUpdateScoreboard();
+    change((state) => {
+      state.global.infoBoxText = text;
+    });
   }
 
   function setBackgroundColor(teamNumber: number, color: string): void {
-    setTeamValue(makeTeamKey(teamNumber), "bgColor", color);
-    sendUpdateScoreboard();
+    change((state) => {
+      state[makeTeamKey(teamNumber)].bgColor = color;
+    });
   }
 
   function setTextColor(teamNumbar: number, color: string): void {
-    setTeamValue(makeTeamKey(teamNumbar), "textColor", color);
-    sendUpdateScoreboard();
+    change((state) => {
+      state[makeTeamKey(teamNumbar)].textColor = color;
+    });
   }
 
   async function nextSet() {
     if (scoreboardState.global.scoringMode === "tennis") {
       if (!(await showConfirm("Start next set?", setConfirmMessage, setConfirmOpen))) return;
-      const period = parseInt(scoreboardState.global.period) || 0;
-      setGlobalValue("period", (period + 1).toString());
-      setTeamValue("team1", "primaryScore", "0");
-      setTeamValue("team2", "primaryScore", "0");
-      sendUpdateScoreboard();
+      change((state) => {
+        const period = parseInt(state.global.period) || 0;
+        state.global.period = (period + 1).toString();
+        state.team1.primaryScore = "0";
+        state.team2.primaryScore = "0";
+      });
       return;
     }
     if (!(await showConfirm("Start next set/period?", setConfirmMessage, setConfirmOpen))) return;
-    let slot = -1;
-    for (let setIndex = 1; setIndex <= 5; setIndex++) {
-      const key = makeSecondaryScoreKey(setIndex);
-      if (!scoreboardState.team1[key] && !scoreboardState.team2[key]) {
-        slot = setIndex;
-        break;
-      }
-    }
-    if (slot !== -1) {
-      const t1Score = scoreboardState.team1.primaryScore;
-      const t2Score = scoreboardState.team2.primaryScore;
-      const secondaryScoreKey = makeSecondaryScoreKey(slot);
-      setTeamValue("team1", secondaryScoreKey, t1Score);
-      setTeamValue("team2", secondaryScoreKey, t2Score);
-      if (t1Score && !t2Score) setTeamValue("team2", secondaryScoreKey, "0");
-      if (t2Score && !t1Score) setTeamValue("team1", secondaryScoreKey, "0");
-    }
-    const period = parseInt(scoreboardState.global.period) || 0;
-    setGlobalValue("period", (period + 1).toString());
-    Object.keys(scoreboardState.controls).forEach((controlKey) => {
-      if (scoreboardState.controls[controlKey].periodReset) {
-        const control = scoreboardState.controls[controlKey];
-        if (control.type === "toggleTeam") {
-          setTeamValue("team1", controlKey, false);
-          setTeamValue("team2", controlKey, false);
-          return;
+    change((state) => {
+      let slot = -1;
+      for (let setIndex = 1; setIndex <= 5; setIndex++) {
+        const key = makeSecondaryScoreKey(setIndex);
+        if (!state.team1[key] && !state.team2[key]) {
+          slot = setIndex;
+          break;
         }
-        const def = control.options && control.options.length > 0 ? control.options[0] : "0";
-        setTeamValue("team1", controlKey, def);
-        setTeamValue("team2", controlKey, def);
+      }
+      if (slot !== -1) {
+        const t1Score = state.team1.primaryScore;
+        const t2Score = state.team2.primaryScore;
+        const secondaryScoreKey = makeSecondaryScoreKey(slot);
+        state.team1[secondaryScoreKey] = t1Score;
+        state.team2[secondaryScoreKey] = t2Score;
+        if (t1Score && !t2Score) state.team2[secondaryScoreKey] = "0";
+        if (t2Score && !t1Score) state.team1[secondaryScoreKey] = "0";
+      }
+      const period = parseInt(state.global.period) || 0;
+      state.global.period = (period + 1).toString();
+      Object.keys(state.controls).forEach((controlKey) => {
+        const control = state.controls[controlKey];
+        if (control.periodReset) {
+          if (control.type === "toggleTeam") {
+            state.team1[controlKey] = false;
+            state.team2[controlKey] = false;
+            return;
+          }
+          const def = control.options && control.options.length > 0 ? control.options[0] : "0";
+          state.team1[controlKey] = def;
+          state.team2[controlKey] = def;
+        }
+      });
+      if (state.global.primaryScoreResetOnPeriod) {
+        state.team1.primaryScore = "0";
+        state.team2.primaryScore = "0";
       }
     });
-    if (scoreboardState.global.primaryScoreResetOnPeriod) {
-      setTeamValue("team1", "primaryScore", "0");
-      setTeamValue("team2", "primaryScore", "0");
-    }
-    sendUpdateScoreboard();
   }
 
   async function newMatch() {
@@ -411,39 +299,41 @@ function App() {
       ))
     )
       return;
-    if (scoreboardState.global.timerDirection === "up") {
-      setGlobalValue("timer", "0:00");
-    } else {
-      setGlobalValue("timer", `${parseInt(scoreboardState.global.duration)}:00`);
-    }
-    setGlobalValue("period", "1");
-    Object.keys(scoreboardState.controls).forEach((controlKey) => {
-      const control = scoreboardState.controls[controlKey];
-      if (control.type === "toggleTeam") {
-        setTeamValue("team1", "possession", true);
-        setTeamValue("team2", "possession", false);
-        return;
+    change((state) => {
+      if (state.global.timerDirection === "up") {
+        state.global.timer = "0:00";
+      } else {
+        state.global.timer = `${parseInt(state.global.duration)}:00`;
       }
-      const def = control.options && control.options.length > 0 ? control.options[0] : "0";
-      setTeamValue("team1", controlKey, def);
-      setTeamValue("team2", controlKey, def);
+      state.global.period = "1";
+      Object.keys(state.controls).forEach((controlKey) => {
+        const control = state.controls[controlKey];
+        if (control.type === "toggleTeam") {
+          state.team1.possession = true;
+          state.team2.possession = false;
+          return;
+        }
+        const def = control.options && control.options.length > 0 ? control.options[0] : "0";
+        state.team1[controlKey] = def;
+        state.team2[controlKey] = def;
+      });
+      state.team1.primaryScore = "0";
+      state.team2.primaryScore = "0";
+      const hasSec = !!state.team1.secondaryScore;
+      state.team1.secondaryScore = hasSec ? "0" : "";
+      state.team2.secondaryScore = hasSec ? "0" : "";
+      for (let setIndex = 1; setIndex <= 5; setIndex++) {
+        const secondaryScoreKey = makeSecondaryScoreKey(setIndex);
+        state.team1[secondaryScoreKey] = "";
+        state.team2[secondaryScoreKey] = "";
+      }
     });
-    setTeamValue("team1", "primaryScore", "0");
-    setTeamValue("team2", "primaryScore", "0");
-    const hasSec = !!scoreboardState.team1.secondaryScore;
-    setTeamValue("team1", "secondaryScore", hasSec ? "0" : "");
-    setTeamValue("team2", "secondaryScore", hasSec ? "0" : "");
-    for (let setIndex = 1; setIndex <= 5; setIndex++) {
-      const secondaryScoreKey = makeSecondaryScoreKey(setIndex);
-      setTeamValue("team1", secondaryScoreKey, "");
-      setTeamValue("team2", secondaryScoreKey, "");
-    }
-    sendUpdateScoreboard();
   }
 
   function setSelectControl(teamNumbar: number, key: string, value: string): void {
-    setTeamValue(makeTeamKey(teamNumbar), key, value);
-    sendUpdateScoreboard();
+    change((state) => {
+      state[makeTeamKey(teamNumbar)][key] = value;
+    });
   }
 
   onSettled(() => {
@@ -694,13 +584,13 @@ function App() {
         <Status />
       </div>
       <ConfirmDialog
-        open={confirmOpen}
-        message={confirmMessage}
+        open={confirmOpen()}
+        message={confirmMessage()}
         onOk={confirmOk}
         onCancel={confirmCancel}
         okTextClass="text-zinc-300"
       />
-      <ConnectingOverlay status={status} />
+      <ConnectingOverlay status={status()} />
     </>
   );
 }
@@ -738,6 +628,118 @@ function makeSecondaryScoreKey(scoreNumber: number): SecondaryScoreKey {
 
 function getTeam(state: ScoreboardMatchConfig, teamNumber: number): RemoteControlScoreboardTeam {
   return state[makeTeamKey(teamNumber)];
+}
+
+function givePossession(state: ScoreboardMatchConfig, teamNumber: number): void {
+  state.team1.possession = teamNumber === 1;
+  state.team2.possession = teamNumber === 2;
+}
+
+function addToCurrentSet(state: ScoreboardMatchConfig, teamNumber: number, delta: number): void {
+  const setNum = parseInt(state.global.period) || 1;
+  if (setNum < 1 || setNum > 5) return;
+  const actualKey = makeSecondaryScoreKey(setNum);
+  const team = getTeam(state, teamNumber);
+  const current = parseInt(team[actualKey] ?? "0") || 0;
+  team[actualKey] = Math.max(0, current + delta).toString();
+  const otherTeam = state[makeOtherTeamKey(teamNumber)];
+  if (!otherTeam[actualKey] || otherTeam[actualKey] === "") {
+    otherTeam[actualKey] = "0";
+  }
+}
+
+function winGame(state: ScoreboardMatchConfig, teamNumber: number): void {
+  state.team1.primaryScore = "0";
+  state.team2.primaryScore = "0";
+  givePossession(state, state.team1.possession ? 2 : 1);
+  addToCurrentSet(state, teamNumber, 1);
+}
+
+function adjustTennisScore(state: ScoreboardMatchConfig, teamNumber: number, delta: number): void {
+  const team = getTeam(state, teamNumber);
+  const otherTeam = state[makeOtherTeamKey(teamNumber)];
+  let score = team.primaryScore;
+  const otherScore = otherTeam.primaryScore;
+  if (delta > 0) {
+    switch (score) {
+      case "0":
+        score = "15";
+        break;
+      case "15":
+        score = "30";
+        break;
+      case "30":
+        if (otherScore === "40") {
+          score = "D";
+          otherTeam.primaryScore = "D";
+        } else {
+          score = "40";
+        }
+        break;
+      case "40":
+        if (otherScore === "Ad") {
+          score = "D";
+          otherTeam.primaryScore = "D";
+        } else if (otherScore === "40" || otherScore === "D") {
+          score = "Ad";
+        } else {
+          winGame(state, teamNumber);
+          return;
+        }
+        break;
+      case "D":
+        if (otherScore === "Ad") {
+          otherTeam.primaryScore = "D";
+        } else {
+          score = "Ad";
+        }
+        break;
+      case "Ad":
+        winGame(state, teamNumber);
+        return;
+    }
+  } else {
+    switch (score) {
+      case "Ad":
+        score = "D";
+        break;
+      case "D":
+        score = "40";
+        break;
+      case "40":
+        score = "30";
+        break;
+      case "30":
+        score = "15";
+        break;
+      case "15":
+        score = "0";
+        break;
+    }
+  }
+  team.primaryScore = score;
+}
+
+function adjustScore(
+  state: ScoreboardMatchConfig,
+  teamNumber: number,
+  key: string,
+  delta: number,
+): void {
+  if (state.global.scoringMode === "tennis" && key === "primaryScore") {
+    adjustTennisScore(state, teamNumber, delta);
+    return;
+  }
+  if (key === "currentSetScore") {
+    addToCurrentSet(state, teamNumber, delta);
+    return;
+  }
+  const team = getTeam(state, teamNumber);
+  const current = parseInt(team[key] as string) || 0;
+  team[key] = Math.max(0, current + delta).toString();
+  if (key === "primaryScore" && delta > 0 && state.global.changePossessionOnScore) {
+    givePossession(state, teamNumber);
+  }
 }
 
 function TeamColumn(props: TeamColumnProps) {

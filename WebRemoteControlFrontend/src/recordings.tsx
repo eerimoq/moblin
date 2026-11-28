@@ -163,11 +163,15 @@ function RecordingRow(props: RecordingRowProps) {
           class="recording-thumbnail"
           src={src()}
           alt=""
-          onMouseEnter={
-            hasHoverPreview() ? (event) => props.hoverPreview.show(src(), event) : undefined
-          }
-          onMouseMove={hasHoverPreview() ? (event) => props.hoverPreview.move(event) : undefined}
-          onMouseLeave={hasHoverPreview() ? () => props.hoverPreview.hide() : undefined}
+          onMouseEnter={(event) => {
+            if (hasHoverPreview()) props.hoverPreview.show(src(), event);
+          }}
+          onMouseMove={(event) => {
+            if (hasHoverPreview()) props.hoverPreview.move(event);
+          }}
+          onMouseLeave={() => {
+            if (hasHoverPreview()) props.hoverPreview.hide();
+          }}
           onClick={handleThumbnailClick}
         />
         <span class="recording-name">{props.recording.name}</span>
@@ -289,8 +293,8 @@ function App() {
       <Recordings />
       {hoverPreview.element}
       <ConfirmDialog
-        open={confirmOpen}
-        message={confirmMessage}
+        open={confirmOpen()}
+        message={confirmMessage()}
         onOk={confirmOk}
         onCancel={confirmCancel}
         okTextClass="text-red-400"

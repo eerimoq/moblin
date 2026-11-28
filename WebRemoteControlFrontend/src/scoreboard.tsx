@@ -76,7 +76,7 @@ function App() {
         <TeamColumn team={team1()} />
         <TeamColumn team={team2()} />
       </div>
-      <ConnectingOverlay status={status} />
+      <ConnectingOverlay status={status()} />
     </>
   );
 }

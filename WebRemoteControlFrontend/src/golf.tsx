@@ -120,13 +120,13 @@ function App() {
 
   const connection = new GolfConnection();
 
-  function setState(update: (draft: RemoteControlGolfScoreboard) => void): void {
-    setStore(update);
-    flush();
+  function change(update: (draft: RemoteControlGolfScoreboard) => void): void {
+    flush(() => setStore(update));
+    sendUpdate();
   }
 
   function applyRemoteState(data: RemoteControlGolfScoreboard): void {
-    setState((draft) => {
+    setStore((draft) => {
       reconcile(data, null)(draft);
     });
   }
@@ -147,54 +147,48 @@ function App() {
   }
 
   function selectHole(holeIndex: number): void {
-    setState((draft) => {
+    change((draft) => {
       draft.currentHole = holeIndex;
     });
-    sendUpdate();
   }
 
   function setPlayerName(playerIndex: number, name: string): void {
-    setState((draft) => {
+    change((draft) => {
       draft.players[playerIndex].name = name || "Name";
     });
-    sendUpdate();
   }
 
   function setPlayerColor(playerIndex: number, hex: string): void {
-    setState((draft) => {
+    change((draft) => {
       draft.players[playerIndex].color = hexToRgbColor(hex);
     });
-    sendUpdate();
   }
 
   function setScore(playerIndex: number, hole: number, score: number): void {
-    setState((draft) => {
+    change((draft) => {
       draft.players[playerIndex].scores[hole] = score;
     });
-    sendUpdate();
   }
 
   function addPlayer(): void {
     if (state.players.length >= 4) return;
     const playerNumber = state.players.length + 1;
-    setState((draft) => {
+    change((draft) => {
       draft.players.push({
         name: `Player ${playerNumber}`,
         scores: Array(MAX_HOLES).fill(-1) as number[],
         color: hexToRgbColor("#ffffff"),
       });
     });
-    sendUpdate();
   }
 
   async function removePlayer(): Promise<void> {
     if (state.players.length <= 1) return;
     const ok = await showConfirm("Remove the last player?", setConfirmMessage, setConfirmOpen);
     if (!ok) return;
-    setState((draft) => {
+    change((draft) => {
       draft.players.pop();
     });
-    sendUpdate();
   }
 
   async function newRound(): Promise<void> {
@@ -204,32 +198,29 @@ function App() {
       setConfirmOpen,
     );
     if (!ok) return;
-    setState((draft) => {
+    change((draft) => {
       for (const player of draft.players) {
         player.scores.fill(-1);
       }
       draft.currentHole = 0;
     });
-    sendUpdate();
   }
 
   function changeNumberOfHoles(holeCount: number): void {
     const newPars = holeCount === 9 ? [...DEFAULT_PARS_9] : [...DEFAULT_PARS_18];
     const newHole = Math.min(state.currentHole, holeCount - 1);
-    setState((draft) => {
+    change((draft) => {
       draft.numberOfHoles = holeCount;
       draft.pars = newPars;
       draft.currentHole = newHole;
     });
-    sendUpdate();
   }
 
   function changeCurrentPar(par: number): void {
     const hole = state.currentHole;
-    setState((draft) => {
+    change((draft) => {
       draft.pars[hole] = par;
     });
-    sendUpdate();
   }
 
   function Event() {
@@ -243,10 +234,9 @@ function App() {
             class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
             onBlur={(event) => {
               const title = event.target.value;
-              setState((draft) => {
+              change((draft) => {
                 draft.title = title;
               });
-              sendUpdate();
             }}
           />
           <select
@@ -271,10 +261,9 @@ function App() {
             checked={state.playerColors}
             onChange={(event) => {
               const playerColors = event.target.checked;
-              setState((draft) => {
+              change((draft) => {
                 draft.playerColors = playerColors;
               });
-              sendUpdate();
             }}
             label="Player colors"
           />
@@ -337,13 +326,13 @@ function App() {
                   const isActive = () => holeIndex === state.currentHole;
                   const extraClass = () => {
                     if (isActive()) return "";
-                    if (allScored()) return " complete";
-                    if (anyScored()) return " played";
+                    if (allScored()) return "complete";
+                    if (anyScored()) return "played";
                     return "";
                   };
                   return (
                     <button
-                      class={`hole-btn shrink-0${isActive() ? " active" : ""}${extraClass()}`}
+                      class={["hole-btn shrink-0", { active: isActive() }, extraClass()]}
                       onClick={() => selectHole(holeIndex)}
                     >
                       {holeIndex + 1}
@@ -485,13 +474,13 @@ function App() {
                           const score = () => player.scores[holeIndex];
                           const cls = () => scoreClass(score(), state.pars[holeIndex]);
                           return (
-                            <td class={`hole-score-cell ${cls()}`}>
+                            <td class={["hole-score-cell", cls()]}>
                               {score() >= 0 ? score() : ""}
                             </td>
                           );
                         }}
                       </For>
-                      <td class={`total-cell ${totalClass(total())}`}>{totalText()}</td>
+                      <td class={["total-cell", totalClass(total())]}>{totalText()}</td>
                     </tr>
                   );
                 }}
@@ -517,15 +506,15 @@ function App() {
     <div class="max-w-xl mx-auto space-y-2">
       <Title title="Moblin Golf Scoreboard" />
       <BasicLinks />
-      <ConnectingOverlay status={status} />
+      <ConnectingOverlay status={status()} />
       <Event />
       <Players />
       <Holes />
       <FullScorecard />
       <Buttons />
       <ConfirmDialog
-        open={confirmOpen}
-        message={confirmMessage}
+        open={confirmOpen()}
+        message={confirmMessage()}
         onOk={confirmOk}
         onCancel={confirmCancel}
         okTextClass="text-zinc-300"

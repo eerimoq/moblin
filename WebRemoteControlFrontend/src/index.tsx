@@ -1,5 +1,4 @@
 import { createSignal, createStore, For, reconcile, Show } from "solid-js";
-import type { Accessor } from "solid-js";
 import { render } from "@solidjs/web";
 import {
   BitratePreset,
@@ -101,7 +100,7 @@ function loadShowPreview(): boolean {
 }
 
 interface StatusTableProps {
-  rows: Accessor<StatusRow[]>;
+  rows: StatusRow[];
 }
 
 function StatusTable(props: StatusTableProps) {
@@ -109,7 +108,7 @@ function StatusTable(props: StatusTableProps) {
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left text-zinc-300 table-auto">
         <tbody>
-          <For each={props.rows()} keyed={false}>
+          <For each={props.rows} keyed={false}>
             {(row) => (
               <tr class="border-b border-zinc-800">
                 <td class="py-1.5 pr-4 text-zinc-200 font-medium whitespace-nowrap">{row()[0]}</td>
@@ -536,7 +535,7 @@ function App() {
   function Status() {
     return (
       <Section title="Status">
-        <StatusTable rows={statusRows} />
+        <StatusTable rows={statusRows()} />
       </Section>
     );
   }
@@ -553,8 +552,8 @@ function App() {
               label="Live"
             />
             <ConfirmDialog
-              open={() => pendingLive() !== null}
-              message={() => (pendingLive() ? "Go live?" : "End?")}
+              open={pendingLive() !== null}
+              message={pendingLive() ? "Go live?" : "End?"}
               onOk={() => {
                 const value = pendingLive();
                 setPendingLive(null);
@@ -570,8 +569,8 @@ function App() {
               label="Recording"
             />
             <ConfirmDialog
-              open={() => pendingRecording() !== null}
-              message={() => (pendingRecording() ? "Start recording?" : "Stop recording?")}
+              open={pendingRecording() !== null}
+              message={pendingRecording() ? "Start recording?" : "Stop recording?"}
               onOk={() => {
                 const value = pendingRecording();
                 setPendingRecording(null);
@@ -601,10 +600,8 @@ function App() {
               label="Preview stream"
             />
             <ConfirmDialog
-              open={() => pendingPreviewStream() !== null}
-              message={() =>
-                pendingPreviewStream() ? "Start preview stream?" : "Stop preview stream?"
-              }
+              open={pendingPreviewStream() !== null}
+              message={pendingPreviewStream() ? "Start preview stream?" : "Stop preview stream?"}
               onOk={() => {
                 const value = pendingPreviewStream();
                 setPendingPreviewStream(null);
@@ -647,32 +644,31 @@ function App() {
             </Show>
             <Picker
               name="Scene"
-              options={scenes}
-              value={currentSceneId}
+              options={scenes()}
+              value={currentSceneId()}
               onChange={(value) => connection.setScene(value)}
             />
             <Picker
               name="Auto scene switcher"
-              options={autoSwitchers}
-              value={currentAutoSwitcherId}
+              options={autoSwitchers()}
+              value={currentAutoSwitcherId()}
               onChange={(value) => {
                 connection.setAutoSceneSwitcher(value === "" ? null : value);
               }}
             />
             <Picker
               name="Mic"
-              options={mics}
-              value={currentMicId}
+              options={mics()}
+              value={currentMicId()}
               onChange={(value) => connection.setMic(value)}
             />
             <Picker
               name="Bitrate"
-              options={(): NamedItem[] => {
-                return bitratePresets().map(({ id, bitrate }): NamedItem => {
-                  return { id, name: bitrate > 0 ? formatBytesPerSecond(bitrate) : "Unknown" };
-                });
-              }}
-              value={currentBitrateId}
+              options={bitratePresets().map(({ id, bitrate }): NamedItem => ({
+                id,
+                name: bitrate > 0 ? formatBytesPerSecond(bitrate) : "Unknown",
+              }))}
+              value={currentBitrateId()}
               onChange={(value) => connection.setBitratePreset(value)}
             />
             <Toggle
@@ -850,7 +846,7 @@ function App() {
     <div class="max-w-3xl mx-auto space-y-2">
       <Title title="Moblin Remote Control" />
       <Links />
-      <ConnectingOverlay status={status} />
+      <ConnectingOverlay status={status()} />
       <VideoPreview />
       <Status />
       <Control />
