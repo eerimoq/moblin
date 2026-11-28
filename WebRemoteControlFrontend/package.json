@@ -9,13 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "solid-js": "^1.9.20",
+    "@solidjs/web": "^2.0.4",
+    "solid-js": "^2.0.4",
     "tailwind-merge": "^3.7.1"
   },
   "devDependencies": {
+    "@solidjs/vite-plugin": "^3.0.1",
     "@tailwindcss/vite": "^4.3.5",
     "typescript": "^7.0.2",
-    "vite": "^8.4.0",
-    "vite-plugin-solid": "^2.11.17"
+    "vite": "^8.4.0"
   }
 }

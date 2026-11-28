@@ -1,5 +1,5 @@
-import { createSignal, onMount, onCleanup } from "solid-js";
-import { render } from "solid-js/web";
+import { createSignal, onSettled } from "solid-js";
+import { render } from "@solidjs/web";
 import {
   connectionStatus,
   createScoreboardTeam,
@@ -29,11 +29,7 @@ function TeamColumn(props: TeamColumnProps) {
           {props.team.name}
         </div>
         <div class="serve-box">
-          <img
-            src="/volleyball.png"
-            class="serve-img"
-            classList={{ hidden: !props.team.possession }}
-          />
+          <img src="/volleyball.png" class={["serve-img", { hidden: !props.team.possession }]} />
         </div>
       </div>
     </div>
@@ -69,12 +65,9 @@ function App() {
     }
   }
 
-  onMount(() => {
+  onSettled(() => {
     document.body.addEventListener("click", toggleFullscreen);
-  });
-
-  onCleanup(() => {
-    document.body.removeEventListener("click", toggleFullscreen);
+    return () => document.body.removeEventListener("click", toggleFullscreen);
   });
 
   return (

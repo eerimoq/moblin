@@ -1,5 +1,6 @@
-import type { Accessor, JSX, ParentProps } from "solid-js";
-import { For, onCleanup, onMount, Show } from "solid-js";
+import type { Accessor, ParentProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { For, onSettled, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
 import { connectionStatus, NamedItem } from "./utils.ts";
 
@@ -58,12 +59,12 @@ export function HoldButton(props: HoldButtonProps) {
     props.onStop();
   }
 
-  onMount(() => {
+  onSettled(() => {
     window.addEventListener("blur", stop);
-    onCleanup(() => {
+    return () => {
       window.removeEventListener("blur", stop);
       stop();
-    });
+    };
   });
 
   return (
@@ -95,39 +96,32 @@ interface ConfirmDialogProps {
   okLabel?: string;
 }
 
-export function ConfirmDialog({
-  open,
-  message,
-  onOk,
-  onCancel,
-  okTextClass,
-  okLabel = "OK",
-}: ConfirmDialogProps) {
+export function ConfirmDialog(props: ConfirmDialogProps) {
   return (
-    <Show when={open()}>
+    <Show when={props.open()}>
       <div
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
-        onClick={onCancel}
+        onClick={() => props.onCancel()}
       >
         <div
           class="relative w-full max-w-sm mx-4 rounded-2xl border border-zinc-600 bg-zinc-800 shadow-2xl shadow-black/60 ring-1 ring-white/10"
           onClick={(e) => e.stopPropagation()}
         >
-          <Show when={message().length > 0}>
+          <Show when={props.message().length > 0}>
             <div class="px-6 pt-6 pb-4">
-              <p class="text-base text-zinc-100 leading-relaxed">{message()}</p>
+              <p class="text-base text-zinc-100 leading-relaxed">{props.message()}</p>
             </div>
           </Show>
           <div class="flex items-center justify-end gap-2 border-t border-zinc-700 px-6 py-4">
             <Button
-              class={`py-2 px-4 rounded-lg font-medium hover:bg-zinc-600 ${okTextClass}`}
-              onClick={onOk}
+              class={`py-2 px-4 rounded-lg font-medium hover:bg-zinc-600 ${props.okTextClass}`}
+              onClick={() => props.onOk()}
             >
-              {okLabel}
+              {props.okLabel ?? "OK"}
             </Button>
             <Button
               class="py-2 px-4 rounded-lg font-medium text-zinc-300 border border-zinc-600 hover:bg-zinc-700"
-              onClick={onCancel}
+              onClick={() => props.onCancel()}
             >
               Cancel
             </Button>
@@ -180,8 +174,8 @@ interface TitleProps {
   title: string;
 }
 
-export function Title({ title }: TitleProps) {
-  return <h1 class="text-2xl font-bold text-center">{title}</h1>;
+export function Title(props: TitleProps) {
+  return <h1 class="text-2xl font-bold text-center">{props.title}</h1>;
 }
 
 export interface PickerProps {
@@ -191,19 +185,19 @@ export interface PickerProps {
   onChange: (value: string) => void;
 }
 
-export function Picker({ name, options, value, onChange }: PickerProps) {
+export function Picker(props: PickerProps) {
   return (
     <div class="flex items-center space-x-4">
-      <label class="text-sm text-zinc-200 w-24 shrink-0">{name}</label>
-      <Show when={options().length > 0}>
+      <label class="text-sm text-zinc-200 w-24 shrink-0">{props.name}</label>
+      <Show when={props.options().length > 0}>
         <select
           class="bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 flex-1"
-          value={value()}
-          onChange={(event) => onChange(event.target.value)}
+          value={props.value()}
+          onChange={(event) => props.onChange(event.target.value)}
         >
-          <For each={options()}>
+          <For each={props.options()}>
             {(option) => (
-              <option value={option.id} selected={option.id === value()}>
+              <option value={option.id} selected={option.id === props.value()}>
                 {option.name}
               </option>
             )}
@@ -231,7 +225,7 @@ export function Toggle(props: ToggleProps) {
           class="peer appearance-none w-11 h-5 bg-slate-400 rounded-full checked:bg-indigo-800 cursor-pointer transition-colors duration-300"
           checked={props.checked}
           role="switch"
-          onChange={props.onChange}
+          onChange={(event) => props.onChange(event)}
         />
         <label
           for={props.id}
@@ -249,9 +243,9 @@ interface ConnectingOverlayProps {
   status: Accessor<string>;
 }
 
-export function ConnectingOverlay({ status }: ConnectingOverlayProps) {
+export function ConnectingOverlay(props: ConnectingOverlayProps) {
   return (
-    <Show when={status() !== connectionStatus.connected}>
+    <Show when={props.status() !== connectionStatus.connected}>
       <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="relative w-full max-w-sm mx-4 rounded-2xl border border-zinc-600 bg-zinc-800 shadow-2xl shadow-black/60 ring-1 ring-white/10">
           <div class="px-6 py-8 flex flex-col items-center gap-4">

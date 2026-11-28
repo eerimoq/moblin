@@ -1,7 +1,6 @@
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, createStore, For, reconcile, Show } from "solid-js";
 import type { Accessor } from "solid-js";
-import { createStore } from "solid-js/store";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 import {
   BitratePreset,
   connectionStatus,
@@ -105,16 +104,16 @@ interface StatusTableProps {
   rows: Accessor<StatusRow[]>;
 }
 
-function StatusTable({ rows }: StatusTableProps) {
+function StatusTable(props: StatusTableProps) {
   return (
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left text-zinc-300 table-auto">
         <tbody>
-          <For each={rows()}>
-            {([name, value]) => (
+          <For each={props.rows()} keyed={false}>
+            {(row) => (
               <tr class="border-b border-zinc-800">
-                <td class="py-1.5 pr-4 text-zinc-200 font-medium whitespace-nowrap">{name}</td>
-                <td class="py-1.5 text-zinc-200" innerHTML={value} />
+                <td class="py-1.5 pr-4 text-zinc-200 font-medium whitespace-nowrap">{row()[0]}</td>
+                <td class="py-1.5 text-zinc-200" innerHTML={row()[1]} />
               </tr>
             )}
           </For>
@@ -282,9 +281,12 @@ function App() {
         setCurrentAutoSwitcherId(state.autoSceneSwitcher.id ?? "");
       }
       if (state.filters !== undefined) {
-        for (const [name, on] of convertFilters(state.filters)) {
-          setFilterStates(name, on);
-        }
+        const filters = convertFilters(state.filters);
+        setFilterStates((filterStates) => {
+          for (const [name, on] of filters) {
+            filterStates[name] = on;
+          }
+        });
       }
       if (state.gimbalTracking !== undefined) {
         setGimbalTracking(state.gimbalTracking);
@@ -423,7 +425,9 @@ function App() {
     if (data.srt.connectionPriorities.length > 0) {
       setShowSrt(true);
       setSrtEnabled(data.srt.connectionPrioritiesEnabled);
-      setSrtPriorities(data.srt.connectionPriorities);
+      setSrtPriorities((priorities) => {
+        reconcile(data.srt.connectionPriorities, "id")(priorities);
+      });
     } else {
       setShowSrt(false);
     }
@@ -512,10 +516,7 @@ function App() {
         >
           <button
             type="button"
-            class="relative w-full cursor-pointer overflow-hidden rounded-lg border border-zinc-700 bg-black"
-            classList={{
-              "flex items-center justify-center": true,
-            }}
+            class="relative w-full cursor-pointer overflow-hidden rounded-lg border border-zinc-700 bg-black flex items-center justify-center"
             onClick={hidePreview}
           >
             <img src={previewImageSrc()!} alt="Video preview" class={"h-full object-contain"} />
@@ -713,8 +714,11 @@ function App() {
                 <SrtPriorityRow
                   priority={priority}
                   onChange={(priorityValue, enabled) => {
-                    setSrtPriorities(priorityIndex(), "priority", priorityValue);
-                    setSrtPriorities(priorityIndex(), "enabled", enabled);
+                    const index = priorityIndex();
+                    setSrtPriorities((priorities) => {
+                      priorities[index].priority = priorityValue;
+                      priorities[index].enabled = enabled;
+                    });
                     connection.setSrtConnectionPriority(priority.id, priorityValue, enabled);
                   }}
                 />
@@ -813,7 +817,10 @@ function App() {
                   id={`filter_${key}`}
                   checked={filterStates[key] || false}
                   onChange={(event) => {
-                    setFilterStates(key, event.target.checked);
+                    const on = event.target.checked;
+                    setFilterStates((filterStates) => {
+                      filterStates[key] = on;
+                    });
                     connection.setFilter(key, event.target.checked);
                   }}
                   label={filterNames[key as keyof typeof filterNames] || key}
@@ -860,20 +867,20 @@ interface SrtPriorityRowProps {
   onChange: (priority: number, enabled: boolean) => void;
 }
 
-function SrtPriorityRow({ priority, onChange }: SrtPriorityRowProps) {
-  const [sliderValue, setSliderValue] = createSignal(priority.priority);
-  const [checked, setChecked] = createSignal(priority.enabled);
+function SrtPriorityRow(props: SrtPriorityRowProps) {
+  const [sliderValue, setSliderValue] = createSignal(() => props.priority.priority);
+  const [checked, setChecked] = createSignal(() => props.priority.enabled);
 
   return (
     <div class="flex items-center space-x-3">
-      <label class="text-sm text-zinc-200 w-24 shrink-0">{priority.name}</label>
+      <label class="text-sm text-zinc-200 w-24 shrink-0">{props.priority.name}</label>
       <input
         type="checkbox"
         checked={checked()}
         class="w-4 h-4 bg-zinc-800 border border-zinc-600 rounded cursor-pointer accent-indigo-600"
         onChange={(event) => {
           setChecked(event.target.checked);
-          onChange(sliderValue(), event.target.checked);
+          props.onChange(sliderValue(), event.target.checked);
         }}
       />
       <input
@@ -883,7 +890,7 @@ function SrtPriorityRow({ priority, onChange }: SrtPriorityRowProps) {
         value={sliderValue()}
         class="flex-1 accent-indigo-600"
         onInput={(event) => setSliderValue(parseInt(event.target.value))}
-        onChange={(event) => onChange(parseInt(event.target.value), checked())}
+        onChange={(event) => props.onChange(parseInt(event.target.value), checked())}
       />
       <span class="text-sm text-zinc-300 w-6 text-right">{sliderValue()}</span>
     </div>

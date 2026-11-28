@@ -1,5 +1,5 @@
-import { createSignal, For, Show, onMount } from "solid-js";
-import { render } from "solid-js/web";
+import { createSignal, For, Show, onSettled } from "solid-js";
+import { render } from "@solidjs/web";
 import { showConfirm, confirmOk, confirmCancel } from "./utils.ts";
 import { BasicLinks, ConfirmDialog, Title } from "./components.tsx";
 
@@ -121,15 +121,15 @@ interface RecordingRowProps {
   hoverPreview: HoverPreviewHandle;
 }
 
-function RecordingRow({ recording, onDelete, onMobilePreview, hoverPreview }: RecordingRowProps) {
+function RecordingRow(props: RecordingRowProps) {
   const [copyLabel, setCopyLabel] = createSignal("Copy link");
-  const src = `/thumbnails/${encodeURIComponent(recording.name)}`;
+  const src = () => `/thumbnails/${encodeURIComponent(props.recording.name)}`;
 
   async function handleCopy(event: MouseEvent): Promise<void> {
     event.preventDefault();
     event.stopPropagation();
     try {
-      await copyText(downloadUrl(recording.name));
+      await copyText(downloadUrl(props.recording.name));
       setCopyLabel("Copied");
     } catch {
       setCopyLabel("Failed");
@@ -140,20 +140,20 @@ function RecordingRow({ recording, onDelete, onMobilePreview, hoverPreview }: Re
   function handleDownload(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    downloadFile(recording.name);
+    downloadFile(props.recording.name);
   }
 
   function handleDelete(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    onDelete(recording.name);
+    props.onDelete(props.recording.name);
   }
 
   function handleThumbnailClick(event: MouseEvent): void {
     if (hasHoverPreview()) return;
     event.preventDefault();
     event.stopPropagation();
-    onMobilePreview(src);
+    props.onMobilePreview(src());
   }
 
   return (
@@ -161,21 +161,23 @@ function RecordingRow({ recording, onDelete, onMobilePreview, hoverPreview }: Re
       <div class="recording-header">
         <img
           class="recording-thumbnail"
-          src={src}
+          src={src()}
           alt=""
-          onMouseEnter={hasHoverPreview() ? (event) => hoverPreview.show(src, event) : undefined}
-          onMouseMove={hasHoverPreview() ? (event) => hoverPreview.move(event) : undefined}
-          onMouseLeave={hasHoverPreview() ? () => hoverPreview.hide() : undefined}
+          onMouseEnter={
+            hasHoverPreview() ? (event) => props.hoverPreview.show(src(), event) : undefined
+          }
+          onMouseMove={hasHoverPreview() ? (event) => props.hoverPreview.move(event) : undefined}
+          onMouseLeave={hasHoverPreview() ? () => props.hoverPreview.hide() : undefined}
           onClick={handleThumbnailClick}
         />
-        <span class="recording-name">{recording.name}</span>
+        <span class="recording-name">{props.recording.name}</span>
       </div>
       <div class="recording-footer">
-        <span class="recording-size">{recording.size}</span>
+        <span class="recording-size">{props.recording.size}</span>
         <button
           type="button"
           class="recording-button"
-          aria-label={`Copy download link for ${recording.name}`}
+          aria-label={`Copy download link for ${props.recording.name}`}
           onClick={handleCopy}
         >
           {copyLabel()}
@@ -183,7 +185,7 @@ function RecordingRow({ recording, onDelete, onMobilePreview, hoverPreview }: Re
         <button
           type="button"
           class="recording-button"
-          aria-label={`Download ${recording.name}`}
+          aria-label={`Download ${props.recording.name}`}
           onClick={handleDownload}
         >
           Download
@@ -191,7 +193,7 @@ function RecordingRow({ recording, onDelete, onMobilePreview, hoverPreview }: Re
         <button
           type="button"
           class="recording-delete-button"
-          aria-label={`Delete ${recording.name}`}
+          aria-label={`Delete ${props.recording.name}`}
           onClick={handleDelete}
         >
           Delete
@@ -239,7 +241,9 @@ function App() {
     await loadRecordings();
   }
 
-  onMount(loadRecordings);
+  onSettled(() => {
+    loadRecordings();
+  });
 
   function Recordings() {
     return (
@@ -252,10 +256,10 @@ function App() {
         <Show when={!loading() && recordings().length === 0}>
           <div class="text-sm text-zinc-500 text-center">No recordings found.</div>
         </Show>
-        <For each={recordings()}>
+        <For each={recordings()} keyed={(recording) => recording.name}>
           {(recording) => (
             <RecordingRow
-              recording={recording}
+              recording={recording()}
               onDelete={handleDelete}
               onMobilePreview={setMobilePreviewSrc}
               hoverPreview={hoverPreview}

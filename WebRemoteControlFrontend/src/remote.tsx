@@ -1,6 +1,15 @@
-import { createSignal, For, Show, onMount, onCleanup } from "solid-js";
-import { createStore } from "solid-js/store";
-import { render } from "solid-js/web";
+import {
+  createSignal,
+  createStore,
+  flush,
+  For,
+  Match,
+  onSettled,
+  reconcile,
+  Show,
+  Switch,
+} from "solid-js";
+import { render } from "@solidjs/web";
 import {
   connectionStatus,
   EventData,
@@ -78,7 +87,6 @@ function App() {
   const [activeInputId, setActiveInputId] = createSignal<string | null>(null);
   const [confirmOpen, setConfirmOpen] = createSignal(false);
   const [confirmMessage, setConfirmMessage] = createSignal("");
-  let statusIntervalId: ReturnType<typeof setInterval> | null = null;
 
   class RemoteConnection extends WebSocketConnection {
     onConnected(): void {
@@ -126,7 +134,24 @@ function App() {
   }
 
   function handleEventScoreboard(config: ScoreboardMatchConfig): void {
-    setScoreboardState(config);
+    setScoreboardState((state) => {
+      reconcile(config, null)(state);
+    });
+    flush();
+  }
+
+  function setTeamValue(teamKey: "team1" | "team2", key: string, value: string | boolean): void {
+    setScoreboardState((state) => {
+      state[teamKey][key] = value;
+    });
+    flush();
+  }
+
+  function setGlobalValue(key: string, value: string | boolean): void {
+    setScoreboardState((state) => {
+      state.global[key] = value;
+    });
+    flush();
   }
 
   function adjust(teamNumber: number, key: string, delta: number): void {
@@ -142,11 +167,11 @@ function App() {
         const actualKey = makeSecondaryScoreKey(setNum);
         const current = parseInt(team[actualKey] ?? "0") || 0;
         const newVal = Math.max(0, current + delta).toString();
-        setScoreboardState(teamKey, actualKey, newVal);
+        setTeamValue(teamKey, actualKey, newVal);
         const otherTeamKey = makeOtherTeamKey(teamNumber);
         const otherTeam = scoreboardState[otherTeamKey];
         if (!otherTeam[actualKey] || otherTeam[actualKey] === "") {
-          setScoreboardState(otherTeamKey, actualKey, "0");
+          setTeamValue(otherTeamKey, actualKey, "0");
         }
       }
       connection.sendUpdateScoreboard(scoreboardState);
@@ -154,7 +179,7 @@ function App() {
     }
     const current = parseInt(team[key] as string) || 0;
     const newVal = Math.max(0, current + delta).toString();
-    setScoreboardState(teamKey as "team1" | "team2", key, newVal);
+    setTeamValue(teamKey, key, newVal);
     if (key === "primaryScore" && delta > 0 && scoreboardState.global.changePossessionOnScore) {
       toggleTeam(teamNumber);
     }
@@ -177,7 +202,7 @@ function App() {
         case "30":
           if (otherScore === "40") {
             score = "D";
-            setScoreboardState(otherTeamKey, "primaryScore", "D");
+            setTeamValue(otherTeamKey, "primaryScore", "D");
           } else {
             score = "40";
           }
@@ -185,7 +210,7 @@ function App() {
         case "40":
           if (otherScore === "Ad") {
             score = "D";
-            setScoreboardState(otherTeamKey, "primaryScore", "D");
+            setTeamValue(otherTeamKey, "primaryScore", "D");
           } else if (otherScore === "40" || otherScore === "D") {
             score = "Ad";
           } else {
@@ -195,7 +220,7 @@ function App() {
           break;
         case "D":
           if (otherScore === "Ad") {
-            setScoreboardState(otherTeamKey, "primaryScore", "D");
+            setTeamValue(otherTeamKey, "primaryScore", "D");
           } else {
             score = "Ad";
           }
@@ -223,46 +248,46 @@ function App() {
           break;
       }
     }
-    setScoreboardState(teamKey, "primaryScore", score);
+    setTeamValue(teamKey, "primaryScore", score);
     sendUpdateScoreboard();
   }
 
   function winGame(teamNumber: number): void {
-    setScoreboardState("team1", "primaryScore", "0");
-    setScoreboardState("team2", "primaryScore", "0");
+    setTeamValue("team1", "primaryScore", "0");
+    setTeamValue("team2", "primaryScore", "0");
     const nextServer = scoreboardState.team1.possession ? 2 : 1;
-    setScoreboardState("team1", "possession", nextServer === 1);
-    setScoreboardState("team2", "possession", nextServer === 2);
+    setTeamValue("team1", "possession", nextServer === 1);
+    setTeamValue("team2", "possession", nextServer === 2);
     adjust(teamNumber, "currentSetScore", 1);
   }
 
   function toggleTeam(teamNumber: number): void {
-    setScoreboardState("team1", "possession", teamNumber === 1);
-    setScoreboardState("team2", "possession", teamNumber === 2);
+    setTeamValue("team1", "possession", teamNumber === 1);
+    setTeamValue("team2", "possession", teamNumber === 2);
     sendUpdateScoreboard();
   }
 
   function setTeamName(teamNumber: number, name: string): void {
-    setScoreboardState(makeTeamKey(teamNumber), "name", name);
+    setTeamValue(makeTeamKey(teamNumber), "name", name);
     sendUpdateScoreboard();
   }
 
   function setHistoricScore(teamNumber: number, idx: number, score: string): void {
     const teamKey = makeTeamKey(teamNumber);
     const actualKey = makeSecondaryScoreKey(idx);
-    setScoreboardState(teamKey, actualKey, score);
+    setTeamValue(teamKey, actualKey, score);
     if (score !== "") {
       const otherTeamKey = makeOtherTeamKey(teamNumber);
       const otherTeam = scoreboardState[otherTeamKey];
       if (!otherTeam[actualKey] || otherTeam[actualKey] === "") {
-        setScoreboardState(otherTeamKey, actualKey, "0");
+        setTeamValue(otherTeamKey, actualKey, "0");
       }
     }
     sendUpdateScoreboard();
   }
 
   function setHistoricPeriod(period: number): void {
-    setScoreboardState("global", "period", period.toString());
+    setGlobalValue("period", period.toString());
     sendUpdateScoreboard();
   }
 
@@ -274,7 +299,7 @@ function App() {
     const current = (team[key] as string) || "";
     const idx = control.options.indexOf(current);
     const next = control.options[(idx + 1) % control.options.length];
-    setScoreboardState(teamKey, key, next);
+    setTeamValue(teamKey, key, next);
     sendUpdateScoreboard();
   }
 
@@ -285,42 +310,45 @@ function App() {
 
   function switchLayout(layout: string): void {
     if (!layout) return;
-    setScoreboardState("layout", layout);
+    setScoreboardState((state) => {
+      state.layout = layout;
+    });
+    flush();
     sendUpdateScoreboard();
   }
 
   function toggleGlobal(key: string): void {
-    setScoreboardState("global", key, !scoreboardState.global[key]);
+    setGlobalValue(key, !scoreboardState.global[key]);
     sendUpdateScoreboard();
   }
 
   function setClockDirection(direction: string): void {
-    setScoreboardState("global", "timerDirection", direction);
+    setGlobalValue("timerDirection", direction);
     sendUpdateScoreboard();
   }
 
   function setTitle(title: string): void {
-    setScoreboardState("global", "title", title);
+    setGlobalValue("title", title);
     sendUpdateScoreboard();
   }
 
   function setPeriod(period: string): void {
-    setScoreboardState("global", "period", period);
+    setGlobalValue("period", period);
     sendUpdateScoreboard();
   }
 
   function setInfoBoxText(text: string): void {
-    setScoreboardState("global", "infoBoxText", text);
+    setGlobalValue("infoBoxText", text);
     sendUpdateScoreboard();
   }
 
   function setBackgroundColor(teamNumber: number, color: string): void {
-    setScoreboardState(makeTeamKey(teamNumber), "bgColor", color);
+    setTeamValue(makeTeamKey(teamNumber), "bgColor", color);
     sendUpdateScoreboard();
   }
 
   function setTextColor(teamNumbar: number, color: string): void {
-    setScoreboardState(makeTeamKey(teamNumbar), "textColor", color);
+    setTeamValue(makeTeamKey(teamNumbar), "textColor", color);
     sendUpdateScoreboard();
   }
 
@@ -328,9 +356,9 @@ function App() {
     if (scoreboardState.global.scoringMode === "tennis") {
       if (!(await showConfirm("Start next set?", setConfirmMessage, setConfirmOpen))) return;
       const period = parseInt(scoreboardState.global.period) || 0;
-      setScoreboardState("global", "period", (period + 1).toString());
-      setScoreboardState("team1", "primaryScore", "0");
-      setScoreboardState("team2", "primaryScore", "0");
+      setGlobalValue("period", (period + 1).toString());
+      setTeamValue("team1", "primaryScore", "0");
+      setTeamValue("team2", "primaryScore", "0");
       sendUpdateScoreboard();
       return;
     }
@@ -347,29 +375,29 @@ function App() {
       const t1Score = scoreboardState.team1.primaryScore;
       const t2Score = scoreboardState.team2.primaryScore;
       const secondaryScoreKey = makeSecondaryScoreKey(slot);
-      setScoreboardState("team1", secondaryScoreKey, t1Score);
-      setScoreboardState("team2", secondaryScoreKey, t2Score);
-      if (t1Score && !t2Score) setScoreboardState("team2", secondaryScoreKey, "0");
-      if (t2Score && !t1Score) setScoreboardState("team1", secondaryScoreKey, "0");
+      setTeamValue("team1", secondaryScoreKey, t1Score);
+      setTeamValue("team2", secondaryScoreKey, t2Score);
+      if (t1Score && !t2Score) setTeamValue("team2", secondaryScoreKey, "0");
+      if (t2Score && !t1Score) setTeamValue("team1", secondaryScoreKey, "0");
     }
     const period = parseInt(scoreboardState.global.period) || 0;
-    setScoreboardState("global", "period", (period + 1).toString());
+    setGlobalValue("period", (period + 1).toString());
     Object.keys(scoreboardState.controls).forEach((controlKey) => {
       if (scoreboardState.controls[controlKey].periodReset) {
         const control = scoreboardState.controls[controlKey];
         if (control.type === "toggleTeam") {
-          setScoreboardState("team1", controlKey, false);
-          setScoreboardState("team2", controlKey, false);
+          setTeamValue("team1", controlKey, false);
+          setTeamValue("team2", controlKey, false);
           return;
         }
         const def = control.options && control.options.length > 0 ? control.options[0] : "0";
-        setScoreboardState("team1", controlKey, def);
-        setScoreboardState("team2", controlKey, def);
+        setTeamValue("team1", controlKey, def);
+        setTeamValue("team2", controlKey, def);
       }
     });
     if (scoreboardState.global.primaryScoreResetOnPeriod) {
-      setScoreboardState("team1", "primaryScore", "0");
-      setScoreboardState("team2", "primaryScore", "0");
+      setTeamValue("team1", "primaryScore", "0");
+      setTeamValue("team2", "primaryScore", "0");
     }
     sendUpdateScoreboard();
   }
@@ -384,51 +412,48 @@ function App() {
     )
       return;
     if (scoreboardState.global.timerDirection === "up") {
-      setScoreboardState("global", "timer", "0:00");
+      setGlobalValue("timer", "0:00");
     } else {
-      setScoreboardState("global", "timer", `${parseInt(scoreboardState.global.duration)}:00`);
+      setGlobalValue("timer", `${parseInt(scoreboardState.global.duration)}:00`);
     }
-    setScoreboardState("global", "period", "1");
+    setGlobalValue("period", "1");
     Object.keys(scoreboardState.controls).forEach((controlKey) => {
       const control = scoreboardState.controls[controlKey];
       if (control.type === "toggleTeam") {
-        setScoreboardState("team1", "possession", true);
-        setScoreboardState("team2", "possession", false);
+        setTeamValue("team1", "possession", true);
+        setTeamValue("team2", "possession", false);
         return;
       }
       const def = control.options && control.options.length > 0 ? control.options[0] : "0";
-      setScoreboardState("team1", controlKey, def);
-      setScoreboardState("team2", controlKey, def);
+      setTeamValue("team1", controlKey, def);
+      setTeamValue("team2", controlKey, def);
     });
-    setScoreboardState("team1", "primaryScore", "0");
-    setScoreboardState("team2", "primaryScore", "0");
+    setTeamValue("team1", "primaryScore", "0");
+    setTeamValue("team2", "primaryScore", "0");
     const hasSec = !!scoreboardState.team1.secondaryScore;
-    setScoreboardState("team1", "secondaryScore", hasSec ? "0" : "");
-    setScoreboardState("team2", "secondaryScore", hasSec ? "0" : "");
+    setTeamValue("team1", "secondaryScore", hasSec ? "0" : "");
+    setTeamValue("team2", "secondaryScore", hasSec ? "0" : "");
     for (let setIndex = 1; setIndex <= 5; setIndex++) {
       const secondaryScoreKey = makeSecondaryScoreKey(setIndex);
-      setScoreboardState("team1", secondaryScoreKey, "");
-      setScoreboardState("team2", secondaryScoreKey, "");
+      setTeamValue("team1", secondaryScoreKey, "");
+      setTeamValue("team2", secondaryScoreKey, "");
     }
     sendUpdateScoreboard();
   }
 
   function setSelectControl(teamNumbar: number, key: string, value: string): void {
-    setScoreboardState(makeTeamKey(teamNumbar), key, value);
+    setTeamValue(makeTeamKey(teamNumbar), key, value);
     sendUpdateScoreboard();
   }
 
-  onMount(() => {
-    statusIntervalId = setInterval(() => connection.sendGetStatusRequest(), 2000);
-  });
-
-  onCleanup(() => {
-    if (statusIntervalId) clearInterval(statusIntervalId);
+  onSettled(() => {
+    const statusIntervalId = setInterval(() => connection.sendGetStatusRequest(), 2000);
+    return () => clearInterval(statusIntervalId);
   });
 
   function Team() {
     return (
-      <div class="flex gap-2" classList={{ "opacity-30 pointer-events-none": !connected() }}>
+      <div class={["flex gap-2", { "opacity-30 pointer-events-none": !connected() }]}>
         <For each={[1, 2]}>
           {(teamNumber) => (
             <TeamColumn
@@ -502,11 +527,13 @@ function App() {
             {(setNumber) => (
               <div class="flex flex-col gap-1">
                 <div
-                  class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600"
-                  classList={{
-                    "active-set border-yellow-600":
-                      scoreboardState.global.period === String(setNumber),
-                  }}
+                  class={[
+                    "text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600",
+                    {
+                      "active-set border-yellow-600":
+                        scoreboardState.global.period === String(setNumber),
+                    },
+                  ]}
                   onClick={() => setHistoricPeriod(setNumber)}
                 >
                   SET {setNumber}
@@ -601,22 +628,19 @@ function App() {
             }}
           />
           <button
-            class="btn h-9 text-[10px]"
-            classList={{ "btn-active": scoreboardState.global.showTitle }}
+            class={["btn h-9 text-[10px]", { "btn-active": scoreboardState.global.showTitle }]}
             onClick={() => toggleGlobal("showTitle")}
           >
             Title
           </button>
           <button
-            class="btn h-9 text-[10px]"
-            classList={{ "btn-active": scoreboardState.global.showMoreStats }}
+            class={["btn h-9 text-[10px]", { "btn-active": scoreboardState.global.showMoreStats }]}
             onClick={() => toggleGlobal("showMoreStats")}
           >
             More stats
           </button>
           <button
-            class="btn h-9 text-[10px]"
-            classList={{ "btn-active": scoreboardState.global.showStats }}
+            class={["btn h-9 text-[10px]", { "btn-active": scoreboardState.global.showStats }]}
             onClick={() => toggleGlobal("showStats")}
           >
             Info box
@@ -636,8 +660,7 @@ function App() {
             }}
           />
           <button
-            class="btn h-9 text-[10px]"
-            classList={{ "btn-active": scoreboardState.global.showClock }}
+            class={["btn h-9 text-[10px]", { "btn-active": scoreboardState.global.showClock }]}
             onClick={() => toggleGlobal("showClock")}
           >
             Clock
@@ -897,63 +920,58 @@ interface ControlWidgetProps {
   onSelect: (teamNumber: number, key: string, value: string) => void;
 }
 
-function ControlWidget({
-  teamNumber,
-  controlKey,
-  control,
-  team,
-  onCycle,
-  onToggle,
-  onSelect,
-}: ControlWidgetProps) {
-  if (control.type === "select") {
-    return (
-      <div class="disp-sm bg-zinc-800">
-        <select
-          value={(team[controlKey] as string) || ""}
-          onChange={(event) => onSelect(teamNumber, controlKey, event.target.value)}
+function ControlWidget(props: ControlWidgetProps) {
+  const value = () => (props.team[props.controlKey] as string) || "";
+  const isCycleActive = () => {
+    const currentValue = value();
+    return !!(currentValue && currentValue !== "NONE" && !currentValue.startsWith("NO "));
+  };
+  const cycleLabel = () =>
+    (props.control.label ? `${props.control.label}: ${value()}` : value()) || "NONE";
+  return (
+    <Switch>
+      <Match when={props.control.type === "select"}>
+        <div class="disp-sm bg-zinc-800">
+          <select
+            value={value()}
+            onChange={(event) =>
+              props.onSelect(props.teamNumber, props.controlKey, event.target.value)
+            }
+          >
+            <For each={props.control.options || []}>
+              {(optionValue) => (
+                <option value={optionValue}>
+                  {props.control.label}: {optionValue}
+                </option>
+              )}
+            </For>
+          </select>
+        </div>
+      </Match>
+      <Match when={props.control.type === "toggleTeam"}>
+        <button
+          class={[
+            "btn btn-ctrl",
+            {
+              "btn-accent": props.team.possession === true,
+              "text-zinc-500": props.team.possession !== true,
+            },
+          ]}
+          onClick={() => props.onToggle(props.teamNumber)}
         >
-          <For each={control.options || []}>
-            {(optionValue) => (
-              <option value={optionValue}>
-                {control.label}: {optionValue}
-              </option>
-            )}
-          </For>
-        </select>
-      </div>
-    );
-  }
-  if (control.type === "toggleTeam") {
-    const isActive = () => team.possession === true;
-    return (
-      <button
-        class="btn btn-ctrl"
-        classList={{ "btn-accent": isActive(), "text-zinc-500": !isActive() }}
-        onClick={() => onToggle(teamNumber)}
-      >
-        {control.label}
-      </button>
-    );
-  }
-  if (control.type === "cycle") {
-    const val = () => (team[controlKey] as string) || "";
-    const isActive = () => {
-      const currentVal = val();
-      return !!(currentVal && currentVal !== "NONE" && !currentVal.startsWith("NO "));
-    };
-    const label = () => (control.label ? `${control.label}: ${val()}` : val()) || "NONE";
-    return (
-      <button
-        class="btn btn-ctrl"
-        classList={{ "btn-accent": isActive() }}
-        onClick={() => onCycle(teamNumber, controlKey)}
-      >
-        {label()}
-      </button>
-    );
-  }
-  return null;
+          {props.control.label}
+        </button>
+      </Match>
+      <Match when={props.control.type === "cycle"}>
+        <button
+          class={["btn btn-ctrl", { "btn-accent": isCycleActive() }]}
+          onClick={() => props.onCycle(props.teamNumber, props.controlKey)}
+        >
+          {cycleLabel()}
+        </button>
+      </Match>
+    </Switch>
+  );
 }
 
 interface TeamScorePickerProps {

@@ -1,6 +1,5 @@
-import { createSignal, For } from "solid-js";
-import { createStore } from "solid-js/store";
-import { render } from "solid-js/web";
+import { createSignal, createStore, flush, For, reconcile } from "solid-js";
+import { render } from "@solidjs/web";
 import {
   WebSocketConnection,
   connectionStatus,
@@ -83,7 +82,7 @@ function scoreOptionColor(score: number, par: number): string {
 }
 
 function App() {
-  const [state, setState] = createStore<RemoteControlGolfScoreboard>({
+  const [state, setStore] = createStore<RemoteControlGolfScoreboard>({
     title: "",
     numberOfHoles: 18,
     pars: [...DEFAULT_PARS_18],
@@ -121,8 +120,15 @@ function App() {
 
   const connection = new GolfConnection();
 
+  function setState(update: (draft: RemoteControlGolfScoreboard) => void): void {
+    setStore(update);
+    flush();
+  }
+
   function applyRemoteState(data: RemoteControlGolfScoreboard): void {
-    setState(data);
+    setState((draft) => {
+      reconcile(data, null)(draft);
+    });
   }
 
   function sendUpdate() {
@@ -141,36 +147,43 @@ function App() {
   }
 
   function selectHole(holeIndex: number): void {
-    setState("currentHole", holeIndex);
+    setState((draft) => {
+      draft.currentHole = holeIndex;
+    });
     sendUpdate();
   }
 
   function setPlayerName(playerIndex: number, name: string): void {
-    setState("players", playerIndex, "name", name || "Name");
+    setState((draft) => {
+      draft.players[playerIndex].name = name || "Name";
+    });
     sendUpdate();
   }
 
   function setPlayerColor(playerIndex: number, hex: string): void {
-    setState("players", playerIndex, "color", hexToRgbColor(hex));
+    setState((draft) => {
+      draft.players[playerIndex].color = hexToRgbColor(hex);
+    });
     sendUpdate();
   }
 
   function setScore(playerIndex: number, hole: number, score: number): void {
-    setState("players", playerIndex, "scores", hole, score);
+    setState((draft) => {
+      draft.players[playerIndex].scores[hole] = score;
+    });
     sendUpdate();
   }
 
   function addPlayer(): void {
     if (state.players.length >= 4) return;
     const playerNumber = state.players.length + 1;
-    setState("players", (players) => [
-      ...players,
-      {
+    setState((draft) => {
+      draft.players.push({
         name: `Player ${playerNumber}`,
         scores: Array(MAX_HOLES).fill(-1) as number[],
         color: hexToRgbColor("#ffffff"),
-      },
-    ]);
+      });
+    });
     sendUpdate();
   }
 
@@ -178,7 +191,9 @@ function App() {
     if (state.players.length <= 1) return;
     const ok = await showConfirm("Remove the last player?", setConfirmMessage, setConfirmOpen);
     if (!ok) return;
-    setState("players", (players) => players.slice(0, -1));
+    setState((draft) => {
+      draft.players.pop();
+    });
     sendUpdate();
   }
 
@@ -189,22 +204,31 @@ function App() {
       setConfirmOpen,
     );
     if (!ok) return;
-    setState("players", (players) =>
-      players.map((player) => ({ ...player, scores: Array(MAX_HOLES).fill(-1) as number[] })),
-    );
-    setState("currentHole", 0);
+    setState((draft) => {
+      for (const player of draft.players) {
+        player.scores.fill(-1);
+      }
+      draft.currentHole = 0;
+    });
     sendUpdate();
   }
 
   function changeNumberOfHoles(holeCount: number): void {
     const newPars = holeCount === 9 ? [...DEFAULT_PARS_9] : [...DEFAULT_PARS_18];
     const newHole = Math.min(state.currentHole, holeCount - 1);
-    setState({ numberOfHoles: holeCount, pars: newPars, currentHole: newHole });
+    setState((draft) => {
+      draft.numberOfHoles = holeCount;
+      draft.pars = newPars;
+      draft.currentHole = newHole;
+    });
     sendUpdate();
   }
 
   function changeCurrentPar(par: number): void {
-    setState("pars", state.currentHole, par);
+    const hole = state.currentHole;
+    setState((draft) => {
+      draft.pars[hole] = par;
+    });
     sendUpdate();
   }
 
@@ -218,7 +242,10 @@ function App() {
             value={state.title}
             class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
             onBlur={(event) => {
-              setState("title", event.target.value);
+              const title = event.target.value;
+              setState((draft) => {
+                draft.title = title;
+              });
               sendUpdate();
             }}
           />
@@ -243,7 +270,10 @@ function App() {
             id="colors"
             checked={state.playerColors}
             onChange={(event) => {
-              setState("playerColors", event.target.checked);
+              const playerColors = event.target.checked;
+              setState((draft) => {
+                draft.playerColors = playerColors;
+              });
               sendUpdate();
             }}
             label="Player colors"
@@ -452,10 +482,12 @@ function App() {
                         )}
                       >
                         {(holeIndex) => {
-                          const score = player.scores[holeIndex];
-                          const cls = scoreClass(score, state.pars[holeIndex]);
+                          const score = () => player.scores[holeIndex];
+                          const cls = () => scoreClass(score(), state.pars[holeIndex]);
                           return (
-                            <td class={`hole-score-cell ${cls}`}>{score >= 0 ? score : ""}</td>
+                            <td class={`hole-score-cell ${cls()}`}>
+                              {score() >= 0 ? score() : ""}
+                            </td>
                           );
                         }}
                       </For>
