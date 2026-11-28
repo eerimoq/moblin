@@ -12,22 +12,61 @@ enum SettingsMic: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsMicsMicProcessing: String, Codable, CaseIterable {
+    case none = "None"
+    case voice = "Voice"
+
+    func toString() -> String {
+        switch self {
+        case .none:
+            String(localized: "None")
+        case .voice:
+            String(localized: "Voice")
+        }
+    }
+}
+
+enum SettingsMicsMicOutput: String, Codable, CaseIterable {
+    case streamAndRecording = "Stream and recording"
+    case stream = "Stream"
+    case recording = "Recording"
+
+    func toString() -> String {
+        switch self {
+        case .streamAndRecording:
+            String(localized: "Stream and recording")
+        case .stream:
+            String(localized: "Stream")
+        case .recording:
+            String(localized: "Recording")
+        }
+    }
+}
+
 class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unchecked Sendable {
     static func == (lhs: SettingsMicsMic, rhs: SettingsMicsMic) -> Bool {
-        lhs.inputUid == rhs.inputUid && lhs.dataSourceId == rhs.dataSourceId
+        lhs.inputUid == rhs.inputUid && lhs.dataSourceId == rhs.dataSourceId && lhs.channel == rhs.channel
     }
 
     var id: String {
-        "\(inputUid) \(dataSourceId ?? 0)"
+        if let channel {
+            "\(inputUid) \(dataSourceId ?? 0) \(channel)"
+        } else {
+            "\(inputUid) \(dataSourceId ?? 0)"
+        }
     }
 
     var name: String = ""
     var inputUid: String = ""
     var dataSourceId: Int?
+    var channel: Int?
     var builtInOrientation: SettingsMic?
     @Published var delay: Double = 0.0
     @Published var gainDb: Float = 0.0
     @Published var connected: Bool = false
+    @Published var mixed: Bool = false
+    @Published var processing: SettingsMicsMicProcessing = .none
+    @Published var output: SettingsMicsMicOutput = .streamAndRecording
 
     func isAudioSession() -> Bool {
         isBuiltin() || isExternal()
@@ -118,6 +157,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         case builtInOrientation
         case delay
         case gainDb
+        case mixed
+        case channel
+        case processing
+        case output
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -128,6 +171,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         try container.encode(.builtInOrientation, builtInOrientation)
         try container.encode(.delay, delay)
         try container.encode(.gainDb, gainDb)
+        try container.encode(.mixed, mixed)
+        try container.encode(.channel, channel)
+        try container.encode(.processing, processing)
+        try container.encode(.output, output)
     }
 
     init() {}
@@ -146,6 +193,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         builtInOrientation = container.decode(.builtInOrientation, SettingsMic?.self, nil)
         delay = container.decode(.delay, Double.self, 0.0)
         gainDb = container.decode(.gainDb, Float.self, 0.0)
+        mixed = container.decode(.mixed, Bool.self, false)
+        channel = container.decode(.channel, Int?.self, nil)
+        processing = container.decode(.processing, SettingsMicsMicProcessing.self, .none)
+        output = container.decode(.output, SettingsMicsMicOutput.self, .streamAndRecording)
     }
 }
 

@@ -205,7 +205,7 @@ private struct StatusesView: View {
         if model.isShowingStatusMic() {
             StreamOverlayIconAndTextView(
                 icon: "music.mic",
-                text: mic.current.name,
+                text: mic.statusText(),
                 textPlacement: textPlacement
             )
         }
