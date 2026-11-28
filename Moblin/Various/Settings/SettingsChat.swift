@@ -261,6 +261,10 @@ class SettingsChatBotPermissions: Codable {
         torch = container.decode(.torch, SettingsChatBotPermissionsCommand.self, .init())
         vibrate = container.decode(.vibrate, SettingsChatBotPermissionsCommand.self, .init())
     }
+
+    func all() -> [SettingsChatBotPermissionsCommand] {
+        Mirror(reflecting: self).children.compactMap { $0.value as? SettingsChatBotPermissionsCommand }
+    }
 }
 
 class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
@@ -1059,5 +1063,19 @@ class SettingsChat: Codable, ObservableObject {
         sharedChatIcons = container.decode(.sharedChatIcons, Bool.self, true)
         bigGifScale = container.decode(.bigGifScale, Float.self, Self.defaultBigGifScale)
         compactEvents = container.decode(.compactEvents, Bool.self, true)
+    }
+
+    func removeSecrets() {
+        ttsMonster.apiToken = ""
+        elevenLabs.apiKey = ""
+        botCommandAi.baseUrl = ""
+        botCommandAi.apiKey = ""
+    }
+
+    func keepSecrets(from old: SettingsChat) {
+        ttsMonster.apiToken = old.ttsMonster.apiToken
+        elevenLabs.apiKey = old.elevenLabs.apiKey
+        botCommandAi.baseUrl = old.botCommandAi.baseUrl
+        botCommandAi.apiKey = old.botCommandAi.apiKey
     }
 }

@@ -88,6 +88,8 @@ enum RemoteControlRequest: Codable {
     case createStream(stream: SettingsStream, secrets: Bool)
     case updateStream(stream: SettingsStream, secrets: Bool)
     case deleteStream(id: UUID)
+    case getChat(secrets: Bool)
+    case updateChat(chat: SettingsChat, secrets: Bool)
     case getAlertsMediaGallery
     case getVideoSources
     case getEditorOptions
@@ -130,6 +132,7 @@ enum RemoteControlResponse: Codable {
     case getScenes(scenes: [SettingsScene])
     case getWidgets(widgets: [SettingsWidget])
     case getStream(stream: SettingsStream)
+    case getChat(chat: SettingsChat)
     case getAlertsMediaGallery(gallery: SettingsAlertsMediaGallery)
     case getVideoSources(videoSources: [RemoteControlVideoSource])
     case getEditorOptions(options: RemoteControlEditorOptions)

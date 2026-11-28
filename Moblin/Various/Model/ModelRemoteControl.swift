@@ -1369,6 +1369,14 @@ extension Model: RemoteControlStreamerDelegate {
         remoteControlDeleteStream(id: id)
     }
 
+    func remoteControlStreamerGetChat(secrets: Bool) -> SettingsChat? {
+        remoteControlGetChat(secrets: secrets)
+    }
+
+    func remoteControlStreamerUpdateChat(chat: SettingsChat, secrets: Bool) -> Bool {
+        remoteControlUpdateChat(chat: chat, secrets: secrets)
+    }
+
     func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID], secrets: Bool) -> Bool {
         remoteControlCreateWidget(widget: widget, sceneIds: sceneIds, secrets: secrets)
     }

@@ -1010,6 +1010,14 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlDeleteStream(id: id) ?? false
     }
 
+    func remoteControlStreamerGetChat(secrets: Bool) -> SettingsChat? {
+        model?.remoteControlGetChat(secrets: secrets)
+    }
+
+    func remoteControlStreamerUpdateChat(chat: SettingsChat, secrets: Bool) -> Bool {
+        model?.remoteControlUpdateChat(chat: chat, secrets: secrets) ?? false
+    }
+
     func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID], secrets: Bool) -> Bool {
         model?.remoteControlCreateWidget(widget: widget, sceneIds: sceneIds, secrets: secrets) ?? false
     }

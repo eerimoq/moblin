@@ -50,6 +50,15 @@ private func makePhoneWidget() -> SettingsWidget {
     return widget
 }
 
+private func makePhoneChat() -> SettingsChat {
+    let chat = SettingsChat()
+    chat.ttsMonster.apiToken = "chat-tts-monster-token-secret"
+    chat.elevenLabs.apiKey = "chat-eleven-labs-key-secret"
+    chat.botCommandAi.baseUrl = "https://ai.example.com/chat-ai-url-secret"
+    chat.botCommandAi.apiKey = "chat-ai-api-key-secret"
+    return chat
+}
+
 private func headers(_ stream: SettingsStream) -> String {
     stream.whip.headers.map { "\($0.name): \($0.value)" }.joined(separator: ", ")
 }
@@ -82,7 +91,30 @@ private let widgetSecrets = [
     "tts-monster-token-secret",
 ]
 
+private let chatSecrets = [
+    "chat-tts-monster-token-secret",
+    "chat-eleven-labs-key-secret",
+    "chat-ai-url-secret",
+    "chat-ai-api-key-secret",
+]
+
 struct SettingsSecretsSuite {
+    struct ChatCase: CustomTestStringConvertible {
+        let testDescription: String
+        let value: @Sendable (SettingsChat) -> String
+        let expected: String
+
+        init(
+            _ description: String,
+            _ expected: String,
+            value: @escaping @Sendable (SettingsChat) -> String
+        ) {
+            testDescription = description
+            self.expected = expected
+            self.value = value
+        }
+    }
+
     struct StreamCase: CustomTestStringConvertible {
         let testDescription: String
         let value: @Sendable (SettingsStream) -> String
@@ -263,5 +295,26 @@ struct SettingsSecretsSuite {
         let widget = makePhoneWidget()
         widget.keepSecrets(from: SettingsWidget(name: ""))
         #expect(testCase.value(widget) == testCase.expected)
+    }
+
+    @Test(arguments: chatSecrets)
+    func removedChatSecretsAreNotEncoded(secret: String) {
+        let chat = copied(makePhoneChat())
+        chat.removeSecrets()
+        #expect(!encoded(chat).contains(secret))
+    }
+
+    @Test(arguments: [
+        ChatCase("TTS.Monster token", "chat-tts-monster-token-secret") { $0.ttsMonster.apiToken },
+        ChatCase("ElevenLabs key", "chat-eleven-labs-key-secret") { $0.elevenLabs.apiKey },
+        ChatCase("AI base URL", "https://ai.example.com/chat-ai-url-secret") { $0.botCommandAi.baseUrl },
+        ChatCase("AI API key", "chat-ai-api-key-secret") { $0.botCommandAi.apiKey },
+    ])
+    func keptChatSecretsAreThePhones(testCase: ChatCase) {
+        let phone = makePhoneChat()
+        let request = copied(phone)
+        request.removeSecrets()
+        request.keepSecrets(from: phone)
+        #expect(testCase.value(request) == testCase.expected)
     }
 }

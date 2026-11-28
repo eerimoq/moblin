@@ -67,6 +67,8 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerCreateStream(stream: SettingsStream, secrets: Bool) -> Bool
     func remoteControlStreamerUpdateStream(stream: SettingsStream, secrets: Bool) -> Bool
     func remoteControlStreamerDeleteStream(id: UUID) -> Bool
+    func remoteControlStreamerGetChat(secrets: Bool) -> SettingsChat?
+    func remoteControlStreamerUpdateChat(chat: SettingsChat, secrets: Bool) -> Bool
     func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID], secrets: Bool) -> Bool
     func remoteControlStreamerUpdateWidget(widget: SettingsWidget, secrets: Bool) -> Bool
     func remoteControlStreamerDeleteWidget(id: UUID) -> Bool
@@ -573,6 +575,15 @@ class RemoteControlStreamer {
             sendResultResponse(id: id, ok: ok)
         case let .deleteStream(id: streamId):
             sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteStream(id: streamId))
+        case let .getChat(secrets: secrets):
+            if let chat = delegate.remoteControlStreamerGetChat(secrets: secrets) {
+                send(message: .response(id: id, result: .ok, data: .getChat(chat: chat)))
+            } else {
+                sendResultResponse(id: id, ok: false)
+            }
+        case let .updateChat(chat: chat, secrets: secrets):
+            let ok = delegate.remoteControlStreamerUpdateChat(chat: chat, secrets: secrets)
+            sendResultResponse(id: id, ok: ok)
         case .getAlertsMediaGallery:
             let gallery = delegate.remoteControlStreamerGetAlertsMediaGallery()
             send(message: .response(id: id, result: .ok, data: .getAlertsMediaGallery(gallery: gallery)))
